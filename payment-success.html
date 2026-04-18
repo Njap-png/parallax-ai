@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Success | BRIDGEMIND</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#050508;--card:#12121a;--border:#27272a;--cyan:#00ff88;--purple:#a855f7;--text:#e0e0e0;--muted:#9ca3af}
+    body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.6}
+    body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(0,0,0,.03) 1px,rgba(0,0,0,.03) 2px);pointer-events:none;z-index:9999}
+    .container{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:3rem;max-width:500px;margin:2rem}
+    .icon{width:80px;height:80px;background:linear-gradient(135deg,var(--cyan),var(--purple));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 2rem;font-size:2rem}
+    h1{font-size:1.5rem;margin-bottom:1rem}
+    p{color:var(--muted);margin-bottom:2rem}
+    .plan{background:var(--bg);border-radius:8px;padding:1rem;margin-bottom:2rem}
+    .plan-name{font-weight:600;color:var(--cyan)}
+    .btn{display:inline-block;padding:.875rem 2rem;background:var(--cyan);color:var(--bg);text-decoration:none;border-radius:8px;font-weight:500}
+    .btn:hover{box-shadow:0 0 20px rgba(0,255,136,.3)}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">✓</div>
+    <h1>PAYMENT SUCCESSFUL</h1>
+    <p>Thank you for subscribing to BridgeMind! Your account has been activated.</p>
+    <div class="plan">
+      <div class="plan-name" id="planName">Pro Plan</div>
+      <div style="color:var(--muted);font-size:.9rem" id="planPrice">$29/month</div>
+    </div>
+    <p style="font-size:.9rem">Check your email for receipt and next steps.</p>
+    <a href="/dashboard.html" class="btn">Go to Dashboard →</a>
+  </div>
+  <script>
+    const params=new URLSearchParams(window.location.search);
+    const plan=params.get('plan')||'pro';
+    const prices={starter:{name:'Starter',usd:'$9',kes:'KSh 1,100'},pro:{name:'Pro',usd:'$29',kes:'KSh 3,500'},team:{name:'Team',usd:'$99',kes:'KSh 12,000'},enterprise:{name:'Enterprise',usd:'$299',kes:'KSh 36,000'}};
+    document.getElementById('planName').textContent=prices[plan]?.name+' Plan'||'Pro Plan';
+  </script>
+</body>
+</html>

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Reference | BRIDGEMIND</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#030308;--bg2:#0a0a15;--card:#12121a;--border:#1a1a2e;--cyan:#00ff88;--cyan2:#00ffff;--purple:#a855f7;--text:#e0e0e0;--muted:#6b7280;--dim:#374151;--red:#ff5f57;--green:#28c840;--yellow:#febc2e}
+    html{scroll-behavior:smooth}
+    body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);min-height:100vh}
+    body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,136,.015) 2px,rgba(0,255,136,.015) 4px);pointer-events:none;z-index:9998}
+
+    nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(3,3,8,.95);border-bottom:1px solid rgba(0,255,136,.2);backdrop-filter:blur(20px)}
+    nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent)}
+    .nav{max-width:1400px;margin:0 auto;padding:.75rem 2rem;display:flex;justify-content:space-between;align-items:center}
+    .logo{display:flex;align-items:center;gap:.75rem;text-decoration:none;color:var(--text);font-weight:600;font-family:'Orbitron',sans-serif;font-size:.9rem;letter-spacing:2px}
+    .logo-icon{width:28px;height:28px;position:relative}
+    .logo-icon::before{content:'';position:absolute;inset:0;border:2px solid var(--cyan);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);animation:pulse 2s ease-in-out infinite;box-shadow:0 0 10px var(--cyan)}
+    .logo-icon::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:6px;height:6px;background:var(--cyan);border-radius:50%;box-shadow:0 0 8px var(--cyan)}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+    .links{display:flex;gap:1.5rem}
+    .links a{color:var(--muted);text-decoration:none;font-size:.85rem;transition:all .3s}
+    .links a:hover,.links a.active{color:var(--cyan);text-shadow:0 0 10px var(--cyan)}
+
+    main{padding:100px 2rem 4rem;max-width:1200px;margin:0 auto}
+    
+    .hero{text-align:center;margin-bottom:4rem}
+    .hero h1{font-family:'Orbitron',sans-serif;font-size:2.5rem;letter-spacing:4px;margin-bottom:1rem;background:linear-gradient(90deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .hero p{color:var(--muted);font-size:1.1rem;max-width:600px;margin:0 auto}
+
+    .toc{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-bottom:3rem}
+    .toc a{padding:.5rem 1rem;background:rgba(18,18,26,.8);border:1px solid var(--border);border-radius:4px;color:var(--muted);text-decoration:none;font-size:.8rem;transition:all .3s}
+    .toc a:hover{border-color:var(--cyan);color:var(--cyan)}
+
+    .endpoint{background:rgba(18,18,26,.8);border:1px solid var(--border);border-radius:8px;margin-bottom:2rem;overflow:hidden}
+    .endpoint-header{display:flex;align-items:center;gap:1rem;padding:1rem 1.5rem;background:rgba(0,0,0,.3);border-bottom:1px solid var(--border)}
+    .method{padding:.3rem .75rem;border-radius:4px;font-size:.7rem;font-weight:700;font-family:'Orbitron',sans-serif}
+    .method.post{background:rgba(0,255,136,.2);color:var(--cyan)}
+    .method.get{background:rgba(0,255,255,.2);color:var(--cyan2)}
+    .endpoint-url{flex:1;font-size:.9rem;color:var(--text)}
+    .endpoint-name{color:var(--purple);font-weight:600}
+    .endpoint-body{padding:1.5rem}
+
+    .params{margin-bottom:1.5rem}
+    .params h4{font-family:'Orbitron',sans-serif;font-size:.8rem;color:var(--cyan);margin-bottom:.75rem;letter-spacing:1px}
+    .param{display:flex;gap:1rem;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.03);font-size:.85rem}
+    .param-name{color:var(--green);min-width:120px;font-weight:600}
+    .param-type{color:var(--yellow);min-width:80px}
+    .param-desc{color:var(--muted)}
+
+    .code{background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:4px;padding:1rem;margin-top:1rem;overflow-x:auto;font-size:.85rem;line-height:1.6}
+    .code-header{display:flex;justify-content:space-between;margin-bottom:.5rem;font-size:.75rem;color:var(--dim)}
+    .keyword{color:var(--purple)}.string{color:var(--green)}.comment{color:var(--dim)}.number{color:var(--yellow)}
+
+    .models{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;margin:3rem 0}
+    .model{background:linear-gradient(180deg,rgba(18,18,26,.95),rgba(10,10,21,.95));border:1px solid var(--border);border-radius:8px;padding:1.5rem}
+    .model h3{font-family:'Orbitron',sans-serif;font-size:1rem;color:var(--cyan);margin-bottom:.5rem}
+    .model p{color:var(--muted);font-size:.85rem;margin-bottom:1rem}
+    .model-features{list-style:none;font-size:.8rem}
+    .model-features li{padding:.3rem 0;color:var(--text-dim)}
+    .model-features li::before{content:'▸ ';color:var(--cyan)}
+
+    .sidebar{position:fixed;right:2rem;top:100px;width:200px}
+    .sidebar-item{padding:.5rem 1rem;margin-bottom:.5rem;background:rgba(18,18,26,.8);border:1px solid var(--border);border-radius:4px;font-size:.75rem;color:var(--muted);transition:all .3s;cursor:pointer}
+    .sidebar-item:hover{border-color:var(--cyan);color:var(--cyan)}
+    .sidebar-item.active{border-color:var(--cyan);color:var(--cyan);background:rgba(0,255,136,.1)}
+
+    .mobile-menu-btn{display:none;background:none;border:1px solid var(--border);color:var(--muted);padding:.4rem .6rem;border-radius:4px;cursor:pointer;font-size:1.2rem;margin-left:auto}
+    .mobile-menu-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+    .mobile-menu{display:none;position:fixed;top:60px;left:0;right:0;background:var(--card);border-bottom:1px solid var(--border);z-index:999;padding:1rem;flex-direction:column;gap:.5rem;max-height:80vh;overflow-y:auto}
+    .mobile-menu.show{display:flex!important}
+    .mobile-menu a{padding:1rem;color:var(--muted);text-decoration:none;font-size:.9rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+    .mobile-menu a:hover{color:var(--cyan)}
+    .mobile-menu .cta-mobile{background:var(--cyan);color:var(--bg);border:none;text-align:center;justify-content:center;border-radius:6px}
+    @media(max-width:900px){.sidebar{display:none}.mobile-menu-btn{display:flex!important;align-items:center;justify-content:center}.links{display:none!important}.cta{display:none!important}.nav{justify-content:space-between}}
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav">
+      <a href="/" class="logo">
+        <div class="logo-icon"></div>
+        PARALLAX_DOMINION
+      </a>
+      <div class="links">
+        <a href="/services.html">Services</a>
+        <a href="/api-docs.html" class="active">API Docs</a>
+        <a href="/pricing.html">Pricing</a>
+        <a href="/dashboard.html">Dashboard</a>
+      </div>
+      <a href="/login.html" class="cta" id="navCta">GET STARTED</a>
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
+    </div>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="/">🏠 Home <span>→</span></a>
+    <a href="/services.html">🚀 Services <span>→</span></a>
+    <a href="/agent-swarm.html">🐝 Agent Swarm <span>→</span></a>
+    <a href="/ai-chat.html">💬 AI Chat <span>→</span></a>
+    <a href="/terminal-pro.html">⌨️ Terminal <span>→</span></a>
+    <a href="/sandbox.html">📦 Sandbox <span>→</span></a>
+    <a href="/pricing.html">💰 Pricing <span>→</span></a>
+    <a href="/dashboard.html" id="mobileDashboard">📊 Dashboard <span>→</span></a>
+    <a href="/docs.html">📚 Docs <span>→</span></a>
+    <a href="/api-docs.html" style="color:var(--cyan)">🔌 API <span>→</span></a>
+    <a href="/login.html" id="mobileAuthLink" onclick="handleMobileAuth(event)" class="cta-mobile" style="color:var(--bg)">🔑 Get Started <span>→</span></a>
+  </div>
+
+  <main>
+    <div class="hero">
+      <h1>// API_REFERENCE</h1>
+      <p>Build powerful applications with BridgeMind's AI services</p>
+    </div>
+
+    <div class="toc">
+      <a href="#overview">Overview</a>
+      <a href="#cogi">COGI</a>
+      <a href="#guardian">GUARDIAN</a>
+      <a href="#docufy">DOCUFY</a>
+      <a href="#testpilot">TEST_PILOT</a>
+      <a href="#crawler">CRAWLER</a>
+      <a href="#agentswarm">AGENT_SWARM</a>
+      <a href="#orchestrate">ORCHESTRATE</a>
+      <a href="#models">AI_MODELS</a>
+    </div>
+
+    <div id="overview">
+      <h2 style="font-family:'Orbitron',sans-serif;font-size:1.5rem;color:var(--cyan);margin-bottom:1rem">// BASE_URL</h2>
+      <div class="code">
+        <span class="comment">Base URL for all API endpoints</span>
+        https://bridgemind.ai/api
+      </div>
+
+      <h2 style="font-family:'Orbitron',sans-serif;font-size:1.5rem;color:var(--cyan);margin:2rem 0 1rem">// AUTHENTICATION</h2>
+      <div class="code">
+        <span class="comment">Include your API key in the Authorization header</span>
+        Authorization: Bearer <span class="string">YOUR_API_KEY</span>
+      </div>
+
+      <h2 style="font-family:'Orbitron',sans-serif;font-size:1.5rem;color:var(--cyan);margin:2rem 0 1rem">// REQUEST_FORMAT</h2>
+      <div class="code">
+<span class="keyword">const</span> response = <span class="keyword">await</span> fetch(<span class="string">'/api/services'</span>, {
+  method: <span class="string">'POST'</span>,
+  headers: {
+    <span class="string">'Content-Type'</span>: <span class="string">'application/json'</span>
+  },
+  body: JSON.stringify({
+    service: <span class="string">'cogi'</span>,
+    message: <span class="string">'Create a REST API'</span>,
+    language: <span class="string">'javascript'</span>,
+    mode: <span class="string">'code'</span>
+  })
+});
+      </div>
+    </div>
+
+    <div id="cogi" style="margin-top:4rem">
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method post">POST</span>
+          <span class="endpoint-url"><span class="endpoint-name">/api/services</span> - AI Code Generation</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="params">
+            <h4>// PARAMETERS</h4>
+            <div class="param">
+              <span class="param-name">service</span>
+              <span class="param-type">string</span>
+              <span class="param-desc">Must be "cogi"</span>
+            </div>
+            <div class="param">
+              <span class="param-name">message</span>
+              <span class="param-type">string</span>
+              <span class="param-desc">Your code request or existing code</span>
+            </div>
+            <div class="param">
+              <span class="param-name">language</span>
+              <span class="param-type">string</span>
+              <span class="param-desc">javascript, python, typescript, go, rust, java, cpp, php</span>
+            </div>
+            <div class="param">
+              <span class="param-name">mode</span>
+              <span class="param-type">string</span>
+              <span class="param-desc">code, explain, debug, optimize, review</span>
+            </div>
+            <div class="param">
+              <span class="param-name">model</span>
+              <span class="param-type">string</span>
+              <span class="param-desc">fast, balanced (default), power</span>
+            </div>
+          </div>
+          <div class="code">
+            <div class="code-header">
+              <span>REQUEST</span>
+              <span>cURL</span>
+            </div>
+curl -X POST https://bridgemind.ai/api/services \
+  -H "Content-Type: application/json" \
+  -d '{
+    "service": "cogi",
+    "message": "Create a React login form with validation",
+    "language": "typescript",
+    "mode": "code"
+  }'
+          </div>
+          <div class="code">
+            <div class="code-header">
+              <span>RESPONSE</span>
+              <span>JSON</span>
+            </div>
+{
+  "success": true,
+  "response": "import React, { useState } from 'react';\n\nexport const LoginForm = () => {\n  const [email, setEmail] = useState('');\n  const [password, setPassword] = useState('');\n  // ... full implementation",
+  "model": "llama-3.3-70b-versatile",
+  "language": "typescript",
+  "mode": "code",
+  "usage": { "total_tokens": 856 }
+}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="guardian" style="margin-top:2rem">
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method post">POST</span>
+          <span class="endpoint-url"><span class="endpoint-name">/api/services</span> - Security Analysis</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="params">
+            <h4>// PARAMETERS</h4>
+            <div class="param">
+              <span class="param-name">service</span>
+              <span class="param-type">string</span>
+              <span class="param-desc">Must be "guardian"</span>
+            </div>
+            <div class="param">
+              <span class="param-name">code</span>
+              <span class="param-type">string</span>
+              <span class="param-desc">Code to analyze for security issues</span>
+            </div>
+          </div>
+          <div class="code">
+            <div class="code-header">
+              <span>RESPONSE</span>
+              <span>JSON</span>
+            </div>
+{
+  "success": true,
+  "score": 85,
+  "grade": "B",
+  "vulnerabilities": [
+    { "severity": "high", "type": "XSS Risk", "match": "innerHTML", "fix": "Use textContent" }
+  ],
+  "severityCounts": { "critical": 0, "high": 1, "medium": 0, "low": 2, "info": 1 },
+  "aiAnalysis": "Deep analysis from AI...",
+  "recommendations": [...]
+}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="agentswarm" style="margin-top:2rem">
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method post">POST</span>
+          <span class="endpoint-url"><span class="endpoint-name">/api/services</span> - Multi-Agent Collaboration</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="params">
+            <h4>// PARAMETERS</h4>
+            <div class="param">
+              <span class="param-name">service</span>
+              <span class="param-type">string</span>
+              <span class="param-desc">Must be "agentswarm"</span>
+            </div>
+            <div class="param">
+              <span class="param-name">task</span>
+              <span class="param-type">string</span>
+              <span class="param-desc">The task for agents to collaborate on</span>
+            </div>
+            <div class="param">
+              <span class="param-name">agents</span>
+              <span class="param-type">array</span>
+              <span class="param-desc">Array of agent types to deploy</span>
+            </div>
+          </div>
+          <div class="code">
+            <div class="code-header">
+              <span>AVAILABLE_AGENTS</span>
+            </div>
+architect  🏗️  - System architecture design
+coder      ⚡   - Code implementation
+reviewer   🔍  - Code review and quality
+tester     🧪  - Test generation
+documenter 📝  - Documentation
+optimizer  🚀  - Performance optimization
+security   🛡️  - Security analysis
+analyst    📊  - Data analysis
+          </div>
+          <div class="code">
+            <div class="code-header">
+              <span>REQUEST</span>
+            </div>
+{
+  "service": "agentswarm",
+  "task": "Build a scalable e-commerce API",
+  "agents": ["architect", "coder", "reviewer", "tester"]
+}
+          </div>
+          <div class="code">
+            <div class="code-header">
+              <span>RESPONSE</span>
+            </div>
+{
+  "success": true,
+  "swarm": [...],
+  "results": [
+    { "agentName": "Architect", "status": "completed", "response": "..." },
+    { "agentName": "Coder", "status": "completed", "response": "..." },
+    ...
+  ],
+  "synthesis": "Final synthesized solution...",
+  "stats": { "agentsActive": 4, "totalTokens": 2500 }
+}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="orchestrate" style="margin-top:2rem">
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method post">POST</span>
+          <span class="endpoint-url"><span class="endpoint-name">/api/services</span> - Pipeline Orchestration</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="params">
+            <h4>// PARAMETERS</h4>
+            <div class="param">
+              <span class="param-name">service</span>
+              <span class="param-type">string</span>
+              <span class="param-desc">Must be "orchestrate"</span>
+            </div>
+            <div class="param">
+              <span class="param-name">task</span>
+              <span class="param-type">string</span>
+              <span class="param-desc">Task description</span>
+            </div>
+            <div class="param">
+              <span class="param-name">services</span>
+              <span class="param-type">array</span>
+              <span class="param-desc">Pipeline: ["cogi", "guardian", "testpilot"]</span>
+            </div>
+          </div>
+          <div class="code">
+            <span class="comment">Pipeline: Generate Code → Check Security → Generate Tests</span>
+{
+  "service": "orchestrate",
+  "task": "Create a user authentication module",
+  "services": ["cogi", "guardian", "testpilot"]
+}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="models" style="margin-top:4rem">
+      <h2 style="font-family:'Orbitron',sans-serif;font-size:1.5rem;color:var(--cyan);margin-bottom:1.5rem">// AI_MODELS</h2>
+      <div class="models">
+        <div class="model">
+          <h3>⚡ Fast</h3>
+          <p>llama-3.1-8b-instant</p>
+          <ul class="model-features">
+            <li>Fastest response time</li>
+            <li>Good for simple tasks</li>
+            <li>Lower token usage</li>
+            <li>Best for prototyping</li>
+          </ul>
+        </div>
+        <div class="model">
+          <h3>⚖️ Balanced</h3>
+          <p>llama-3.3-70b-versatile</p>
+          <ul class="model-features">
+            <li>Best quality/speed balance</li>
+            <li>Great for most tasks</li>
+            <li>Recommended default</li>
+            <li>Handles complex tasks</li>
+          </ul>
+        </div>
+        <div class="model">
+          <h3>🚀 Power</h3>
+          <p>mixtral-8x7b-32768</p>
+          <ul class="model-features">
+            <li>Highest capability</li>
+            <li>Longest context window</li>
+            <li>Complex reasoning</li>
+            <li>Large codebases</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:4rem;padding:2rem;background:rgba(0,255,136,.05);border:1px solid rgba(0,255,136,.2);border-radius:8px;text-align:center">
+      <h3 style="font-family:'Orbitron',sans-serif;color:var(--cyan);margin-bottom:1rem">// READY_TO_BUILD</h3>
+      <p style="color:var(--muted);margin-bottom:1.5rem">Get your API key and start building today</p>
+      <a href="/dashboard.html" style="display:inline-block;padding:1rem 2rem;background:var(--cyan);color:var(--bg);text-decoration:none;border-radius:4px;font-family:'Orbitron',sans-serif;font-weight:600">GET_STARTED</a>
+    </div>
+  </main>
+
+  <script>
+    document.querySelectorAll('.toc a').forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        const target = document.querySelector(link.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+    function toggleMobileMenu(){
+      document.getElementById('mobileMenu').classList.toggle('show');
+      updateMobileAuth();
+    }
+    
+    function updateMobileAuth() {
+      const isLoggedIn = localStorage.getItem('auth_token');
+      const mobileAuthLink = document.getElementById('mobileAuthLink');
+      
+      if (isLoggedIn) {
+        mobileAuthLink.innerHTML = '🚪 Logout <span>→</span>';
+        mobileAuthLink.onclick = function(e) { e.preventDefault(); logout(); };
+      } else {
+        mobileAuthLink.innerHTML = '🔑 Get Started <span>→</span>';
+        mobileAuthLink.onclick = function() { window.location.href = '/login.html'; };
+      }
+    }
+    
+    function handleMobileAuth(e) {
+      const isLoggedIn = localStorage.getItem('auth_token');
+      if (isLoggedIn) {
+        e.preventDefault();
+        logout();
+      }
+    }
+    
+    function logout() {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      window.location.href = '/login.html';
+    }
+    if(localStorage.getItem('auth_token')){
+      document.getElementById('navCta').href = '/dashboard.html';
+      document.getElementById('navCta').textContent = 'Dashboard';
+    }
+  </script>
+</body>
+</html>

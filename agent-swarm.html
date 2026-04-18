@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parallax Nexus | PARALLAX DOMINION</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#030308;--bg2:#0a0a15;--card:#12121a;--border:#1a1a2e;--cyan:#00ff88;--cyan2:#00ffff;--purple:#a855f7;--text:#e0e0e0;--muted:#6b7280;--dim:#374151;--red:#ff5f57;--green:#28c840;--yellow:#febc2e;--orange:#ff9500}
+    html,body{height:100%;overflow:hidden}
+    body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text)}
+    body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,136,.015) 2px,rgba(0,255,136,.015) 4px);pointer-events:none;z-index:9998}
+
+    /* HEADER */
+    header{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.5rem;background:rgba(18,18,26,.98);border-bottom:1px solid rgba(0,255,136,.2);position:relative;z-index:100}
+    header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent)}
+    .logo{display:flex;align-items:center;gap:.75rem;font-family:'Orbitron',sans-serif;font-size:.9rem;color:var(--cyan);letter-spacing:2px}
+    .logo-icon{width:28px;height:28px;position:relative}
+    .logo-icon::before{content:'';position:absolute;inset:0;border:2px solid var(--cyan);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);animation:pulse 2s ease-in-out infinite}
+    .logo-icon::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:8px;height:8px;background:var(--cyan);border-radius:50%}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+
+    /* MAIN */
+    main{display:flex;height:calc(100vh - 60px);position:relative;z-index:1}
+
+    /* SIDEBAR */
+    .sidebar{width:320px;background:rgba(18,18,26,.95);border-right:1px solid var(--border);display:flex;flex-direction:column}
+    .sidebar-header{padding:1rem;border-bottom:1px solid var(--border)}
+    .sidebar-title{font-family:'Orbitron',sans-serif;font-size:.8rem;color:var(--cyan);letter-spacing:2px;margin-bottom:.75rem}
+    
+    .task-input{width:100%;padding:.75rem;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:inherit;font-size:.85rem;resize:vertical;min-height:120px;outline:none;transition:border-color .3s}
+    .task-input:focus{border-color:var(--cyan)}
+
+    .agents-section{padding:1rem;flex:1;overflow-y:auto}
+    .agents-title{font-size:.7rem;color:var(--muted);letter-spacing:1px;margin-bottom:.75rem;text-transform:uppercase}
+    .agent-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+    .agent-card{display:flex;flex-direction:column;align-items:center;padding:.75rem;border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all .3s;background:rgba(0,0,0,.2)}
+    .agent-card:hover{border-color:var(--cyan);background:rgba(0,255,136,.05)}
+    .agent-card.selected{border-color:var(--cyan);background:rgba(0,255,136,.1);box-shadow:0 0 20px rgba(0,255,136,.2)}
+    .agent-card.selected .agent-icon{transform:scale(1.1)}
+    .agent-icon{font-size:1.5rem;margin-bottom:.5rem;transition:transform .3s}
+    .agent-name{font-family:'Orbitron',sans-serif;font-size:.65rem;letter-spacing:1px;color:var(--text)}
+    .agent-role{font-size:.6rem;color:var(--muted);margin-top:.25rem}
+    .agent-check{width:16px;height:16px;border-radius:50%;border:2px solid var(--dim);margin-top:.5rem;display:flex;align-items:center;justify-content:center;font-size:.6rem;transition:all .3s}
+    .agent-card.selected .agent-check{background:var(--cyan);border-color:var(--cyan);color:var(--bg)}
+
+    .run-section{padding:1rem;border-top:1px solid var(--border)}
+    .model-select{width:100%;padding:.5rem;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:inherit;margin-bottom:.75rem}
+    .run-btn{width:100%;padding:1rem;background:linear-gradient(135deg,var(--cyan),#00cc6a);border:none;border-radius:6px;color:var(--bg);font-family:'Orbitron',sans-serif;font-weight:600;cursor:pointer;transition:all .3s;display:flex;align-items:center;justify-content:center;gap:.5rem}
+    .run-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,255,136,.3)}
+    .run-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+    /* WORKSPACE */
+    .workspace{flex:1;display:flex;flex-direction:column;min-width:0}
+    
+    /* AGENTS DISPLAY */
+    .agents-display{padding:1rem;display:flex;gap:.5rem;overflow-x:auto;background:rgba(0,0,0,.3);border-bottom:1px solid var(--border)}
+    .active-agent{min-width:100px;padding:.5rem 1rem;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:20px;display:flex;align-items:center;gap:.5rem;font-size:.75rem;white-space:nowrap}
+    .active-agent-icon{font-size:1rem}
+    .active-agent-status{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 1s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+    /* RESULTS AREA */
+    .results{flex:1;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem;padding:1rem;overflow-y:auto;background:rgba(0,0,0,.2)}
+
+    .result-card{background:linear-gradient(180deg,rgba(18,18,26,.98),rgba(10,10,15,.98));border:1px solid var(--border);border-radius:8px;overflow:hidden;display:flex;flex-direction:column}
+    .result-header{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;background:rgba(0,0,0,.3);border-bottom:1px solid var(--border)}
+    .result-icon{font-size:1.25rem}
+    .result-info{flex:1}
+    .result-name{font-family:'Orbitron',sans-serif;font-size:.8rem;letter-spacing:1px}
+    .result-status{width:8px;height:8px;border-radius:50%;background:var(--yellow)}
+    .result-status.ready{background:var(--green)}
+    .result-status.error{background:var(--red)}
+    .result-latency{font-size:.65rem;color:var(--muted)}
+
+    .result-body{flex:1;padding:1rem;overflow-y:auto;font-size:.8rem;line-height:1.8;white-space:pre-wrap;max-height:400px}
+    .result-body.loading{color:var(--yellow);font-style:italic}
+
+    /* SYNTHESIS */
+    .synthesis{grid-column:1/-1;background:linear-gradient(180deg,rgba(0,255,136,.05),rgba(18,18,26,.98));border:1px solid rgba(0,255,136,.3);border-radius:8px;overflow:hidden}
+    .synthesis-header{display:flex;align-items:center;gap:.75rem;padding:1rem;background:linear-gradient(90deg,rgba(0,255,136,.1),transparent);border-bottom:1px solid rgba(0,255,136,.2)}
+    .synthesis-icon{font-size:1.5rem}
+    .synthesis-title{font-family:'Orbitron',sans-serif;font-size:1rem;color:var(--cyan);letter-spacing:2px}
+    .synthesis-body{padding:1.5rem;font-size:.9rem;line-height:1.8;white-space:pre-wrap}
+
+    /* STATS BAR */
+    .stats-bar{display:flex;gap:1rem;padding:1rem;background:rgba(18,18,26,.98);border-top:1px solid var(--border)}
+    .stat{display:flex;align-items:center;gap:.5rem;font-size:.8rem}
+    .stat-value{font-family:'Orbitron',sans-serif;color:var(--cyan);font-weight:600}
+    .stat-label{color:var(--muted)}
+
+    /* AI LINKS */
+    .ai-links-section{padding:1rem;border-top:1px solid var(--border)}
+    .ai-links-title{font-size:.7rem;color:var(--muted);letter-spacing:1px;margin-bottom:.75rem;text-transform:uppercase}
+    .ai-links-grid{display:flex;flex-direction:column;gap:.5rem}
+    .ai-link{display:flex;align-items:center;gap:.5rem;padding:.6rem .75rem;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:6px;color:var(--text);text-decoration:none;font-size:.75rem;transition:all .3s}
+    .ai-link:hover{border-color:var(--cyan);background:rgba(0,255,136,.05)}
+    .ai-link-icon{font-size:1rem}
+    .ai-link-name{flex:1;font-weight:500}
+    .ai-link-badge{font-size:.6rem;padding:.15rem .4rem;background:rgba(0,255,136,.2);color:var(--cyan);border-radius:4px}
+    .ai-link.chatgpt:hover{border-color:#10a37f}
+    .ai-link.claude:hover{border-color:#d97706}
+    .ai-link.gemini:hover{border-color:#4285f4}
+    .ai-link.grok:hover{border-color:#9c27b0}
+
+    /* RESPONSIVE */
+    @media(max-width:1024px){
+      .sidebar{width:260px}
+      .agent-grid{grid-template-columns:repeat(3,1fr)}
+      .results{grid-template-columns:1fr}
+    }
+    
+    @media(max-width:900px){
+      main{flex-direction:column}
+      .sidebar{width:100%;height:auto;max-height:50vh;border-right:none;border-bottom:1px solid var(--border);overflow-y:auto}
+      .workspace{flex:1;min-height:300px}
+      .agent-grid{grid-template-columns:repeat(4,1fr);gap:.5rem}
+      .results{grid-template-columns:1fr}
+      .synthesis{grid-column:1}
+    }
+    
+    @media(max-width:768px){
+      *{max-width:100vw;overflow-x:hidden}
+      .mobile-menu-btn{display:block!important}
+      .sidebar{width:100%;max-height:45vh;border-bottom:1px solid var(--border)}
+      .sidebar-header,.agents-section,.run-section{padding:.5rem}
+      .agent-grid{grid-template-columns:repeat(3,1fr);gap:.5rem}
+      .agent-card{padding:.75rem}
+      .agent-icon{font-size:1.5rem}
+      .agent-name{font-size:.65rem}
+      .agent-role{font-size:.55rem}
+      .task-input{min-height:80px;font-size:.85rem}
+      .logo{font-size:.75rem}
+      header{padding:.5rem .75rem}
+      .stats-bar{flex-wrap:wrap;gap:.5rem;padding:.5rem;font-size:.7rem}
+      .results{padding:.5rem;gap:.5rem}
+      .result-card{max-height:250px;overflow-y:auto}
+      .result-header{padding:.5rem}
+      .result-icon{font-size:1.25rem}
+      .result-name{font-size:.7rem}
+      .result-body{padding:.5rem;font-size:.75rem}
+      .run-btn{padding:.6rem;font-size:.75rem}
+      .run-section{flex-direction:column;gap:.5rem}
+      .model-select{width:100%;font-size:.75rem}
+      .ai-links-grid{grid-template-columns:1fr 1fr}
+    }
+    
+    @media(max-width:480px){
+      *{overflow-x:hidden}
+      .agent-grid{grid-template-columns:repeat(2,1fr)}
+      .agent-card{padding:.5rem}
+      .agent-icon{font-size:1.25rem}
+      .logo span:last-child{font-size:.6rem;letter-spacing:1px}
+      .sidebar-header,.agents-section,.run-section{padding:.5rem}
+      .run-btn{padding:.5rem;font-size:.7rem}
+      .model-select{font-size:.7rem;padding:.4rem}
+      .stats-bar{justify-content:space-between;font-size:.65rem}
+      .result-body{max-height:200px;font-size:.7rem}
+      .synthesis-body{padding:.75rem;font-size:.75rem}
+      .synthesis-title{font-size:.8rem}
+      .synthesis{max-height:300px;overflow-y:auto}
+      .ai-links-section{padding:.5rem}
+      .ai-link{padding:.4rem .5rem;font-size:.65rem}
+      body{font-size:.8rem}
+    }
+    
+    /* MOBILE NAV */
+    .mobile-menu-btn{display:none;background:transparent;border:1px solid var(--border);color:var(--muted);padding:.4rem .6rem;border-radius:4px;cursor:pointer;font-size:1.2rem}
+    .mobile-menu-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+    .mobile-menu{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(18,18,26,.98);border:none;z-index:10000;padding:70px 1rem 1rem;overflow-y:auto}
+    .mobile-menu.show{display:block}
+    .mobile-menu select{width:100%;padding:.6rem;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:inherit;margin-bottom:.75rem}
+    .mobile-menu h4{font-family:'Orbitron',sans-serif;font-size:.7rem;color:var(--cyan);margin-bottom:.75rem}
+    .mobile-menu a{padding:1rem;color:var(--muted);text-decoration:none;font-size:1rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+    .mobile-menu a:hover{color:var(--cyan);background:rgba(0,255,136,.05)}
+    .mobile-menu a:last-child{margin-top:auto;border-bottom:none}
+    body.menu-open{overflow:hidden}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <div class="logo-icon"></div>
+      <span>AGENT_SWARM</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:1rem">
+      <div class="stat">
+        <span style="width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)"></span>
+        <span style="font-size:.75rem;color:var(--muted)">AI CONNECTED</span>
+      </div>
+      <a href="/" style="color:var(--muted);text-decoration:none;font-size:.8rem">← Back</a>
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
+    </div>
+  </header>
+  
+  <div class="mobile-menu" id="mobileMenu">
+    <h4>// MODEL</h4>
+    <select id="modelMobile" onchange="document.getElementById('modelSelect').value=this.value">
+      <option value="balanced">⚖️ Balanced</option>
+      <option value="fast">⚡ Fast</option>
+      <option value="power">🚀 Power</option>
+    </select>
+    <h4>// AGENTS</h4>
+    <select id="agentsMobile">
+      <option value="4">4 Agents (Default)</option>
+      <option value="8">8 Agents (Full)</option>
+    </select>
+    <button class="run-btn" onclick="runSwarm()" style="margin-top:.5rem">
+      <span>🐝</span> DEPLOY
+    </button>
+    <a href="/services.html">Services <span>→</span></a>
+    <a href="/ai-chat.html">AI Chat <span>→</span></a>
+    <a href="/dashboard.html" id="mobileDashboard">Dashboard <span>→</span></a>
+    <a href="/login.html" id="mobileAuthLink" onclick="handleMobileAuth(event)">Sign In <span>→</span></a>
+  </div>
+
+  <main>
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-title">// TASK_DESCRIPTION</div>
+        <textarea class="task-input" id="taskInput" placeholder="Describe your task...
+
+Example: Build a complete user authentication system with JWT tokens, password hashing, and role-based access control."></textarea>
+      </div>
+
+      <div class="agents-section">
+        <div class="agents-title">// SELECT_AGENTS</div>
+        <div class="agent-grid">
+          <div class="agent-card selected" onclick="toggleAgent('architect', this)">
+            <span class="agent-icon">🏗️</span>
+            <span class="agent-name">ARCHITECT</span>
+            <span class="agent-role">System Design</span>
+            <div class="agent-check">✓</div>
+          </div>
+          <div class="agent-card selected" onclick="toggleAgent('coder', this)">
+            <span class="agent-icon">⚡</span>
+            <span class="agent-name">CODER</span>
+            <span class="agent-role">Implementation</span>
+            <div class="agent-check">✓</div>
+          </div>
+          <div class="agent-card selected" onclick="toggleAgent('reviewer', this)">
+            <span class="agent-icon">🔍</span>
+            <span class="agent-name">REVIEWER</span>
+            <span class="agent-role">Quality Check</span>
+            <div class="agent-check">✓</div>
+          </div>
+          <div class="agent-card selected" onclick="toggleAgent('tester', this)">
+            <span class="agent-icon">🧪</span>
+            <span class="agent-name">TESTER</span>
+            <span class="agent-role">QA Engineer</span>
+            <div class="agent-check">✓</div>
+          </div>
+          <div class="agent-card" onclick="toggleAgent('docs', this)">
+            <span class="agent-icon">📝</span>
+            <span class="agent-name">DOCS</span>
+            <span class="agent-role">Documentation</span>
+            <div class="agent-check">✓</div>
+          </div>
+          <div class="agent-card" onclick="toggleAgent('optimizer', this)">
+            <span class="agent-icon">🚀</span>
+            <span class="agent-name">OPTIMIZER</span>
+            <span class="agent-role">Performance</span>
+            <div class="agent-check">✓</div>
+          </div>
+          <div class="agent-card" onclick="toggleAgent('security', this)">
+            <span class="agent-icon">🛡️</span>
+            <span class="agent-name">SECURITY</span>
+            <span class="agent-role">Vulnerability</span>
+            <div class="agent-check">✓</div>
+          </div>
+          <div class="agent-card" onclick="toggleAgent('analyst', this)">
+            <span class="agent-icon">📊</span>
+            <span class="agent-name">ANALYST</span>
+            <span class="agent-role">Data Insights</span>
+            <div class="agent-check">✓</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="run-section">
+        <select class="model-select" id="languageSelect">
+          <option value="">🌐 Auto-detect</option>
+          <option value="javascript">📜 JavaScript</option>
+          <option value="typescript">📜 TypeScript</option>
+          <option value="python">🐍 Python</option>
+          <option value="rust">🦀 Rust</option>
+          <option value="go">🐹 Go</option>
+          <option value="java">☕ Java</option>
+          <option value="cpp">⚙️ C++</option>
+          <option value="csharp">🔷 C#</option>
+          <option value="php">🐘 PHP</option>
+          <option value="ruby">💎 Ruby</option>
+          <option value="swift">🍎 Swift</option>
+          <option value="kotlin">🎯 Kotlin</option>
+          <option value="sql">🗄️ SQL</option>
+          <option value="html">🏠 HTML/CSS</option>
+          <option value="bash">💻 Bash</option>
+        </select>
+        <select class="model-select" id="modelSelect">
+          <option value="balanced">⚖️ Balanced (Default)</option>
+          <option value="fast">⚡ Fast (8B)</option>
+          <option value="power">🚀 Power (Mixtral)</option>
+        </select>
+        <button class="run-btn" id="runBtn" onclick="runSwarm()">
+          <span>🐝</span>
+          DEPLOY SWARM
+        </button>
+      </div>
+
+      <div class="ai-links-section">
+        <div class="ai-links-title">// AI_CHAT_TOOLS</div>
+        <div class="ai-links-grid">
+          <a href="https://chat.openai.com/" target="_blank" class="ai-link chatgpt">
+            <span class="ai-link-icon">🤖</span>
+            <span class="ai-link-name">ChatGPT</span>
+            <span class="ai-link-badge">GPT-4</span>
+          </a>
+          <a href="https://claude.ai/" target="_blank" class="ai-link claude">
+            <span class="ai-link-icon">🧠</span>
+            <span class="ai-link-name">Claude</span>
+            <span class="ai-link-badge">Sonnet</span>
+          </a>
+          <a href="https://aistudio.google.com/" target="_blank" class="ai-link gemini">
+            <span class="ai-link-icon">✨</span>
+            <span class="ai-link-name">Google AI Studio</span>
+            <span class="ai-link-badge">Gemini</span>
+          </a>
+          <a href="https://grok.x.com/" target="_blank" class="ai-link grok">
+            <span class="ai-link-icon">🌀</span>
+            <span class="ai-link-name">Grok</span>
+            <span class="ai-link-badge">xAI</span>
+          </a>
+        </div>
+      </div>
+    </aside>
+
+    <section class="workspace">
+      <div class="agents-display" id="agentsDisplay">
+        <div style="color:var(--muted);font-size:.8rem">Select agents and deploy...</div>
+      </div>
+
+      <div class="results" id="resultsArea">
+        <div style="grid-column:1/-1;display:flex;align-items:center;justify-content:center;height:100%;color:var(--dim)">
+          <div style="text-align:center">
+            <div style="font-size:3rem;margin-bottom:1rem">🐝</div>
+            <div style="font-family:'Orbitron',sans-serif;letter-spacing:2px">AWAITING DEPLOYMENT</div>
+            <div style="font-size:.8rem;color:var(--muted);margin-top:.5rem">Define a task and deploy the agent swarm</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-bar" id="statsBar" style="display:none">
+        <div class="stat">
+          <span class="stat-label">Agents:</span>
+          <span class="stat-value" id="statAgents">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Completed:</span>
+          <span class="stat-value" id="statCompleted">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Total Tokens:</span>
+          <span class="stat-value" id="statTokens">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Total Time:</span>
+          <span class="stat-value" id="statTime">0ms</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const agentIcons = {
+      architect: '🏗️',
+      coder: '⚡',
+      reviewer: '🔍',
+      tester: '🧪',
+      docs: '📝',
+      optimizer: '🚀',
+      security: '🛡️',
+      analyst: '📊'
+    };
+
+    let selectedAgents = ['architect', 'coder', 'reviewer', 'tester'];
+    let isRunning = false;
+
+    function toggleAgent(agent, element) {
+      if (selectedAgents.includes(agent)) {
+        selectedAgents = selectedAgents.filter(a => a !== agent);
+        element.classList.remove('selected');
+      } else {
+        selectedAgents.push(agent);
+        element.classList.add('selected');
+      }
+      updateAgentsDisplay();
+    }
+
+    function updateAgentsDisplay() {
+      const display = document.getElementById('agentsDisplay');
+      if (selectedAgents.length === 0) {
+        display.innerHTML = '<div style="color:var(--muted);font-size:.8rem">Select at least one agent...</div>';
+      } else {
+        display.innerHTML = selectedAgents.map(agent => `
+          <div class="active-agent">
+            <span class="active-agent-icon">${agentIcons[agent]}</span>
+            <span>${agent.toUpperCase()}</span>
+            <span class="active-agent-status"></span>
+          </div>
+        `).join('');
+      }
+    }
+
+    async function runSwarm() {
+      if (isRunning) return;
+      
+      const task = document.getElementById('taskInput').value.trim();
+      if (!task) {
+        alert('Please describe your task');
+        return;
+      }
+
+      if (selectedAgents.length === 0) {
+        alert('Please select at least one agent');
+        return;
+      }
+
+      isRunning = true;
+      const btn = document.getElementById('runBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span>⏳</span> PROCESSING...';
+
+      const resultsArea = document.getElementById('resultsArea');
+      const model = document.getElementById('modelSelect').value;
+      const language = document.getElementById('languageSelect').value;
+
+      resultsArea.innerHTML = selectedAgents.map(agent => `
+        <div class="result-card" id="result-${agent}">
+          <div class="result-header">
+            <span class="result-icon">${agentIcons[agent]}</span>
+            <div class="result-info">
+              <div class="result-name">${agent.toUpperCase()}</div>
+              <div class="result-latency">Processing...</div>
+            </div>
+            <div class="result-status" id="status-${agent}"></div>
+          </div>
+          <div class="result-body loading" id="body-${agent}">
+            Analyzing task and generating response...
+          </div>
+        </div>
+      `).join('');
+
+      document.getElementById('statsBar').style.display = 'flex';
+
+      try {
+        const response = await fetch('/api/services', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            service: 'agentswarm',
+            task: task,
+            agents: selectedAgents,
+            model: model,
+            language: language || null
+          })
+        });
+
+        const data = await response.json();
+
+        document.getElementById('statAgents').textContent = data.stats?.agentsDeployed || selectedAgents.length;
+        document.getElementById('statCompleted').textContent = data.stats?.agentsCompleted || 0;
+        document.getElementById('statTokens').textContent = (data.stats?.totalTokens || 0).toLocaleString();
+        document.getElementById('statTime').textContent = `${data.stats?.totalLatency || 0}ms`;
+
+        if (data.results) {
+          data.results.forEach(result => {
+            const bodyEl = document.getElementById(`body-${result.name.toLowerCase()}`);
+            const statusEl = document.getElementById(`status-${result.name.toLowerCase()}`);
+            const latencyEl = document.querySelector(`#result-${result.name.toLowerCase()} .result-latency`);
+
+            if (bodyEl) {
+              bodyEl.classList.remove('loading');
+              bodyEl.textContent = result.response || result.error || 'No response';
+            }
+
+            if (statusEl) {
+              statusEl.classList.add(result.status === 'completed' ? 'ready' : 'error');
+            }
+
+            if (latencyEl) {
+              latencyEl.textContent = `${result.latency}ms`;
+            }
+          });
+        }
+
+        if (data.synthesis) {
+          resultsArea.innerHTML += `
+            <div class="synthesis">
+              <div class="synthesis-header">
+                <span class="synthesis-icon">🧠</span>
+                <span class="synthesis-title">SYNTHESIS</span>
+              </div>
+              <div class="synthesis-body">${data.synthesis}</div>
+            </div>
+          `;
+        }
+
+      } catch (err) {
+        resultsArea.innerHTML += `
+          <div style="grid-column:1/-1;padding:2rem;background:rgba(255,95,87,.1);border:1px solid var(--red);border-radius:8px;color:var(--red)">
+            Error: ${err.message}
+          </div>
+        `;
+      }
+
+      isRunning = false;
+      btn.disabled = false;
+      btn.innerHTML = '<span>🐝</span> DEPLOY SWARM';
+    }
+
+    updateAgentsDisplay();
+    
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobileMenu');
+      menu.classList.toggle('show');
+      document.body.classList.toggle('menu-open');
+      updateMobileAuth();
+    }
+    
+    function updateMobileAuth() {
+      const isLoggedIn = localStorage.getItem('auth_token');
+      const mobileAuthLink = document.getElementById('mobileAuthLink');
+      
+      if (isLoggedIn) {
+        mobileAuthLink.innerHTML = 'Logout <span>→</span>';
+        mobileAuthLink.onclick = function(e) { e.preventDefault(); logout(); };
+      } else {
+        mobileAuthLink.innerHTML = 'Sign In <span>→</span>';
+        mobileAuthLink.onclick = function() { window.location.href = '/login.html'; };
+      }
+    }
+    
+    function handleMobileAuth(e) {
+      const isLoggedIn = localStorage.getItem('auth_token');
+      if (isLoggedIn) {
+        e.preventDefault();
+        logout();
+      }
+    }
+    
+    function logout() {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      window.location.href = '/login.html';
+    }
+  </script>
+</body>
+</html>

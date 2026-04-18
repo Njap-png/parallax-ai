@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marketing Hub | BRIDGEMIND</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#030308;--bg2:#0a0a15;--card:#12121a;--border:#1a1a2e;--cyan:#00ff88;--cyan2:#00ffff;--purple:#a855f7;--text:#e0e0e0;--muted:#6b7280;--dim:#374151;--red:#ff5f57;--green:#28c840;--yellow:#febc2e;--blue:#3b82f6}
+    html,body{height:100%}
+    body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.6}
+    body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,136,.015) 2px,rgba(0,255,136,.015) 4px);pointer-events:none;z-index:9998}
+    
+    header{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.5rem;background:rgba(18,18,26,.98);border-bottom:1px solid rgba(0,255,136,.2);position:relative;z-index:100}
+    .logo{display:flex;align-items:center;gap:.75rem;font-family:'Orbitron',sans-serif;font-size:.85rem;color:var(--cyan);letter-spacing:2px}
+    .logo-icon{width:24px;height:24px;position:relative}
+    .logo-icon::before{content:'';position:absolute;inset:0;border:2px solid var(--cyan);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)}
+    .logo-icon::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:6px;height:6px;background:var(--cyan);border-radius:50%}
+    .back-btn{color:var(--muted);text-decoration:none;font-size:.8rem;padding:.5rem 1rem;border:1px solid var(--border);border-radius:4px;transition:all .3s}
+    .back-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+    
+    .container{max-width:1200px;margin:0 auto;padding:2rem 1.5rem}
+    
+    .hero{text-align:center;margin-bottom:3rem}
+    .hero h1{font-family:'Orbitron',sans-serif;font-size:clamp(1.5rem,4vw,2.5rem);color:var(--cyan);letter-spacing:3px;margin-bottom:1rem}
+    .hero p{color:var(--muted);max-width:600px;margin:0 auto}
+    
+    .platform-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;margin-bottom:3rem}
+    
+    .platform-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;transition:all .3s}
+    .platform-card:hover{border-color:var(--cyan);transform:translateY(-4px);box-shadow:0 10px 30px rgba(0,255,136,.1)}
+    .platform-header{display:flex;align-items:center;gap:1rem;margin-bottom:1rem}
+    .platform-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem}
+    .platform-icon.twitter{background:rgba(29,161,242,.2)}
+    .platform-icon.linkedin{background:rgba(0,119,181,.2)}
+    .platform-icon.devto{background:rgba(0,173,130,.2)}
+    .platform-icon.github{background:rgba(255,255,255,.1)}
+    .platform-icon.reddit{background:rgba(255,69,0,.2)}
+    .platform-name{font-family:'Orbitron',sans-serif;font-size:1rem;color:var(--text)}
+    .platform-desc{font-size:.8rem;color:var(--muted);margin-bottom:1rem}
+    .platform-stats{display:flex;gap:1.5rem;padding:.75rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:1rem}
+    .stat{text-align:center}
+    .stat-value{font-family:'Orbitron',sans-serif;color:var(--cyan);font-size:1.1rem}
+    .stat-label{font-size:.65rem;color:var(--muted)}
+    .platform-btn{width:100%;padding:.75rem;background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:inherit;cursor:pointer;transition:all .3s}
+    .platform-btn:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,255,136,.05)}
+    
+    .content-generator{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:2rem;margin-bottom:3rem}
+    .gen-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}
+    .gen-title{font-family:'Orbitron',sans-serif;font-size:1.2rem;color:var(--cyan);letter-spacing:2px}
+    .platform-select{display:flex;gap:.5rem}
+    .ps-btn{padding:.5rem 1rem;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:4px;color:var(--muted);cursor:pointer;transition:all .3s;font-size:.8rem}
+    .ps-btn:hover{color:var(--text)}
+    .ps-btn.active{background:rgba(0,255,136,.1);border-color:var(--cyan);color:var(--cyan)}
+    
+    .gen-form{margin-bottom:1.5rem}
+    .form-label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:.5rem;letter-spacing:1px}
+    .form-input,.form-select,.form-textarea{width:100%;padding:.75rem 1rem;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:inherit;font-size:.9rem;transition:border-color .3s}
+    .form-input:focus,.form-select:focus,.form-textarea:focus{outline:none;border-color:var(--cyan)}
+    .form-textarea{resize:vertical;min-height:100px}
+    
+    .templates{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem}
+    .template-card{padding:1rem;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:6px;cursor:pointer;transition:all .3s;text-align:center}
+    .template-card:hover{border-color:var(--cyan);background:rgba(0,255,136,.05)}
+    .template-card.selected{border-color:var(--cyan);background:rgba(0,255,136,.1)}
+    .template-icon{font-size:1.5rem;margin-bottom:.5rem}
+    .template-name{font-size:.8rem;color:var(--text)}
+    
+    .generate-btn{width:100%;padding:1rem;background:linear-gradient(135deg,var(--cyan),#00cc6a);border:none;border-radius:6px;color:var(--bg);font-family:'Orbitron',sans-serif;font-weight:600;cursor:pointer;font-size:1rem;transition:all .3s}
+    .generate-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,255,136,.3)}
+    
+    .output-section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:2rem;margin-bottom:3rem;display:none}
+    .output-section.show{display:block}
+    .output-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+    .output-title{font-family:'Orbitron',sans-serif;color:var(--green)}
+    .char-count{font-size:.8rem;color:var(--muted)}
+    .output-preview{min-height:150px;padding:1rem;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:6px;margin-bottom:1rem;white-space:pre-wrap;line-height:1.8}
+    .output-actions{display:flex;gap:1rem;flex-wrap:wrap}
+    .output-btn{flex:1;min-width:150px;padding:.75rem;background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:inherit;cursor:pointer;transition:all .3s}
+    .output-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+    .output-btn.primary{background:var(--cyan);border-color:var(--cyan);color:var(--bg);font-weight:600}
+    .output-btn.primary:hover{background:#00cc6a}
+    
+    .scheduling{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:2rem}
+    .sched-title{font-family:'Orbitron',sans-serif;font-size:1.1rem;color:var(--cyan);margin-bottom:1.5rem;letter-spacing:2px}
+    .schedule-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:.5rem;margin-bottom:1.5rem}
+    .day-card{padding:.75rem;text-align:center;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:6px;cursor:pointer;transition:all .3s}
+    .day-card:hover{border-color:var(--cyan)}
+    .day-card.selected{border-color:var(--cyan);background:rgba(0,255,136,.1)}
+    .day-name{font-size:.7rem;color:var(--muted)}
+    .day-check{font-size:1rem;color:var(--green);margin-top:.25rem}
+    
+    .best-times{background:rgba(0,255,136,.05);border:1px solid rgba(0,255,136,.2);border-radius:8px;padding:1rem;margin-top:1rem}
+    .best-times h4{font-size:.8rem;color:var(--cyan);margin-bottom:.5rem}
+    .time-list{display:flex;flex-wrap:wrap;gap:.5rem}
+    .time-badge{padding:.25rem .75rem;background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.3);border-radius:20px;font-size:.7rem;color:var(--cyan)}
+    
+    /* Twitter Post Preview */
+    .twitter-preview{background:#15202b;border-radius:12px;padding:1rem;margin-bottom:1rem}
+    .twitter-header{display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem}
+    .twitter-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--purple))}
+    .twitter-user{font-weight:600;color:#fff}
+    .twitter-handle{color:#8899a6;font-size:.85rem}
+    .twitter-logo{color:#1da1f2;margin-left:auto;font-size:1.2rem}
+    .twitter-content{color:#fff;font-size:.95rem;line-height:1.5;white-space:pre-wrap}
+    .twitter-actions{display:flex;justify-content:space-between;padding-top:.75rem;border-top:1px solid #38444d;margin-top:.75rem}
+    .twitter-action{color:#8899a6;font-size:.85rem;cursor:pointer}
+    .twitter-action:hover{color:var(--cyan)}
+    
+    @media(max-width:768px){
+      .container{padding:1rem}
+      .platform-grid{grid-template-columns:1fr}
+      .platform-select{flex-wrap:wrap}
+      .schedule-grid{grid-template-columns:repeat(4,1fr)}
+      .output-actions{flex-direction:column}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <div class="logo-icon"></div>
+      MARKETING_HUB
+    </div>
+    <a href="/" class="back-btn">← Back</a>
+  </header>
+  
+  <div class="container">
+    <div class="hero">
+      <h1>📢 MARKETING HUB</h1>
+      <p>Generate content for Twitter, LinkedIn, Dev.to, and more. Plan your posts and grow your audience.</p>
+    </div>
+    
+    <!-- Platform Cards -->
+    <div class="platform-grid">
+      <div class="platform-card">
+        <div class="platform-header">
+          <div class="platform-icon twitter">𝕏</div>
+          <span class="platform-name">Twitter / X</span>
+        </div>
+        <p class="platform-desc">Post tweets, threads, and engage with developers</p>
+        <div class="platform-stats">
+          <div class="stat">
+            <div class="stat-value">280</div>
+            <div class="stat-label">Char Limit</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">2-4</div>
+            <div class="stat-label">Posts/Day</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">9-11am</div>
+            <div class="stat-label">Best Time</div>
+          </div>
+        </div>
+        <button class="platform-btn" onclick="switchPlatform('twitter')">📝 Write Tweet</button>
+      </div>
+      
+      <div class="platform-card">
+        <div class="platform-header">
+          <div class="platform-icon linkedin">in</div>
+          <span class="platform-name">LinkedIn</span>
+        </div>
+        <p class="platform-desc">Share professional updates and articles</p>
+        <div class="platform-stats">
+          <div class="stat">
+            <div class="stat-value">3000</div>
+            <div class="stat-label">Char Limit</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">1-2</div>
+            <div class="stat-label">Posts/Day</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">8-10am</div>
+            <div class="stat-label">Best Time</div>
+          </div>
+        </div>
+        <button class="platform-btn" onclick="switchPlatform('linkedin')">📝 Write Post</button>
+      </div>
+      
+      <div class="platform-card">
+        <div class="platform-header">
+          <div class="platform-icon devto">DEV</div>
+          <span class="platform-name">Dev.to</span>
+        </div>
+        <p class="platform-desc">Write technical articles and tutorials</p>
+        <div class="platform-stats">
+          <div class="stat">
+            <div class="stat-value">Unlimited</div>
+            <div class="stat-label">Length</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">1-3</div>
+            <div class="stat-label">Articles/Week</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">6-9am</div>
+            <div class="stat-label">Best Time</div>
+          </div>
+        </div>
+        <button class="platform-btn" onclick="switchPlatform('devto')">📝 Write Article</button>
+      </div>
+      
+      <div class="platform-card">
+        <div class="platform-header">
+          <div class="platform-icon reddit">r/</div>
+          <span class="platform-name">Reddit</span>
+        </div>
+        <p class="platform-desc">Share in developer communities</p>
+        <div class="platform-stats">
+          <div class="stat">
+            <div class="stat-value">40000</div>
+            <div class="stat-label">Char Limit</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">5-10</div>
+            <div class="stat-label">Comments/Day</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">2-4pm</div>
+            <div class="stat-label">Best Time</div>
+          </div>
+        </div>
+        <button class="platform-btn" onclick="switchPlatform('reddit')">📝 Write Post</button>
+      </div>
+    </div>
+    
+    <!-- Content Generator -->
+    <div class="content-generator">
+      <div class="gen-header">
+        <span class="gen-title">// CONTENT GENERATOR</span>
+        <div class="platform-select">
+          <button class="ps-btn active" onclick="selectContentPlatform(this,'twitter')">Twitter</button>
+          <button class="ps-btn" onclick="selectContentPlatform(this,'linkedin')">LinkedIn</button>
+          <button class="ps-btn" onclick="selectContentPlatform(this,'devto')">Dev.to</button>
+          <button class="ps-btn" onclick="selectContentPlatform(this,'reddit')">Reddit</button>
+        </div>
+      </div>
+      
+      <div class="gen-form">
+        <label class="form-label">WHAT DO YOU WANT TO PROMOTE?</label>
+        <select class="form-select" id="contentType" onchange="updateTemplate()">
+          <option value="feature">New Feature/Update</option>
+          <option value="tutorial">Tutorial/Tip</option>
+          <option value="launch">Product Launch</option>
+          <option value="milestone">Milestone/Achievement</option>
+          <option value="comparison">Comparison</option>
+          <option value="testimonial">User Testimonial</option>
+        </select>
+      </div>
+      
+      <div class="gen-form">
+        <label class="form-label">TOPIC / PRODUCT</label>
+        <input type="text" class="form-input" id="topic" value="BridgeMind AI Developer Platform" placeholder="What are you promoting?">
+      </div>
+      
+      <div class="gen-form">
+        <label class="form-label">KEY POINTS (comma separated)</label>
+        <input type="text" class="form-input" id="keyPoints" placeholder="Free tier, AI code generation, security scanning...">
+      </div>
+      
+      <div class="templates" id="templates">
+        <div class="template-card selected" onclick="selectTemplate(this,'hook')">
+          <div class="template-icon">🎣</div>
+          <div class="template-name">Hook</div>
+        </div>
+        <div class="template-card" onclick="selectTemplate(this,'story')">
+          <div class="template-icon">📖</div>
+          <div class="template-name">Story</div>
+        </div>
+        <div class="template-card" onclick="selectTemplate(this,'list')">
+          <div class="template-icon">📋</div>
+          <div class="template-name">List</div>
+        </div>
+        <div class="template-card" onclick="selectTemplate(this,'question')">
+          <div class="template-icon">❓</div>
+          <div class="template-name">Question</div>
+        </div>
+        <div class="template-card" onclick="selectTemplate(this,'thread')">
+          <div class="template-icon">🧵</div>
+          <div class="template-name">Thread</div>
+        </div>
+      </div>
+      
+      <button class="generate-btn" onclick="generateContent()">
+        ⚡ GENERATE CONTENT
+      </button>
+    </div>
+    
+    <!-- Output Section -->
+    <div class="output-section" id="outputSection">
+      <div class="output-header">
+        <span class="output-title">✓ READY TO POST</span>
+        <span class="char-count" id="charCount">0 / 280 characters</span>
+      </div>
+      
+      <div class="twitter-preview" id="twitterPreview">
+        <div class="twitter-header">
+          <div class="twitter-avatar"></div>
+          <div>
+            <div class="twitter-user">BridgeMind</div>
+            <div class="twitter-handle">@bridgemind_ai</div>
+          </div>
+          <div class="twitter-logo">𝕏</div>
+        </div>
+        <div class="twitter-content" id="previewContent">Your content here...</div>
+        <div class="twitter-actions">
+          <span class="twitter-action">💬 Reply</span>
+          <span class="twitter-action">🔄 Retweet</span>
+          <span class="twitter-action">❤️ Like</span>
+          <span class="twitter-action">📤 Share</span>
+        </div>
+      </div>
+      
+      <div class="output-preview" id="outputPreview" style="display:none"></div>
+      
+      <div class="output-actions">
+        <button class="output-btn" onclick="copyToClipboard()">📋 COPY</button>
+        <button class="output-btn" onclick="schedulePost()">📅 SCHEDULE</button>
+        <button class="output-btn primary" onclick="openInPlatform()">🚀 POST NOW</button>
+      </div>
+    </div>
+    
+    <!-- Scheduling -->
+    <div class="scheduling">
+      <div class="sched-title">// POST SCHEDULE</div>
+      <div class="schedule-grid">
+        <div class="day-card selected">
+          <div class="day-name">Mon</div>
+          <div class="day-check">✓</div>
+        </div>
+        <div class="day-card selected">
+          <div class="day-name">Tue</div>
+          <div class="day-check">✓</div>
+        </div>
+        <div class="day-card selected">
+          <div class="day-name">Wed</div>
+          <div class="day-check">✓</div>
+        </div>
+        <div class="day-card selected">
+          <div class="day-name">Thu</div>
+          <div class="day-check">✓</div>
+        </div>
+        <div class="day-card selected">
+          <div class="day-name">Fri</div>
+          <div class="day-check">✓</div>
+        </div>
+        <div class="day-card">
+          <div class="day-name">Sat</div>
+          <div class="day-check"></div>
+        </div>
+        <div class="day-card">
+          <div class="day-name">Sun</div>
+          <div class="day-check"></div>
+        </div>
+      </div>
+      
+      <div class="best-times">
+        <h4>// BEST TIMES TO POST</h4>
+        <div class="time-list">
+          <span class="time-badge">Twitter: 8-9am, 12-1pm, 5-6pm</span>
+          <span class="time-badge">LinkedIn: 8-10am (Tue-Thu)</span>
+          <span class="time-badge">Dev.to: 6-9am</span>
+          <span class="time-badge">Reddit: 2-4pm</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    let currentPlatform = 'twitter';
+    let currentTemplate = 'hook';
+    let generatedContent = '';
+    
+    const contentTemplates = {
+      twitter: {
+        hook: (topic, points) => `🚀 Built ${topic} in 30 seconds.
+
+No signup. No credit card.
+
+Just type what you want and watch AI do the rest.
+
+Try it free →`,
+        story: (topic, points) => `Last week I shipped ${topic}.
+
+Here's what I learned:
+
+• ${points || 'AI can do 80% of the work'}
+• Free tier exists for a reason
+• Developers actually want simplicity
+
+The future is now.`,
+        list: (topic, points) => `${topic} does 5 things:
+
+1. ⚡ Code generation
+2. 🛡️ Security scanning  
+3. 📝 Auto docs
+4. 🧪 Test creation
+5. 🐝 AI agents
+
+What would you add? 👇`,
+        question: (topic, points) => `Devs: What's your biggest coding bottleneck?
+
+• Debugging?
+• Documentation?
+• Writing tests?
+
+${topic} handles all of these automatically.
+
+What's your take?`,
+        thread: (topic, points) => `🧵 A thread on why you should try ${topic}:
+
+1/ AI that actually understands code
+2/ Free tier that doesn't suck
+3/ Security built-in, not bolted on
+4/ Works in 13+ languages
+5/ No learning curve
+
+10/ The best part? It's free to start.
+
+Link in bio.`
+      },
+      linkedin: {
+        hook: (topic, points) => `I just discovered something that changed how I think about developer tools.
+
+${topic} isn't just another AI platform.
+
+It's the first one that actually gets what developers need:
+
+→ Instant code generation
+→ Built-in security scanning
+→ Auto documentation
+→ Multi-agent collaboration
+
+The free tier (100 API calls/month) is more than enough to get started.
+
+Link in comments. What's your experience with AI dev tools?`,
+        story: (topic, points) => `6 months ago, I was spending 40% of my coding time on tasks that should be automated:
+
+• Writing repetitive boilerplate
+• Hunting for security vulnerabilities
+• Creating documentation nobody reads
+• Writing tests that barely cover edge cases
+
+Then I built ${topic}.
+
+Now? That 40% is back in my pocket.
+
+The best part: It's free to start.
+
+No credit card. No commitment.
+
+What would you do with an extra 16 hours per week?`,
+        list: (topic, points) => `5 reasons ${topic} is the AI platform developers actually need:
+
+1️⃣ NO learning curve - just type what you want
+2️⃣ FREE tier that doesn't limit features
+3️⃣ SECURITY first - not an afterthought
+4️⃣ MULTI-AGENT - 8 AI working together
+5️⃣ CODE SANDBOX - run code instantly
+
+Save this post. You'll thank me later.
+
+#developers #AI #coding`,
+        question: (topic, points) => `Honest question:
+
+Why are most AI dev tools so... complicated?
+
+You need API keys, docs, tutorials, webinars...
+
+${topic} works differently.
+
+Sign up. Type your request. Done.
+
+Is simplicity the missing ingredient in developer tools? Or am I missing something?
+
+Genuinely curious what the community thinks.`,
+        thread: (topic, points) => `I've used dozens of AI coding tools.
+
+Most of them fail at the basics.
+
+${topic} doesn't.
+
+Here's why it's different:
+
+→ Generates complete REST APIs, not snippets
+→ Finds security issues before you deploy
+→ Auto-creates docs from your code
+→ Runs tests automatically
+→ Has 8 AI agents that collaborate
+
+The free tier gives you 100 API calls monthly.
+
+No credit card required.
+
+Full thread 👇`
+      },
+      devto: {
+        hook: (topic, points) => `# I Built ${topic} - Here's What I Learned
+
+After months of development, I'm excited to share ${topic}.
+
+## Why I Built This
+
+Developer tools shouldn't require:
+- 50 tutorials to get started
+- Complex configuration
+- expensive subscriptions
+
+## What Makes It Different
+
+1. **Simplicity First** - Type what you need
+2. **Security Built-In** - Not an afterthought  
+3. **Free Tier** - Actually useful, not crippled
+
+## Getting Started
+
+\`\`\`bash
+# Sign up free
+# Start building
+# No credit card needed
+\`\`\`
+
+Would love your feedback!`,
+        story: (topic, points) => `# From Idea to Production in 30 Seconds
+
+Yes, you read that right.
+
+${topic} can take your idea and turn it into running code in 30 seconds.
+
+Not a prototype. Not a mockup. Working code.
+
+## The Journey
+
+Building this taught me:
+- Developers want speed
+- Security shouldn't slow you down
+- AI can handle the boring stuff
+
+## Try It
+
+Drop your use case in the comments. I'll generate code for you right here.`,
+        list: (topic, points) => `# ${topic}: A Complete Overview
+
+## Features
+
+1. **COGI** - AI Code Generation
+2. **GUARDIAN** - Security Scanner  
+3. **DOCUFY** - Auto Documentation
+4. **TEST PILOT** - Test Generation
+5. **CRAWLER** - Web Scraper
+6. **AGENT SWARM** - Multi-Agent AI
+
+## Quick Start
+
+\`\`\`javascript
+const result = await fetch('/api/services', {
+  method: 'POST',
+  body: { service: 'cogi', message: 'REST API' }
+});
+\`\`\`
+
+## Free Tier
+
+- 100 API calls/month
+- All features included
+- No credit card required`,
+        question: (topic, points) => `# What Developer Tools Do You Actually Use?
+
+I've been researching AI developer tools for ${topic}.
+
+Most have great features but fail on:
+- Ease of use
+- Pricing transparency
+- Real-world usability
+
+## My Findings
+
+The best tools share:
+1. Fast time-to-first-result
+2. Clear documentation
+3. Generous free tiers
+
+What are your must-have features in AI dev tools?
+
+#developers #AI #tooling`,
+        thread: (topic, points) => `# Why ${topic} is Different
+
+After building and using AI tools for years, here's what I learned:
+
+## The Problem
+
+Most AI tools optimize for:
+- Impressive demos
+- Enterprise features
+- Subscription revenue
+
+## What Developers Actually Need
+
+- ⚡ Speed (30-second code generation)
+- 🛡️ Security (built-in, not bolted on)
+- 📝 Documentation (auto-generated)
+- 🧪 Tests (comprehensive coverage)
+
+## The Solution
+
+${topic} was built with these principles.
+
+No enterprise features.
+No sales calls.
+Just code.
+
+**Link in bio.**
+
+What would you build with 10x more coding time?`
+      },
+      reddit: {
+        hook: (topic, points) => `Just launched ${topic} - free tier with 100 API calls/month
+
+Hey everyone! I just shipped ${topic}.
+
+It's an AI developer platform with:
+- Code generation (13+ languages)
+- Security scanning
+- Auto documentation
+- Multi-agent collaboration
+
+**Free tier is actually useful** - not a crippled demo.
+
+No credit card required.
+
+Would love feedback from the community.
+
+Link: https://bridgemind.ai`,
+        story: (topic, points) => `I'm a solo dev who spent 6 months building ${topic}
+
+AMA about the process.
+
+After working as a dev for 8 years, I got tired of:
+- Spending hours on boilerplate code
+- Security vulnerabilities in "secure" libraries
+- Writing docs nobody reads
+
+So I built ${topic}.
+
+Happy to answer any questions about:
+- Technical challenges
+- Design decisions
+- What I'd do differently`,
+        list: (topic, points) => `${topic} - I made a tool that generates REST APIs in 30 seconds
+
+Posted this in r/webdev but figured you might want to see it too.
+
+**Features:**
+- ⚡ Generate complete APIs
+- 🛡️ Security scanning built-in
+- 📝 Auto documentation
+- 🧪 Generate tests
+- 🐝 8 AI agents working together
+
+**Free tier:** 100 API calls/month
+
+**No signup friction** - just start using it.
+
+Is this something you'd use?`,
+        question: (topic, points) => `Honest question: What would make you switch to a new AI coding tool?
+
+Building ${topic} and curious what actually matters to devs.
+
+Is it:
+- Speed?
+- Accuracy?
+- Price?
+- Specific features?
+- Something else?
+
+Not looking for praise - genuinely want to know what would make you switch from your current workflow.`,
+        thread: (topic, points) => `Built ${topic} to solve my own problems
+
+Long-time lurker, first time poster. Made an account just to share this.
+
+**What it does:**
+- Generates REST APIs from text descriptions
+- Scans existing code for vulnerabilities
+- Auto-generates documentation
+- Creates test suites
+
+**Why I built it:**
+As a freelance dev, I was spending too much time on:
+1. Repetitive boilerplate
+2. Security reviews
+3. Documentation (which nobody reads anyway)
+
+Now I use it for every project.
+
+**Free tier** has 100 calls/month - enough for personal projects.
+
+Is this useful or am I just solving my own problems?`
+      }
+    };
+    
+    function switchPlatform(platform) {
+      currentPlatform = platform;
+      document.querySelectorAll('.ps-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.toLowerCase().includes(platform.substring(0,4)));
+      });
+      document.getElementById('outputSection').classList.remove('show');
+    }
+    
+    function selectContentPlatform(btn, platform) {
+      document.querySelectorAll('.ps-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentPlatform = platform;
+    }
+    
+    function selectTemplate(card, template) {
+      document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      currentTemplate = template;
+    }
+    
+    function updateTemplate() {
+      // Auto-select appropriate template based on content type
+      const contentType = document.getElementById('contentType').value;
+      const templateMap = {
+        'feature': 'hook',
+        'tutorial': 'list',
+        'launch': 'story',
+        'milestone': 'story',
+        'comparison': 'question',
+        'testimonial': 'story'
+      };
+      
+      const template = templateMap[contentType];
+      document.querySelectorAll('.template-card').forEach(card => {
+        card.classList.toggle('selected', card.querySelector('.template-name').textContent.toLowerCase() === template);
+      });
+      currentTemplate = template;
+    }
+    
+    function generateContent() {
+      const topic = document.getElementById('topic').value || 'BridgeMind';
+      const points = document.getElementById('keyPoints').value;
+      
+      const templates = contentTemplates[currentPlatform];
+      const templateFn = templates[currentTemplate] || templates.hook;
+      
+      generatedContent = templateFn(topic, points);
+      
+      // Update UI
+      const outputSection = document.getElementById('outputSection');
+      outputSection.classList.add('show');
+      
+      // Twitter preview
+      if (currentPlatform === 'twitter') {
+        document.getElementById('twitterPreview').style.display = 'block';
+        document.getElementById('outputPreview').style.display = 'none';
+        document.getElementById('previewContent').textContent = generatedContent;
+        document.getElementById('charCount').textContent = `${generatedContent.length} / 280 characters`;
+        document.getElementById('charCount').style.color = generatedContent.length > 280 ? 'var(--red)' : 'var(--muted)';
+      } else {
+        document.getElementById('twitterPreview').style.display = 'none';
+        document.getElementById('outputPreview').style.display = 'block';
+        document.getElementById('outputPreview').textContent = generatedContent;
+        const limit = currentPlatform === 'linkedin' ? 3000 : currentPlatform === 'reddit' ? 40000 : 'Unlimited';
+        document.getElementById('charCount').textContent = `${generatedContent.length} characters (${limit} limit)`;
+      }
+    }
+    
+    function copyToClipboard() {
+      navigator.clipboard.writeText(generatedContent);
+      showToast('Copied to clipboard!', 'success');
+    }
+    
+    function schedulePost() {
+      showToast('Schedule feature coming soon!', 'info', 'Use Buffer or Later to schedule.');
+    }
+    
+    function openInPlatform() {
+      const urls = {
+        twitter: 'https://twitter.com/compose/tweet',
+        linkedin: 'https://linkedin.com/feed/',
+        devto: 'https://dev.to/new',
+        reddit: 'https://reddit.com/r/programming/submit'
+      };
+      
+      // Copy content first, then open platform
+      copyToClipboard();
+      window.open(urls[currentPlatform], '_blank');
+      showToast('Content copied! Paste it in the new tab.', 'info');
+    }
+    
+    function showToast(message, type, submessage) {
+      const container = document.createElement('div');
+      container.style.cssText = 'position:fixed;top:20px;right:20px;padding:1rem 1.5rem;background:var(--card);border:1px solid var(--cyan);border-radius:8px;z-index:10000;color:var(--text);animation:slideIn .3s ease';
+      
+      const style = document.createElement('style');
+      style.textContent = '@keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}';
+      document.head.appendChild(style);
+      
+      container.innerHTML = `<div>${message}</div>${submessage ? `<div style="font-size:.8rem;color:var(--muted);margin-top:.25rem">${submessage}</div>` : ''}`;
+      document.body.appendChild(container);
+      setTimeout(() => container.remove(), 3000);
+    }
+  </script>
+</body>
+</html>

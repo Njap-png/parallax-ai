@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pricing | BRIDGEMIND</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#030308;--bg2:#0a0a15;--card:#12121a;--border:#1a1a2e;--cyan:#00ff88;--cyan2:#00ffff;--purple:#a855f7;--magenta:#ff00ff;--text:#e0e0e0;--muted:#6b7280;--dim:#374151}
+    html{scroll-behavior:smooth}
+    body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+    body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,136,.015) 2px,rgba(0,255,136,.015) 4px);pointer-events:none;z-index:9998}
+    body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 50% 0%,rgba(0,255,136,.08) 0%,transparent 50%);pointer-events:none;z-index:0}
+
+    nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(3,3,8,.95);border-bottom:1px solid rgba(0,255,136,.2);backdrop-filter:blur(20px)}
+    nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent)}
+    .nav{max-width:1400px;margin:0 auto;padding:.75rem 2rem;display:flex;justify-content:space-between;align-items:center}
+    .logo{display:flex;align-items:center;gap:.75rem;text-decoration:none;color:var(--text);font-weight:600;font-family:'Orbitron',sans-serif;font-size:.9rem;letter-spacing:2px}
+    .logo-icon{width:28px;height:28px;position:relative}
+    .logo-icon::before{content:'';position:absolute;inset:0;border:2px solid var(--cyan);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);animation:pulse 2s ease-in-out infinite;box-shadow:0 0 10px var(--cyan)}
+    .logo-icon::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:6px;height:6px;background:var(--cyan);border-radius:50%;box-shadow:0 0 8px var(--cyan)}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+    .links{display:flex;gap:1.5rem}
+    .links a{color:var(--muted);text-decoration:none;font-size:.85rem;transition:all .3s}
+    .links a:hover,.links a.active{color:var(--cyan);text-shadow:0 0 10px var(--cyan)}
+    .cta{padding:.5rem 1.25rem;border:1px solid var(--cyan);color:var(--cyan);text-decoration:none;font-size:.85rem;border-radius:4px;transition:all .3s;font-family:'Orbitron',sans-serif;font-size:.75rem;letter-spacing:1px}
+    .cta:hover{background:var(--cyan);color:var(--bg);box-shadow:0 0 30px rgba(0,255,136,.5)}
+
+    main{padding-top:80px}
+    .hero{padding:6rem 2rem 4rem;text-align:center;position:relative;z-index:1}
+    .hero::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:800px;height:400px;background:radial-gradient(ellipse at center,rgba(0,255,136,.1) 0%,transparent 70%);pointer-events:none}
+    .tag{color:var(--cyan);font-size:.75rem;letter-spacing:4px;margin-bottom:.75rem;display:block;font-family:'Orbitron',sans-serif;text-transform:uppercase;text-shadow:0 0 15px var(--cyan)}
+    h1{font-size:2.75rem;font-family:'Orbitron',sans-serif;letter-spacing:4px;margin-bottom:1rem;background:linear-gradient(90deg,var(--cyan),var(--cyan2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .sub{color:var(--muted);margin-bottom:2.5rem;font-size:1.1rem;max-width:500px;margin-left:auto;margin-right:auto}
+
+    .toggle{display:flex;justify-content:center;gap:.5rem;margin-bottom:3rem}
+    .tbtn{padding:.75rem 1.5rem;background:rgba(18,18,26,.8);border:1px solid rgba(0,255,136,.2);border-radius:4px;color:var(--muted);font-family:'Orbitron',sans-serif;font-size:.8rem;letter-spacing:1px;cursor:pointer;transition:all .3s}
+    .tbtn:hover{border-color:rgba(0,255,136,.4);color:var(--text)}
+    .tbtn.active{border-color:var(--cyan);color:var(--cyan);background:rgba(0,255,136,.1);box-shadow:0 0 20px rgba(0,255,136,.2)}
+
+    .section{padding:2rem 2rem 4rem;max-width:1400px;margin:0 auto;position:relative;z-index:1}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem;max-width:1200px;margin:0 auto}
+
+    .card{background:linear-gradient(180deg,rgba(18,18,26,.95),rgba(10,10,21,.95));border:1px solid rgba(0,255,136,.15);border-radius:8px;padding:2rem;position:relative;overflow:hidden;transition:all .4s}
+    .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,255,136,.3),transparent);opacity:0;transition:opacity .4s}
+    .card:hover{border-color:rgba(0,255,136,.4);transform:translateY(-8px);box-shadow:0 20px 50px rgba(0,0,0,.4),0 0 30px rgba(0,255,136,.1)}
+    .card:hover::before{opacity:1}
+    .card.free{background:linear-gradient(180deg,rgba(0,255,136,.08),rgba(18,18,26,.95));border-color:rgba(0,255,136,.3)}
+    .card.free::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--purple))}
+    .card.popular{border-color:var(--cyan);transform:scale(1.03);background:linear-gradient(180deg,rgba(0,255,136,.1),rgba(18,18,26,.95))}
+    .card.popular:hover{transform:scale(1.03) translateY(-8px)}
+    .card.popular::after{content:'MOST_POPULAR';position:absolute;top:12px;right:-30px;background:var(--cyan);color:var(--bg);padding:.4rem 2.5rem;font-size:.65rem;font-weight:700;font-family:'Orbitron',sans-serif;letter-spacing:1px;transform:rotate(45deg)}
+
+    .name{font-size:1.5rem;font-weight:700;margin-bottom:.5rem;font-family:'Orbitron',sans-serif;letter-spacing:2px}
+    .desc{color:var(--muted);font-size:.9rem;margin-bottom:1.5rem;line-height:1.7}
+    .price{margin-bottom:2rem;padding-bottom:2rem;border-bottom:1px solid rgba(0,255,136,.1)}
+    .amount{font-size:3rem;font-weight:700;color:var(--cyan);font-family:'Orbitron',sans-serif;line-height:1}
+    .period{color:var(--muted);font-size:1rem}
+    .alt{font-size:.8rem;color:var(--dim);margin-top:.5rem;font-family:'Orbitron',sans-serif}
+
+    .features{list-style:none;margin-bottom:2rem}
+    .features li{padding:.875rem 0;border-bottom:1px solid rgba(255,255,255,.03);color:var(--muted);font-size:.9rem;display:flex;align-items:center;gap:.75rem}
+    .features li::before{content:'▸';color:var(--cyan);flex-shrink:0}
+    .features li.disabled{color:var(--dim);text-decoration:line-through}
+    .features li.disabled::before{content:'×';color:var(--dim)}
+
+    .btn{width:100%;padding:1rem;border-radius:4px;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .4s;font-family:'Orbitron',sans-serif;letter-spacing:1px;border:none}
+    .btn-primary{background:linear-gradient(135deg,var(--cyan),#00cc6a);color:var(--bg);box-shadow:0 0 20px rgba(0,255,136,.3)}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,255,136,.5)}
+    .btn-outline{border:1px solid var(--cyan);color:var(--cyan);background:transparent}
+    .btn-outline:hover{background:rgba(0,255,136,.1);box-shadow:0 0 20px rgba(0,255,136,.2)}
+
+    .enterprise{background:linear-gradient(135deg,rgba(168,85,247,.1),rgba(0,255,136,.1));border:1px solid rgba(168,85,247,.3);border-radius:8px;padding:3rem;text-align:center;margin-top:3rem;max-width:800px;margin-left:auto;margin-right:auto}
+    .enterprise h3{font-size:1.5rem;margin-bottom:1rem;font-family:'Orbitron',sans-serif;letter-spacing:2px}
+    .enterprise p{color:var(--muted);margin-bottom:1.5rem}
+
+    .faq{padding:4rem 2rem;max-width:800px;margin:0 auto}
+    .faq h2{text-align:center;margin-bottom:3rem;font-size:1.75rem;font-family:'Orbitron',sans-serif;letter-spacing:3px}
+    .faq-item{background:rgba(18,18,26,.8);border:1px solid rgba(0,255,136,.1);border-radius:4px;margin-bottom:1rem;overflow:hidden;transition:all .3s}
+    .faq-item:hover{border-color:rgba(0,255,136,.3)}
+    .faq-q{padding:1.25rem 1.5rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:600;font-family:'Orbitron',sans-serif;font-size:.85rem;letter-spacing:1px}
+    .faq-q:hover{color:var(--cyan)}
+    .faq-a{padding:0 1.5rem 1.25rem;color:var(--muted);font-size:.9rem;line-height:1.8;display:none}
+    .faq-item.open .faq-a{display:block}
+    .faq-item.open .faq-icon{transform:rotate(45deg)}
+    .faq-icon{transition:transform .3s;font-size:1.5rem;color:var(--cyan)}
+
+    @media(max-width:768px){.links{display:none}.grid{grid-template-columns:1fr}.card.popular{transform:none}.card.popular:hover{transform:translateY(-8px)}.enterprise{margin:3rem 1rem}}
+    
+    /* MOBILE MENU */
+    .mobile-menu-btn{display:none;background:none;border:1px solid var(--border);color:var(--muted);padding:.4rem .6rem;border-radius:4px;cursor:pointer;font-size:1.2rem;margin-left:auto;z-index:99998}
+    .mobile-menu-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+    .mobile-menu{position:fixed;top:0;right:0;width:300px;max-width:85vw;height:100vh;background:var(--card);border-left:1px solid var(--border);padding:80px 0 1rem;z-index:2147483647!important;transform:translateX(100%);transition:transform .3s ease-in-out;overflow-y:auto;box-shadow:-10px 0 30px rgba(0,0,0,.5);-webkit-overflow-scrolling:touch}
+    .mobile-menu.show{transform:translateX(0)}
+    .mobile-menu a{padding:1rem 1.5rem;color:var(--muted);text-decoration:none;font-size:1rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+    .mobile-menu a:hover{color:var(--cyan);background:rgba(0,255,136,.05)}
+    .mobile-menu-close{position:absolute;top:1rem;right:1rem;background:none;border:1px solid var(--border);color:var(--muted);padding:.5rem .75rem;border-radius:4px;cursor:pointer;font-size:1.2rem}
+    .mobile-menu-close:hover{border-color:var(--cyan);color:var(--cyan)}
+    @media(max-width:768px){
+      .mobile-menu-btn{display:flex;align-items:center;justify-content:center}
+      .links{display:none!important}
+      .cta{display:none}
+    }
+    .menu-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:2147483646!important;opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s}
+    .menu-overlay.show{opacity:1;visibility:visible}
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav">
+      <a href="/" class="logo">
+        <div class="logo-icon"></div>
+        PARALLAX_DOMINION
+      </a>
+      <div class="links">
+        <a href="/services.html">Services</a>
+        <a href="/agent-swarm.html">Agent Swarm</a>
+        <a href="/ai-chat.html">AI Chat</a>
+        <a href="/terminal-pro.html">Terminal</a>
+        <a href="/sandbox.html">Sandbox</a>
+        <a href="/pricing.html" class="active">Pricing</a>
+        <a href="/docs.html">Docs</a>
+        <a href="/dashboard.html" id="navDashboard" style="display:none">Dashboard</a>
+        <a href="#" id="navLogout" style="display:none" onclick="logout()">Logout</a>
+        <a href="/login.html" id="navLogin">Sign In</a>
+      </div>
+      <a href="/login.html" id="navCta" class="cta">GET_STARTED</a>
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
+    </div>
+  </nav>
+  <div class="menu-overlay" id="menuOverlay" onclick="toggleMobileMenu()"></div>
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="mobile-menu-close" onclick="toggleMobileMenu()">✕</button>
+    <a href="/">Home</a>
+    <a href="/services.html">Services</a>
+    <a href="/agent-swarm.html">Agent Swarm</a>
+    <a href="/ai-chat.html">AI Chat</a>
+    <a href="/terminal-pro.html">Terminal</a>
+    <a href="/sandbox.html">Sandbox</a>
+    <a href="/pricing.html" style="color:var(--cyan)">Pricing</a>
+    <a href="/docs.html">Docs</a>
+    <a href="/dashboard.html" id="mobileDashboard">Dashboard</a>
+    <a href="/login.html" id="mobileAuthLink" onclick="handleMobileAuth(event)">Sign In</a>
+  </div>
+
+  <script>
+    function toggleMobileMenu(){
+      const menu = document.getElementById('mobileMenu');
+      const overlay = document.getElementById('menuOverlay');
+      menu.classList.toggle('show');
+      overlay.classList.toggle('show');
+      document.body.style.overflow = menu.classList.contains('show') ? 'hidden' : '';
+      updateMobileAuth();
+    }
+    
+    function updateMobileAuth() {
+      const isLoggedIn = localStorage.getItem('auth_token');
+      const mobileAuthLink = document.getElementById('mobileAuthLink');
+      
+      if (isLoggedIn) {
+        mobileAuthLink.innerHTML = 'Logout <span>→</span>';
+        mobileAuthLink.onclick = function(e) { e.preventDefault(); logout(); };
+      } else {
+        mobileAuthLink.innerHTML = 'Sign In <span>→</span>';
+        mobileAuthLink.onclick = function() { window.location.href = '/login.html'; };
+      }
+    }
+    
+    function handleMobileAuth(e) {
+      const isLoggedIn = localStorage.getItem('auth_token');
+      if (isLoggedIn) {
+        e.preventDefault();
+        logout();
+      }
+    }
+    
+    function logout() {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      window.location.href = '/login.html';
+    }
+  </script>
+
+  <main>
+    <section class="hero">
+      <span class="tag">// PRICING</span>
+      <h1>TRANSPARENT PRICING</h1>
+      <p class="sub">Start free, scale as you grow. No hidden fees. Cancel anytime.</p>
+      <div class="toggle">
+        <button class="tbtn active" onclick="setCurrency('USD')">USD ($)</button>
+        <button class="tbtn" onclick="setCurrency('KES')">KES (KSh)</button>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="grid">
+        <div class="card free">
+          <div class="name">FREE</div>
+          <div class="desc">Perfect for trying out BridgeMind. No credit card required.</div>
+          <div class="price">
+            <span class="amount">$0</span>
+            <span class="period">/month</span>
+            <div class="alt">ALWAYS_FREE</div>
+          </div>
+          <ul class="features">
+            <li>100 API requests/month</li>
+            <li>10 requests/minute</li>
+            <li>All 6 AI Services</li>
+            <li>Community Support</li>
+            <li>Basic Documentation</li>
+            <li class="disabled">Priority Support</li>
+            <li class="disabled">Custom Integrations</li>
+          </ul>
+          <button class="btn btn-outline" onclick="selectPlan('free')">GET_STARTED</button>
+        </div>
+
+        <div class="card">
+          <div class="name">STARTER</div>
+          <div class="desc">For hobbyists and students building side projects</div>
+          <div class="price">
+            <span class="amount" id="starter">$9</span>
+            <span class="period">/month</span>
+            <div class="alt" id="starter-alt">≈ KSh 1,100</div>
+          </div>
+          <ul class="features">
+            <li>10,000 API requests/month</li>
+            <li>30 requests/minute</li>
+            <li>All 6 AI Services</li>
+            <li>Email Support</li>
+            <li>Full Documentation</li>
+            <li>Community Access</li>
+            <li class="disabled">Priority Support</li>
+          </ul>
+          <button class="btn btn-outline" onclick="selectPlan('starter')">GET_STARTED</button>
+        </div>
+
+        <div class="card popular">
+          <div class="name">PRO</div>
+          <div class="desc">For professional developers and small teams</div>
+          <div class="price">
+            <span class="amount" id="pro">$29</span>
+            <span class="period">/month</span>
+            <div class="alt" id="pro-alt">≈ KSh 3,500</div>
+          </div>
+          <ul class="features">
+            <li>100,000 API requests/month</li>
+            <li>100 requests/minute</li>
+            <li>All 6 AI Services</li>
+            <li>Priority Support</li>
+            <li>Advanced Analytics</li>
+            <li>Team Collaboration</li>
+            <li>Custom Integrations</li>
+          </ul>
+          <button class="btn btn-primary" onclick="selectPlan('pro')">GET_STARTED</button>
+        </div>
+
+        <div class="card">
+          <div class="name">ENTERPRISE</div>
+          <div class="desc">For large teams and organizations with custom needs</div>
+          <div class="price">
+            <span class="amount" id="enterprise">$99</span>
+            <span class="period">/month</span>
+            <div class="alt" id="enterprise-alt">≈ KSh 12,000</div>
+          </div>
+          <ul class="features">
+            <li>Unlimited API requests</li>
+            <li>1000 requests/minute</li>
+            <li>All 6 AI Services</li>
+            <li>24/7 Dedicated Support</li>
+            <li>Custom SLA</li>
+            <li>Team Management</li>
+            <li>White-label Options</li>
+          </ul>
+          <button class="btn btn-outline" onclick="selectPlan('enterprise')">CONTACT_SALES</button>
+        </div>
+      </div>
+
+      <div class="enterprise">
+        <h3>NEED_CUSTOM_SOLUTION?</h3>
+        <p>Enterprise solutions with custom pricing, dedicated support, and white-label options.</p>
+        <button class="btn btn-primary" onclick="window.location.href='/contact.html'">CONTACT_SALES</button>
+      </div>
+    </section>
+
+    <section class="faq">
+      <h2>// FAQ</h2>
+      
+      <div class="faq-item open">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          <span>What counts as an API request?</span>
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-a">Each call to our AI services (COGI, Guardian, Docufy, etc.) counts as one API request. Failed requests don't count against your limit.</div>
+      </div>
+      
+      <div class="faq-item">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          <span>Can I upgrade or downgrade anytime?</span>
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-a">Yes! You can change your plan at any time. Changes take effect immediately, and we'll prorate any differences.</div>
+      </div>
+      
+      <div class="faq-item">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          <span>What payment methods do you accept?</span>
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-a">We accept all major credit cards, debit cards, Google Pay, and mobile money (M-Pesa) for Kenya-based customers.</div>
+      </div>
+      
+      <div class="faq-item">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          <span>Is there a free trial for paid plans?</span>
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-a">Our Free tier gives you 100 API calls monthly forever. For paid plans, we offer a 7-day money-back guarantee.</div>
+      </div>
+      
+      <div class="faq-item">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          <span>What happens if I exceed my limit?</span>
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-a">We'll notify you when you reach 80% of your limit. If you exceed it, requests will be queued or you can upgrade instantly.</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const prices = {
+      USD: { starter: '$9', starterAlt: '≈ KSh 1,100', pro: '$29', proAlt: '≈ KSh 3,500', enterprise: '$99', enterpriseAlt: '≈ KSh 12,000' },
+      KES: { starter: 'KSh 1,100', starterAlt: '≈ $9 USD', pro: 'KSh 3,500', proAlt: '≈ $29 USD', enterprise: 'KSh 12,000', enterpriseAlt: '≈ $99 USD' }
+    };
+    
+    function setCurrency(currency) {
+      document.querySelectorAll('.tbtn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('starter').textContent = prices[currency].starter;
+      document.getElementById('starter-alt').textContent = prices[currency].starterAlt;
+      document.getElementById('pro').textContent = prices[currency].pro;
+      document.getElementById('pro-alt').textContent = prices[currency].proAlt;
+      document.getElementById('enterprise').textContent = prices[currency].enterprise;
+      document.getElementById('enterprise-alt').textContent = prices[currency].enterpriseAlt;
+    }
+    
+    function selectPlan(plan) {
+      if (plan === 'free') {
+        window.location.href = '/login.html';
+      } else if (plan === 'enterprise') {
+        window.location.href = '/contact.html';
+      } else {
+        localStorage.setItem('selected_plan', plan);
+        window.location.href = '/checkout.html?plan=' + plan;
+      }
+    }
+    
+    function logout() {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      window.location.href = '/login.html';
+    }
+    
+    if(localStorage.getItem('auth_token')){
+      document.getElementById('navDashboard').style.display='block';
+      document.getElementById('navLogout').style.display='block';
+      document.getElementById('navLogin').style.display='none';
+      document.getElementById('navCta').href='/dashboard.html';
+      document.getElementById('navCta').textContent='DASHBOARD';
+    }
+  </script>
+</body>
+</html>

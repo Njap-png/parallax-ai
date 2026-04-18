@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | BRIDGEMIND</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#00ff88">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#030308;--bg2:#0a0a15;--card:#12121a;--border:#1a1a2e;--cyan:#00ff88;--cyan2:#00ffff;--purple:#a855f7;--magenta:#ff00ff;--text:#e0e0e0;--muted:#6b7280;--dim:#374151;--green:#28c840;--red:#ff5f57;--yellow:#febc2e}
+    html{scroll-behavior:smooth}
+    body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+    body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,136,.015) 2px,rgba(0,255,136,.015) 4px);pointer-events:none;z-index:9998}
+    body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 50% 0%,rgba(0,255,136,.05) 0%,transparent 50%);pointer-events:none;z-index:0}
+
+    nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(3,3,8,.95);border-bottom:1px solid rgba(0,255,136,.2);backdrop-filter:blur(20px)}
+    nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent)}
+    .nav{max-width:1400px;margin:0 auto;padding:.75rem 2rem;display:flex;justify-content:space-between;align-items:center}
+    .logo{display:flex;align-items:center;gap:.75rem;text-decoration:none;color:var(--text);font-weight:600;font-family:'Orbitron',sans-serif;font-size:.9rem;letter-spacing:2px}
+    .logo-icon{width:28px;height:28px;position:relative}
+    .logo-icon::before{content:'';position:absolute;inset:0;border:2px solid var(--cyan);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);animation:pulse 2s ease-in-out infinite;box-shadow:0 0 10px var(--cyan)}
+    .logo-icon::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:6px;height:6px;background:var(--cyan);border-radius:50%;box-shadow:0 0 8px var(--cyan)}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+    @keyframes glow{0%,100%{box-shadow:0 0 10px var(--cyan)}50%{box-shadow:0 0 20px var(--cyan),0 0 30px var(--cyan)}}
+    .links{display:flex;gap:1.5rem}
+    .links a{color:var(--muted);text-decoration:none;font-size:.85rem;transition:all .3s;position:relative}
+    .links a:hover,.links a.active{color:var(--cyan);text-shadow:0 0 10px var(--cyan)}
+    .logout{color:var(--red)!important}
+    .logout:hover{color:var(--red)!important;text-shadow:0 0 10px rgba(255,95,87,.5)!important}
+
+    main{padding:90px 2rem 3rem;max-width:1400px;margin:0 auto;position:relative;z-index:1}
+
+    .welcome{background:linear-gradient(135deg,rgba(0,255,136,.1),rgba(168,85,247,.1));border:1px solid rgba(0,255,136,.2);border-radius:12px;padding:2rem;margin-bottom:2rem;position:relative;overflow:hidden}
+    .welcome::before{content:'';position:absolute;top:-50%;right:-10%;width:300px;height:300px;background:radial-gradient(circle,rgba(0,255,136,.2),transparent 70%);pointer-events:none}
+    .welcome-content{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+    .welcome-text h1{font-family:'Orbitron',sans-serif;font-size:1.75rem;letter-spacing:3px;margin-bottom:.5rem;background:linear-gradient(90deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .welcome-text p{color:var(--muted);font-size:.95rem}
+    .welcome-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem;background:rgba(0,255,136,.2);border:1px solid var(--cyan);border-radius:100px;font-size:.75rem;color:var(--cyan);font-family:'Orbitron',sans-serif}
+    .welcome-badge::before{content:'';width:8px;height:8px;background:var(--cyan);border-radius:50%;animation:glow 2s infinite}
+
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.25rem;margin-bottom:2rem}
+    .stat{background:linear-gradient(180deg,rgba(18,18,26,.95),rgba(10,10,21,.95));border:1px solid rgba(0,255,136,.15);border-radius:8px;padding:1.5rem;position:relative;overflow:hidden;transition:all .4s;cursor:pointer}
+    .stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--purple));opacity:0;transition:opacity .4s}
+    .stat:hover{border-color:rgba(0,255,136,.4);transform:translateY(-4px);box-shadow:0 10px 30px rgba(0,0,0,.3)}
+    .stat:hover::before{opacity:1}
+    .stat-icon{font-size:1.5rem;margin-bottom:1rem;width:48px;height:48px;background:rgba(0,255,136,.1);border-radius:12px;display:flex;align-items:center;justify-content:center}
+    .stat-label{color:var(--dim);font-size:.7rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:.5rem;font-family:'Orbitron',sans-serif}
+    .stat-val{font-size:2rem;font-weight:700;color:var(--cyan);font-family:'Orbitron',sans-serif;line-height:1}
+    .stat-sub{font-size:.75rem;color:var(--muted);margin-top:.5rem;display:flex;align-items:center;gap:.25rem}
+    .stat-change{color:var(--green);font-size:.8rem;margin-top:.75rem;display:flex;align-items:center;gap:.5rem}
+    .stat-change.up::before{content:'↑'}
+    .stat-change.down{color:var(--red)}
+    .stat-change.down::before{content:'↓'}
+
+    .main-grid{display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;margin-bottom:2rem}
+    .card{background:linear-gradient(180deg,rgba(18,18,26,.95),rgba(10,10,21,.95));border:1px solid rgba(0,255,136,.15);border-radius:8px;padding:1.5rem;position:relative;overflow:hidden}
+    .card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent)}
+    .card-title{font-family:'Orbitron',sans-serif;font-size:1rem;letter-spacing:2px;margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem}
+    .card-title::before{content:'▸';color:var(--cyan)}
+
+    .activity-list{list-style:none}
+    .activity-item{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid rgba(255,255,255,.03)}
+    .activity-item:last-child{border-bottom:none}
+    .activity-icon{width:36px;height:36px;background:rgba(0,255,136,.1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+    .activity-content{flex:1}
+    .activity-title{font-weight:500;font-size:.9rem;margin-bottom:.25rem}
+    .activity-meta{font-size:.75rem;color:var(--muted)}
+    .activity-time{font-size:.7rem;color:var(--dim);margin-left:auto;white-space:nowrap}
+
+    .quick-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem}
+    .quick-btn{display:flex;flex-direction:column;align-items:center;gap:.5rem;padding:1.25rem 1rem;background:rgba(0,0,0,.2);border:1px solid rgba(0,255,136,.1);border-radius:8px;cursor:pointer;transition:all .3s;text-decoration:none;color:var(--text)}
+    .quick-btn:hover{border-color:var(--cyan);background:rgba(0,255,136,.05);transform:translateY(-2px)}
+    .quick-btn-icon{font-size:1.5rem}
+    .quick-btn-text{font-size:.7rem;font-family:'Orbitron',sans-serif;letter-spacing:1px;text-align:center}
+
+    .services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem;margin-bottom:2rem}
+    .service{background:rgba(0,0,0,.2);border:1px solid rgba(0,255,136,.1);border-radius:8px;padding:1.25rem;transition:all .3s;text-decoration:none;color:var(--text);display:block}
+    .service:hover{border-color:var(--cyan);background:rgba(0,255,136,.05);transform:translateY(-2px)}
+    .service-header{display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem}
+    .service-icon{font-size:1.25rem}
+    .service-name{font-family:'Orbitron',sans-serif;font-size:.9rem;color:var(--cyan)}
+    .service-desc{color:var(--muted);font-size:.8rem;line-height:1.6}
+    .service-status{display:inline-flex;align-items:center;gap:.5rem;margin-top:.75rem;font-size:.7rem;color:var(--green)}
+    .service-status::before{content:'';width:6px;height:6px;background:var(--green);border-radius:50%;animation:glow 2s infinite}
+
+    .keys-grid{display:grid;gap:1rem}
+    .key{display:flex;justify-content:space-between;align-items:center;padding:1rem;background:rgba(0,0,0,.3);border:1px solid rgba(0,255,136,.1);border-radius:6px}
+    .key:hover{border-color:rgba(0,255,136,.3)}
+    .key-info{flex:1;overflow:hidden}
+    .key-name{font-family:'Orbitron',sans-serif;font-size:.85rem;margin-bottom:.25rem}
+    .key-val{font-size:.75rem;color:var(--dim);font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:300px}
+    .copy-btn{padding:.5rem 1rem;background:transparent;border:1px solid var(--cyan);color:var(--cyan);border-radius:4px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:.7rem;letter-spacing:1px;transition:all .3s}
+    .copy-btn:hover{background:var(--cyan);color:var(--bg)}
+
+    .btn{padding:.875rem 1.5rem;border-radius:4px;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .4s;font-family:'Orbitron',sans-serif;letter-spacing:1px;border:none}
+    .btn-primary{background:linear-gradient(135deg,var(--cyan),#00cc6a);color:var(--bg);box-shadow:0 0 20px rgba(0,255,136,.3)}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,255,136,.5)}
+    .btn-outline{background:transparent;border:1px solid rgba(0,255,136,.3);color:var(--cyan)}
+    .btn-outline:hover{background:rgba(0,255,136,.1);border-color:var(--cyan)}
+
+    .progress-bar{height:8px;background:rgba(0,0,0,.3);border-radius:4px;overflow:hidden;margin-top:.5rem}
+    .progress-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple));border-radius:4px;transition:width .5s ease-out}
+    .progress-fill.warning{background:linear-gradient(90deg,var(--yellow),#ff9500)}
+    .progress-fill.danger{background:linear-gradient(90deg,var(--red),#ff2d55)}
+
+    .tabs{display:flex;gap:.5rem;margin-bottom:1rem;border-bottom:1px solid rgba(0,255,136,.1);padding-bottom:.5rem}
+    .tab{padding:.75rem 1.25rem;background:none;border:none;color:var(--muted);cursor:pointer;font-family:'Orbitron',sans-serif;font-size:.75rem;letter-spacing:1px;transition:all .3s;border-radius:4px 4px 0 0}
+    .tab:hover{color:var(--text)}
+    .tab.active{color:var(--cyan);background:rgba(0,255,136,.1)}
+    pre{background:rgba(0,0,0,.4);border:1px solid rgba(0,255,136,.1);border-radius:4px;padding:1.5rem;font-size:.85rem;overflow-x:auto;line-height:1.8}
+    .kw{color:var(--purple)}.str{color:var(--cyan)}.cm{color:var(--dim)}
+
+    .settings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem}
+
+    /* MOBILE MENU */
+    .mobile-menu-btn{display:none;background:none;border:1px solid var(--border);color:var(--muted);padding:.4rem .6rem;border-radius:4px;cursor:pointer;font-size:1.2rem;margin-left:auto;z-index:2147483647}
+    .mobile-menu-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+    .mobile-menu{position:fixed;top:0;right:0;width:300px;max-width:85vw;height:100vh;background:var(--card);border-left:1px solid var(--border);padding:80px 0 1rem;z-index:2147483647!important;transform:translateX(100%);transition:transform .3s ease-in-out;overflow-y:auto;box-shadow:-10px 0 30px rgba(0,0,0,.5);-webkit-overflow-scrolling:touch}
+    .mobile-menu.show{transform:translateX(0)}
+    .mobile-menu a{padding:1rem 1.5rem;color:var(--muted);text-decoration:none;font-size:1rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+    .mobile-menu a:hover{color:var(--cyan);background:rgba(0,255,136,.05)}
+    .mobile-menu-close{position:absolute;top:1rem;right:1rem;background:none;border:1px solid var(--border);color:var(--muted);padding:.5rem .75rem;border-radius:4px;cursor:pointer;font-size:1.2rem}
+    .mobile-menu-close:hover{border-color:var(--cyan);color:var(--cyan)}
+    .menu-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:2147483646!important;opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s}
+    .menu-overlay.show{opacity:1;visibility:visible}
+    .mobile-menu .cta-mobile{background:var(--cyan);color:var(--bg);border:none;text-align:center;justify-content:center;border-radius:6px}
+
+    @media(max-width:1200px){
+      .main-grid{grid-template-columns:1fr}
+    }
+    @media(max-width:1024px){
+      .grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media(max-width:768px){
+      *{max-width:100vw;overflow-x:hidden}
+      .mobile-menu-btn{display:flex!important;align-items:center;justify-content:center}
+      .links{display:none!important}
+      main{padding:80px 0.75rem 2rem}
+      .welcome{padding:1.25rem}
+      .welcome-text h1{font-size:1.25rem}
+      .welcome-badge{font-size:.65rem}
+      .grid{grid-template-columns:repeat(2,1fr);gap:.75rem}
+      .stat{padding:1rem}
+      .stat-val{font-size:1.5rem}
+      .stat-label{font-size:.6rem}
+      .card{padding:1rem}
+      .card-title{font-size:.9rem}
+      .quick-actions{grid-template-columns:repeat(2,1fr)}
+      .quick-btn{padding:1rem .5rem}
+      .quick-btn-icon{font-size:1.25rem}
+      .services-grid{grid-template-columns:1fr}
+      .settings-grid{grid-template-columns:1fr 1fr}
+      .tabs{flex-wrap:wrap}
+      .tab{padding:.5rem .75rem;font-size:.65rem}
+      pre{font-size:.75rem;padding:1rem}
+      body{font-size:.85rem}
+    }
+    @media(max-width:480px){
+      *{overflow-x:hidden}
+      main{padding:70px 0.5rem 1.5rem}
+      .grid{grid-template-columns:1fr;gap:.5rem}
+      .stat{padding:.75rem}
+      .stat-val{font-size:1.25rem}
+      .settings-grid{grid-template-columns:1fr}
+      .key{flex-direction:column;align-items:flex-start;gap:.75rem}
+      .key-val{max-width:100%}
+      body{font-size:.8rem}
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav">
+      <a href="/" class="logo">
+        <div class="logo-icon"></div>
+        PARALLAX_DOMINION
+      </a>
+      <div class="links">
+        <a href="/services.html">Services</a>
+        <a href="/agent-swarm.html">Agent Swarm</a>
+        <a href="/ai-chat.html">AI Chat</a>
+        <a href="/terminal-pro.html">Terminal</a>
+        <a href="/sandbox.html">Sandbox</a>
+        <a href="/pricing.html">Pricing</a>
+        <a href="/billing.html">Billing</a>
+        <a href="/dashboard.html" class="active">Dashboard</a>
+        <a href="#" id="logoutBtn" class="logout">Logout</a>
+      </div>
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
+    </div>
+  </nav>
+  <div class="menu-overlay" id="menuOverlay" onclick="toggleMobileMenu()"></div>
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="mobile-menu-close" onclick="toggleMobileMenu()">✕</button>
+    <a href="/">🏠 Home</a>
+    <a href="/services.html">🚀 Services</a>
+    <a href="/agent-swarm.html">🐝 Agent Swarm</a>
+    <a href="/ai-chat.html">💬 AI Chat</a>
+    <a href="/terminal-pro.html">⌨️ Terminal</a>
+    <a href="/sandbox.html">📦 Sandbox</a>
+    <a href="/pricing.html">💰 Pricing</a>
+    <a href="/dashboard.html" style="color:var(--cyan)">📊 Dashboard</a>
+    <a href="/docs.html">📚 Docs</a>
+    <a href="#" id="mobileAuthLink" onclick="logout(); return false;">🚪 Logout</a>
+  </div>
+
+  <main>
+    <div class="welcome">
+      <div class="welcome-content">
+        <div class="welcome-text">
+          <h1 id="welcomeTitle">WELCOME BACK, DEVELOPER</h1>
+          <p id="welcomeSub">Your AI-powered development hub is ready. Build faster with intelligent services.</p>
+        </div>
+        <div class="welcome-badge" id="planBadge">
+          <span>⚡</span>
+          <span id="planText">FREE TIER</span>
+        </div>
+      </div>
+    </div>
+
+      <div class="grid">
+      <div class="stat" onclick="navigateToService('cogi')">
+        <div class="stat-icon">📡</div>
+        <div class="stat-label">API Requests Today</div>
+        <div class="stat-val" id="todayCount">0</div>
+        <div class="stat-change up" id="todayChange">Ready to start!</div>
+      </div>
+      <div class="stat">
+        <div class="stat-icon">📊</div>
+        <div class="stat-label">Monthly Usage</div>
+        <div class="stat-val"><span id="monthlyCount">0</span><span style="font-size:.9rem;color:var(--muted)"> / 100</span></div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="usageBar" style="width:0%"></div>
+        </div>
+        <div class="stat-sub" id="usagePercent">0% of free tier used</div>
+      </div>
+      <div class="stat">
+        <div class="stat-icon">⚡</div>
+        <div class="stat-label">Avg Response Time</div>
+        <div class="stat-val" id="avgLatency">142ms</div>
+        <div class="stat-change up">All systems operational</div>
+      </div>
+      <div class="stat">
+        <div class="stat-icon">🛡️</div>
+        <div class="stat-label">Security Score</div>
+        <div class="stat-val" id="securityScore">--</div>
+        <div class="stat-change" id="securityStatus">Run a scan</div>
+      </div>
+    </div>
+
+    <div class="main-grid">
+      <div class="card">
+        <div class="card-title">RECENT_ACTIVITY</div>
+        <ul class="activity-list" id="activityList">
+          <li class="activity-item">
+            <div class="activity-icon">🚀</div>
+            <div class="activity-content">
+              <div class="activity-title">Welcome to BridgeMind!</div>
+              <div class="activity-meta">Platform initialized</div>
+            </div>
+            <div class="activity-time">Just now</div>
+          </li>
+          <li class="activity-item">
+            <div class="activity-icon">⚡</div>
+            <div class="activity-content">
+              <div class="activity-title">API Connected</div>
+              <div class="activity-meta">All services operational</div>
+            </div>
+            <div class="activity-time">Active</div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-title">QUICK_ACTIONS</div>
+        <div class="quick-actions">
+          <a href="/services.html" class="quick-btn">
+            <span class="quick-btn-icon">⚡</span>
+            <span class="quick-btn-text">GENERATE CODE</span>
+          </a>
+          <a href="/ai-chat.html" class="quick-btn">
+            <span class="quick-btn-icon">💬</span>
+            <span class="quick-btn-text">AI CHAT</span>
+          </a>
+          <a href="/terminal-pro.html" class="quick-btn">
+            <span class="quick-btn-icon">⌨️</span>
+            <span class="quick-btn-text">TERMINAL</span>
+          </a>
+          <a href="/sandbox.html" class="quick-btn">
+            <span class="quick-btn-icon">📦</span>
+            <span class="quick-btn-text">SANDBOX</span>
+          </a>
+          <a href="/admin.html" class="quick-btn" id="adminLink" style="display:none">
+            <span class="quick-btn-icon">⚙️</span>
+            <span class="quick-btn-text">ADMIN PANEL</span>
+          </a>
+          <a href="/billing.html" class="quick-btn">
+            <span class="quick-btn-icon">💳</span>
+            <span class="quick-btn-text">BILLING</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">AVAILABLE_SERVICES</div>
+      <div class="services-grid">
+        <a href="/services.html#cogi" class="service">
+          <div class="service-header">
+            <span class="service-icon">⚡</span>
+            <span class="service-name">COGI</span>
+          </div>
+          <div class="service-desc">AI-powered code generation, debugging, and optimization for 50+ languages</div>
+          <div class="service-status">● Operational</div>
+        </a>
+        <a href="/services.html#guardian" class="service">
+          <div class="service-header">
+            <span class="service-icon">🛡️</span>
+            <span class="service-name">GUARDIAN</span>
+          </div>
+          <div class="service-desc">Security vulnerability scanning with OWASP Top 10 detection</div>
+          <div class="service-status">● Operational</div>
+        </a>
+        <a href="/services.html#docufy" class="service">
+          <div class="service-header">
+            <span class="service-icon">📝</span>
+            <span class="service-name">DOCUFY</span>
+          </div>
+          <div class="service-desc">Automatic documentation generation from your codebase</div>
+          <div class="service-status">● Operational</div>
+        </a>
+        <a href="/services.html#testpilot" class="service">
+          <div class="service-header">
+            <span class="service-icon">🧪</span>
+            <span class="service-name">TEST_PILOT</span>
+          </div>
+          <div class="service-desc">Automated test generation for Jest, Mocha, pytest and more</div>
+          <div class="service-status">● Operational</div>
+        </a>
+        <a href="/agent-swarm.html" class="service">
+          <div class="service-header">
+            <span class="service-icon">🐝</span>
+            <span class="service-name">AGENT_SWARM</span>
+          </div>
+          <div class="service-desc">Multi-agent AI orchestration for complex workflows</div>
+          <div class="service-status">● Operational</div>
+        </a>
+        <a href="/services.html#crawler" class="service">
+          <div class="service-header">
+            <span class="service-icon">🕷️</span>
+            <span class="service-name">CRAWLER</span>
+          </div>
+          <div class="service-desc">Intelligent web scraping with anti-blocking technology</div>
+          <div class="service-status">● Operational</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">API_KEYS</div>
+      <div class="keys-grid" id="keysList">
+        <div class="key">
+          <div class="key-info">
+            <div class="key-name">Your API Key</div>
+            <div class="key-val" id="userKey">px_live_•••••••••••••••••••••••</div>
+          </div>
+          <button class="copy-btn" onclick="copyUserKey()">COPY</button>
+        </div>
+      </div>
+      <button class="btn btn-outline" onclick="generateKey()" style="margin-top:1rem;width:100%">+ GENERATE_NEW_KEY</button>
+      <div style="margin-top:1rem;padding:1rem;background:rgba(0,255,136,.05);border:1px solid rgba(0,255,136,.1);border-radius:6px">
+        <div style="font-family:'Orbitron',sans-serif;font-size:.75rem;color:var(--cyan);margin-bottom:.5rem">⚡ QUICK TEST</div>
+        <code style="font-size:.75rem;color:var(--muted);word-break:break-all">curl -X POST https://bridgemind.ai/api/services -H "Content-Type: application/json" -d '{"service":"chat","message":"Hello"}'</code>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">BILLING & SUBSCRIPTION</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1rem">
+        <div style="background:rgba(0,0,0,.3);border:1px solid rgba(0,255,136,.1);border-radius:8px;padding:1rem">
+          <div style="color:var(--dim);font-size:.7rem;text-transform:uppercase;margin-bottom:.5rem">Current Plan</div>
+          <div style="color:var(--cyan);font-family:'Orbitron',sans-serif;font-size:1.25rem" id="billingPlan">FREE TIER</div>
+        </div>
+        <div style="background:rgba(0,0,0,.3);border:1px solid rgba(0,255,136,.1);border-radius:8px;padding:1rem">
+          <div style="color:var(--dim);font-size:.7rem;text-transform:uppercase;margin-bottom:.5rem">Monthly API Calls</div>
+          <div style="color:var(--text);font-family:'Orbitron',sans-serif;font-size:1.25rem"><span id="monthlyCalls">47</span> / 100</div>
+        </div>
+        <div style="background:rgba(0,0,0,.3);border:1px solid rgba(0,255,136,.1);border-radius:8px;padding:1rem">
+          <div style="color:var(--dim);font-size:.7rem;text-transform:uppercase;margin-bottom:.5rem">Next Billing</div>
+          <div style="color:var(--text);font-size:.9rem">-</div>
+        </div>
+      </div>
+      <button class="btn btn-solid" onclick="window.location.href='/pricing.html'" style="width:100%">🚀 UPGRADE PLAN</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">QUICK_START</div>
+      <div class="tabs">
+        <button class="tab active" onclick="showLang('curl')">cURL</button>
+        <button class="tab" onclick="showLang('js')">JavaScript</button>
+        <button class="tab" onclick="showLang('py')">Python</button>
+      </div>
+      <pre id="code"><span class="cm"># Chat with AI</span>
+<span class="kw">curl</span> -X POST https://bridgemind.ai/api/services \
+  -H <span class="str">"Content-Type: application/json"</span> \
+  -d <span class="str">'{"service":"chat","message":"Hello!"}'</span></pre>
+    </div>
+
+    <div class="card">
+      <div class="card-title">ACCOUNT_SETTINGS</div>
+      <div class="settings-grid">
+        <button class="btn btn-outline" onclick="testAPI()">🧪 Test API</button>
+        <button class="btn btn-outline" onclick="viewDocs()">📚 View Docs</button>
+        <button class="btn btn-outline" onclick="upgradePlan()">🚀 Upgrade Plan</button>
+        <button class="btn btn-outline" onclick="contactSupport()">💬 Support</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const BASE_URL = 'https://bridgemind.ai';
+    const codes = {
+      curl: '<span class="cm"># Chat with AI</span>\n<span class="kw">curl</span> -X POST ' + BASE_URL + '/api/services \\\n  -H <span class="str">"Content-Type: application/json"</span> \\\n  -d <span class="str">\'{"service":"chat","message":"Hello!"}\'</span>',
+      js: '<span class="cm">// Chat with AI</span>\n<span class="kw">const</span> res = <span class="kw">await</span> fetch(<span class="str">\'' + BASE_URL + '/api/services\'</span>, {\n  method: <span class="str">\'POST\'</span>,\n  headers: { <span class="str">\'Content-Type\'</span>: <span class="str">\'application/json\'</span> },\n  body: JSON.stringify({ service: <span class="str">\'chat\'</span>, message: <span class="str">\'Hello!\'</span> })\n});\n<span class="kw">const</span> data = <span class="kw">await</span> res.json();\nconsole.log(data.response);',
+      py: '<span class="cm"># Chat with AI</span>\n<span class="kw">import</span> requests\n\nres = requests.post(\n    <span class="str">\'' + BASE_URL + '/api/services\'</span>,\n    json={<span class="str">\'service\'</span>: <span class="str">\'chat\'</span>, <span class="str">\'message\'</span>: <span class="str">\'Hello!\'</span>}\n)\ndata = res.json()\nprint(data[<span class="str">\'response\'</span>])'
+    };
+
+    function showLang(lang) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('code').innerHTML = codes[lang];
+    }
+
+    function copyUserKey() {
+      const token = localStorage.getItem('auth_token') || 'demo_token';
+      navigator.clipboard.writeText(token);
+      const btn = event.target;
+      btn.textContent = 'COPIED!';
+      btn.style.background = 'var(--cyan)';
+      btn.style.color = 'var(--bg)';
+      setTimeout(() => {
+        btn.textContent = 'COPY';
+        btn.style.background = 'transparent';
+        btn.style.color = 'var(--cyan)';
+      }, 2000);
+    }
+
+    function generateKey() {
+      const key = 'px_live_' + Array.from(crypto.getRandomValues(new Uint8Array(24))).map(b => b.toString(16).padStart(2, '0')).join('');
+      navigator.clipboard.writeText(key);
+      showToast('API_KEY_GENERATED', 'Key copied to clipboard!', 'success');
+    }
+
+    function showToast(title, message, type = 'info') {
+      const container = document.getElementById('toast-container') || createToastContainer();
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `
+        <div class="toast-icon">${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}</div>
+        <div class="toast-content">
+          <div class="toast-title">${title}</div>
+          <div class="toast-message">${message}</div>
+        </div>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => toast.classList.add('show'), 10);
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    function createToastContainer() {
+      const container = document.createElement('div');
+      container.id = 'toast-container';
+      container.style.cssText = 'position:fixed;top:80px;right:1rem;z-index:10002;display:flex;flex-direction:column;gap:.5rem;max-width:400px';
+      document.body.appendChild(container);
+      return container;
+    }
+
+    function updateDashboard() {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const token = localStorage.getItem('auth_token') || 'demo_token';
+      const usage = JSON.parse(localStorage.getItem('api_usage') || '{"count":0,"history":[]}');
+      const securityScore = localStorage.getItem('security_score');
+      
+      document.getElementById('welcomeTitle').textContent = user.name ? `WELCOME BACK, ${user.name.toUpperCase()}` : 'WELCOME BACK, DEVELOPER';
+      document.getElementById('welcomeSub').textContent = user.email ? `Logged in as ${user.email}` : 'Your AI-powered development hub is ready.';
+      document.getElementById('userKey').textContent = token.substring(0, 20) + '••••••••••••••••••••';
+      
+      document.getElementById('todayCount').textContent = usage.count || 0;
+      document.getElementById('monthlyCount').textContent = usage.count || 0;
+      document.getElementById('apiCalls').textContent = usage.count || 47;
+      document.getElementById('monthlyCalls').textContent = usage.count || 47;
+      
+      const usagePercent = Math.min(((usage.count || 0) / 100) * 100, 100);
+      document.getElementById('usageBar').style.width = usagePercent + '%';
+      document.getElementById('usagePercent').textContent = usagePercent.toFixed(0) + '% of free tier used';
+      
+      if (usagePercent >= 90) {
+        document.getElementById('usageBar').className = 'progress-fill danger';
+      } else if (usagePercent >= 70) {
+        document.getElementById('usageBar').className = 'progress-fill warning';
+      }
+      
+      if (user.email === 'parallaxstudio.ai@gmail.com') {
+        document.getElementById('planBadge').innerHTML = '<span>👑</span><span>ADMIN TIER</span>';
+        document.getElementById('planText').textContent = 'ADMIN TIER';
+        document.getElementById('securityScore').textContent = 'A+';
+        document.getElementById('adminLink').style.display = 'flex';
+        document.getElementById('billingPlan').textContent = 'ADMIN TIER';
+        document.getElementById('securityStatus').textContent = 'Maximum security';
+      } else {
+        document.getElementById('securityScore').textContent = securityScore || '--';
+        document.getElementById('securityStatus').textContent = securityScore ? 'Protected' : 'Run a scan';
+      }
+      
+      updateActivityFeed(usage);
+    }
+
+    function updateActivityFeed(usage) {
+      const activityList = document.getElementById('activityList');
+      const activities = [];
+      
+      if (usage.history && usage.history.length > 0) {
+        usage.history.forEach(h => {
+          activities.push({
+            icon: getServiceIcon(h.service),
+            title: `${h.service.toUpperCase()} used`,
+            meta: `${h.count} request${h.count > 1 ? 's' : ''}`,
+            time: h.lastUsed || 'Recently'
+          });
+        });
+      }
+      
+      activities.push({ icon: '🚀', title: 'Dashboard accessed', meta: 'Platform initialized', time: 'Active' });
+      activities.push({ icon: '⚡', title: 'API Connected', meta: 'All services operational', time: 'Online' });
+      
+      activityList.innerHTML = activities.slice(0, 5).map(a => `
+        <li class="activity-item">
+          <div class="activity-icon">${a.icon}</div>
+          <div class="activity-content">
+            <div class="activity-title">${a.title}</div>
+            <div class="activity-meta">${a.meta}</div>
+          </div>
+          <div class="activity-time">${a.time}</div>
+        </li>
+      `).join('');
+    }
+
+    function getServiceIcon(service) {
+      const icons = { cogi: '⚡', guardian: '🛡️', docufy: '📝', testpilot: '🧪', crawler: '🕷️', agentswarm: '🐝', chat: '💬' };
+      return icons[service] || '📡';
+    }
+
+    async function testAPI() {
+      try {
+        showToast('TESTING_API', 'Sending request...', 'info');
+        const res = await fetch(BASE_URL + '/api/services', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ service: 'chat', message: 'Hello from dashboard!' })
+        });
+        const data = await res.json();
+        showToast('API_TEST_SUCCESS', 'Response: ' + (data.response ? data.response.substring(0, 50) + '...' : 'OK'), 'success');
+        
+        let usage = JSON.parse(localStorage.getItem('api_usage') || '{"count":0,"history":[]}');
+        usage.count++;
+        if (!usage.history) usage.history = [];
+        const chatEntry = usage.history.find(h => h.service === 'chat');
+        if (chatEntry) chatEntry.count++;
+        else usage.history.push({ service: 'chat', count: 1, lastUsed: new Date().toLocaleDateString() });
+        localStorage.setItem('api_usage', JSON.stringify(usage));
+        updateDashboard();
+      } catch (err) {
+        showToast('API_TEST_FAILED', err.message, 'error');
+      }
+    }
+
+    function viewDocs() {
+      window.open('/docs.html', '_blank');
+    }
+
+    function upgradePlan() {
+      window.location.href = '/pricing.html';
+    }
+
+    function contactSupport() {
+      window.location.href = '/contact.html';
+    }
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobileMenu');
+      const overlay = document.getElementById('menuOverlay');
+      menu.classList.toggle('show');
+      overlay.classList.toggle('show');
+      document.body.style.overflow = menu.classList.contains('show') ? 'hidden' : '';
+    }
+
+    function logout() {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      window.location.href = '/login.html';
+    }
+
+    if (!localStorage.getItem('auth_token')) {
+      window.location.href = '/login.html';
+    } else {
+      updateDashboard();
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      logout();
+    });
+    
+    function navigateToService(service) {
+      const serviceUrls = {
+        cogi: '/services.html#cogi',
+        guardian: '/services.html#guardian',
+        docufy: '/services.html#docufy',
+        testpilot: '/services.html#testpilot',
+        crawler: '/services.html#crawler',
+        agentswarm: '/agent-swarm.html'
+      };
+      window.location.href = serviceUrls[service] || '/services.html';
+    }
+  </script>
+</body>
+</html>

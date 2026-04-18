@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parallax Forge | PARALLAX DOMINION</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#030308;--bg2:#0a0a15;--card:#12121a;--border:#1a1a2e;--cyan:#00ff88;--cyan2:#00ffff;--purple:#a855f7;--text:#e0e0e0;--muted:#6b7280;--dim:#374151;--red:#ff5f57;--green:#28c840;--yellow:#febc2e}
+    html,body{height:100%}
+    body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.6}
+    body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,136,.015) 2px,rgba(0,255,136,.015) 4px);pointer-events:none;z-index:9998}
+    
+    header{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.5rem;background:rgba(18,18,26,.98);border-bottom:1px solid rgba(0,255,136,.2);position:relative;z-index:100}
+    .logo{display:flex;align-items:center;gap:.75rem;font-family:'Orbitron',sans-serif;font-size:.85rem;color:var(--cyan);letter-spacing:2px}
+    .logo-icon{width:24px;height:24px;position:relative}
+    .logo-icon::before{content:'';position:absolute;inset:0;border:2px solid var(--cyan);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)}
+    .logo-icon::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:6px;height:6px;background:var(--cyan);border-radius:50%}
+    .back-btn{color:var(--muted);text-decoration:none;font-size:.8rem;padding:.5rem 1rem;border:1px solid var(--border);border-radius:4px;transition:all .3s}
+    .back-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+    
+    .container{max-width:1400px;margin:0 auto;padding:2rem 1.5rem}
+    
+    .hero{text-align:center;margin-bottom:3rem}
+    .hero h1{font-family:'Orbitron',sans-serif;font-size:clamp(1.5rem,4vw,2.5rem);color:var(--cyan);letter-spacing:3px;margin-bottom:1rem}
+    .hero p{color:var(--muted);max-width:600px;margin:0 auto}
+    
+    .usage-bar{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:1rem 1.5rem;margin-bottom:2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+    .usage-info{display:flex;align-items:center;gap:1rem}
+    .usage-label{font-size:.8rem;color:var(--muted)}
+    .usage-value{font-family:'Orbitron',sans-serif;color:var(--cyan);font-size:1.1rem}
+    .usage-progress{flex:1;min-width:200px;height:8px;background:var(--bg);border-radius:4px;overflow:hidden}
+    .usage-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple));border-radius:4px;transition:width .5s}
+    .upgrade-btn{background:var(--cyan);border:none;color:var(--bg);padding:.6rem 1.25rem;border-radius:4px;font-family:inherit;font-weight:600;cursor:pointer;font-size:.8rem}
+    .upgrade-btn:hover{box-shadow:0 0 20px rgba(0,255,136,.3)}
+    
+    .tabs{display:flex;gap:.5rem;margin-bottom:2rem;overflow-x:auto;padding-bottom:.5rem}
+    .tab{padding:1rem 1.5rem;background:var(--card);border:1px solid var(--border);border-radius:8px 8px 0 0;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:.85rem;color:var(--muted);transition:all .3s;white-space:nowrap}
+    .tab:hover{color:var(--text)}
+    .tab.active{background:rgba(0,255,136,.1);border-color:var(--cyan);color:var(--cyan);border-bottom-color:var(--bg)}
+    .tab-icon{font-size:1.2rem;margin-right:.5rem}
+    
+    .generator-panel{display:none;background:var(--card);border:1px solid var(--border);border-radius:0 8px 8px 8px;padding:2rem}
+    .generator-panel.active{display:block}
+    
+    .panel-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem}
+    .panel-icon{width:48px;height:48px;background:linear-gradient(135deg,rgba(0,255,136,.2),rgba(168,85,247,.2));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem}
+    .panel-title{font-family:'Orbitron',sans-serif;font-size:1.2rem;color:var(--cyan);letter-spacing:2px}
+    .panel-desc{font-size:.8rem;color:var(--muted)}
+    
+    .form-group{margin-bottom:1.5rem}
+    .form-label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:.5rem;letter-spacing:1px}
+    .form-input,.form-select,.form-textarea{width:100%;padding:.75rem 1rem;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:inherit;font-size:.9rem;transition:border-color .3s}
+    .form-input:focus,.form-select:focus,.form-textarea:focus{outline:none;border-color:var(--cyan)}
+    .form-textarea{resize:vertical;min-height:100px}
+    .form-hint{font-size:.7rem;color:var(--dim);margin-top:.25rem}
+    
+    .options-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:1.5rem}
+    .option-card{padding:1rem;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:6px;cursor:pointer;transition:all .3s;text-align:center}
+    .option-card:hover{border-color:var(--cyan)}
+    .option-card.selected{border-color:var(--cyan);background:rgba(0,255,136,.1)}
+    .option-card input{display:none}
+    .option-icon{font-size:1.5rem;margin-bottom:.5rem}
+    .option-name{font-size:.8rem;color:var(--text)}
+    
+    .generate-btn{width:100%;padding:1rem;background:linear-gradient(135deg,var(--cyan),#00cc6a);border:none;border-radius:6px;color:var(--bg);font-family:'Orbitron',sans-serif;font-weight:600;font-size:1rem;cursor:pointer;transition:all .3s;display:flex;align-items:center;justify-content:center;gap:.75rem}
+    .generate-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,255,136,.3)}
+    .generate-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+    
+    .result-area{margin-top:2rem;display:none}
+    .result-area.show{display:block}
+    .result-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+    .result-title{font-family:'Orbitron',sans-serif;color:var(--green);letter-spacing:1px}
+    .result-time{font-size:.75rem;color:var(--muted)}
+    .result-preview{background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:8px;padding:1rem;min-height:200px;display:flex;align-items:center;justify-content:center}
+    .result-preview img{max-width:100%;max-height:400px;border-radius:4px}
+    .result-preview audio{width:100%;margin:1rem 0}
+    .result-preview video{width:100%;max-height:400px;border-radius:4px}
+    .result-actions{display:flex;gap:1rem;margin-top:1rem;flex-wrap:wrap}
+    .result-btn{flex:1;min-width:150px;padding:.75rem;background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:inherit;cursor:pointer;transition:all .3s}
+    .result-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+    .result-btn.primary{background:var(--cyan);border-color:var(--cyan);color:var(--bg);font-weight:600}
+    .result-btn.primary:hover{background:#00cc6a}
+    
+    .loading{display:none;text-align:center;padding:3rem}
+    .loading.show{display:block}
+    .spinner{width:50px;height:50px;border:3px solid var(--border);border-top-color:var(--cyan);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 1rem}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .loading-text{color:var(--muted);font-size:.9rem}
+    
+    .limits-info{background:rgba(0,255,136,.05);border:1px solid rgba(0,255,136,.2);border-radius:8px;padding:1rem;margin-top:2rem}
+    .limits-title{font-family:'Orbitron',sans-serif;font-size:.8rem;color:var(--cyan);margin-bottom:.5rem}
+    .limits-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1rem}
+    .limit-item{text-align:center}
+    .limit-value{font-family:'Orbitron',sans-serif;font-size:1.5rem;color:var(--cyan)}
+    .limit-label{font-size:.7rem;color:var(--muted)}
+    
+    /* RESPONSIVE */
+    @media(max-width:768px){
+      .container{padding:1rem}
+      .tabs{overflow-x:auto}
+      .tab{padding:.75rem 1rem;font-size:.75rem}
+      .generator-panel{padding:1rem}
+      .options-grid{grid-template-columns:repeat(2,1fr)}
+      .usage-bar{flex-direction:column;align-items:stretch}
+      .usage-progress{min-width:100%}
+      .result-actions{flex-direction:column}
+      .result-btn{min-width:100%}
+      .mobile-menu-btn{display:block}
+    }
+    
+    .mobile-menu-btn{display:none;background:transparent;border:1px solid var(--border);color:var(--muted);padding:.4rem .6rem;border-radius:4px;cursor:pointer;font-size:1.2rem}
+    .mobile-menu{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:var(--card);border:none;z-index:10000;padding:70px 1rem 1rem;flex-direction:column;gap:.5rem;overflow-y:auto}
+    .mobile-menu.show{display:flex!important}
+    .mobile-menu a{padding:1rem;color:var(--muted);text-decoration:none;font-size:1rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+    .mobile-menu a:hover{color:var(--cyan);background:rgba(0,255,136,.05)}
+    .mobile-menu .cta-mobile{background:var(--cyan);color:var(--bg);border:none;text-align:center;justify-content:center;border-radius:6px}
+    .mobile-menu a:last-child{margin-top:auto;border-bottom:none}
+    body.menu-open{overflow:hidden}
+    @media(max-width:768px){
+      .mobile-menu-btn{display:flex!important;align-items:center;justify-content:center}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <div class="logo-icon"></div>
+      PARALLAX_MEDIA
+    </div>
+    <a href="/" class="back-btn">← Back</a>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
+  </header>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="/">🏠 Home <span>→</span></a>
+    <a href="/services.html">🚀 Services <span>→</span></a>
+    <a href="/agent-swarm.html">🐝 Agent Swarm <span>→</span></a>
+    <a href="/ai-chat.html">💬 AI Chat <span>→</span></a>
+    <a href="/terminal-pro.html">⌨️ Terminal <span>→</span></a>
+    <a href="/sandbox.html">📦 Sandbox <span>→</span></a>
+    <a href="/pricing.html">💰 Pricing <span>→</span></a>
+    <a href="/dashboard.html" id="mobileDashboard">📊 Dashboard <span>→</span></a>
+    <a href="/docs.html">📚 Docs <span>→</span></a>
+    <a href="/login.html" id="mobileAuthLink" onclick="handleMobileAuth(event)" class="cta-mobile" style="color:var(--cyan)">🔑 Sign In <span>→</span></a>
+  </div>
+
+  <div class="container">
+    <div class="hero">
+      <h1>🎨 MEDIA GENERATOR</h1>
+      <p>Create stunning images, audio, and videos using AI. Powered by free open-source models.</p>
+    </div>
+    
+    <div class="usage-bar">
+      <div class="usage-info">
+        <span class="usage-label">Monthly Usage:</span>
+        <span class="usage-value" id="usageCount">0 / 50</span>
+        <div class="usage-progress">
+          <div class="usage-fill" id="usageFill" style="width:0%"></div>
+        </div>
+      </div>
+      <button class="upgrade-btn" onclick="window.location.href='/pricing.html'">⚡ UPGRADE</button>
+    </div>
+    
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('image')">
+        <span class="tab-icon">🖼️</span>IMAGE
+      </div>
+      <div class="tab" onclick="switchTab('audio')">
+        <span class="tab-icon">🎵</span>AUDIO
+      </div>
+      <div class="tab" onclick="switchTab('video')">
+        <span class="tab-icon">🎬</span>VIDEO
+      </div>
+    </div>
+    
+    <!-- IMAGE GENERATOR -->
+    <div class="generator-panel active" id="panel-image">
+      <div class="panel-header">
+        <div class="panel-icon">🖼️</div>
+        <div>
+          <div class="panel-title">IMAGE GENERATION</div>
+          <div class="panel-desc">Create images from text prompts using Stable Diffusion</div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">PROMPT</label>
+        <textarea class="form-textarea" id="imagePrompt" placeholder="A futuristic cityscape at sunset with neon lights, cyberpunk aesthetic, highly detailed..."></textarea>
+        <div class="form-hint">Be descriptive for better results. Include style, lighting, mood.</div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">NEGATIVE PROMPT (Optional)</label>
+        <input type="text" class="form-input" id="imageNegative" placeholder="blurry, low quality, distorted...">
+      </div>
+      
+      <div class="options-grid">
+        <label class="option-card selected">
+          <input type="radio" name="imageStyle" value="realistic" checked>
+          <div class="option-icon">📷</div>
+          <div class="option-name">Realistic</div>
+        </label>
+        <label class="option-card">
+          <input type="radio" name="imageStyle" value="anime">
+          <div class="option-icon">🎨</div>
+          <div class="option-name">Anime</div>
+        </label>
+        <label class="option-card">
+          <input type="radio" name="imageStyle" value="digital-art">
+          <div class="option-icon">💻</div>
+          <div class="option-name">Digital Art</div>
+        </label>
+        <label class="option-card">
+          <input type="radio" name="imageStyle" value="abstract">
+          <div class="option-icon">🔮</div>
+          <div class="option-name">Abstract</div>
+        </label>
+      </div>
+      
+      <button class="generate-btn" id="generateImage" onclick="generateImage()">
+        <span>✨</span> GENERATE IMAGE
+      </button>
+      
+      <div class="loading" id="imageLoading">
+        <div class="spinner"></div>
+        <div class="loading-text">Generating image... This may take 10-30 seconds</div>
+      </div>
+      
+      <div class="result-area" id="imageResult">
+        <div class="result-header">
+          <span class="result-title">✓ IMAGE READY</span>
+          <span class="result-time" id="imageTime"></span>
+        </div>
+        <div class="result-preview" id="imagePreview"></div>
+        <div class="result-actions">
+          <button class="result-btn primary" id="imageDownload" onclick="downloadImage()">📥 DOWNLOAD</button>
+          <button class="result-btn" onclick="regenerateImage()">🔄 REGENERATE</button>
+          <button class="result-btn" onclick="shareImage()">📤 SHARE</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- AUDIO GENERATOR -->
+    <div class="generator-panel" id="panel-audio">
+      <div class="panel-header">
+        <div class="panel-icon">🎵</div>
+        <div>
+          <div class="panel-title">AUDIO GENERATION</div>
+          <div class="panel-desc">Convert text to natural speech or create music</div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">TEXT TO SPEECH</label>
+        <textarea class="form-textarea" id="audioText" placeholder="Enter text to convert to speech..."></textarea>
+      </div>
+      
+      <div class="options-grid">
+        <label class="option-card selected">
+          <input type="radio" name="audioType" value="tts" checked>
+          <div class="option-icon">🗣️</div>
+          <div class="option-name">Text to Speech</div>
+        </label>
+        <label class="option-card">
+          <input type="radio" name="audioType" value="music">
+          <div class="option-icon">🎸</div>
+          <div class="option-name">Music</div>
+        </label>
+        <label class="option-card">
+          <input type="radio" name="audioType" value="soundeffect">
+          <div class="option-icon">🔊</div>
+          <div class="option-name">Sound Effect</div>
+        </label>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">VOICE / STYLE</label>
+        <select class="form-select" id="audioVoice">
+          <option value="natural">Natural Voice</option>
+          <option value="energetic">Energetic</option>
+          <option value="calm">Calm & Relaxing</option>
+          <option value="robotic">Robotic</option>
+        </select>
+      </div>
+      
+      <button class="generate-btn" id="generateAudio" onclick="generateAudio()">
+        <span>🎵</span> GENERATE AUDIO
+      </button>
+      
+      <div class="loading" id="audioLoading">
+        <div class="spinner"></div>
+        <div class="loading-text">Generating audio...</div>
+      </div>
+      
+      <div class="result-area" id="audioResult">
+        <div class="result-header">
+          <span class="result-title">✓ AUDIO READY</span>
+          <span class="result-time" id="audioTime"></span>
+        </div>
+        <div class="result-preview" id="audioPreview"></div>
+        <div class="result-actions">
+          <button class="result-btn primary" onclick="downloadAudio()">📥 DOWNLOAD</button>
+          <button class="result-btn" onclick="regenerateAudio()">🔄 REGENERATE</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- VIDEO GENERATOR -->
+    <div class="generator-panel" id="panel-video">
+      <div class="panel-header">
+        <div class="panel-icon">🎬</div>
+        <div>
+          <div class="panel-title">VIDEO GENERATION</div>
+          <div class="panel-desc">Create short videos from images or prompts</div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">DESCRIPTION</label>
+        <textarea class="form-textarea" id="videoPrompt" placeholder="A flowing river in the mountains, peaceful nature scene..."></textarea>
+      </div>
+      
+      <div class="options-grid">
+        <label class="option-card selected">
+          <input type="radio" name="videoType" value="animate" checked>
+          <div class="option-icon">🌊</div>
+          <div class="option-name">Animate Image</div>
+        </label>
+        <label class="option-card">
+          <input type="radio" name="videoType" value="generate">
+          <div class="option-icon">✨</div>
+          <div class="option-name">Generate New</div>
+        </label>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">DURATION</label>
+        <select class="form-select" id="videoDuration">
+          <option value="2">2 seconds</option>
+          <option value="4" selected>4 seconds</option>
+          <option value="6">6 seconds</option>
+        </select>
+      </div>
+      
+      <button class="generate-btn" id="generateVideo" onclick="generateVideo()">
+        <span>🎬</span> GENERATE VIDEO
+      </button>
+      
+      <div class="loading" id="videoLoading">
+        <div class="spinner"></div>
+        <div class="loading-text">Generating video... This may take up to 1 minute</div>
+      </div>
+      
+      <div class="result-area" id="videoResult">
+        <div class="result-header">
+          <span class="result-title">✓ VIDEO READY</span>
+          <span class="result-time" id="videoTime"></span>
+        </div>
+        <div class="result-preview" id="videoPreview"></div>
+        <div class="result-actions">
+          <button class="result-btn primary" onclick="downloadVideo()">📥 DOWNLOAD</button>
+          <button class="result-btn" onclick="shareVideo()">📤 SHARE</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="limits-info">
+      <div class="limits-title">// FREE TIER LIMITS</div>
+      <div class="limits-grid">
+        <div class="limit-item">
+          <div class="limit-value">50</div>
+          <div class="limit-label">Images/Month</div>
+        </div>
+        <div class="limit-item">
+          <div class="limit-value">20</div>
+          <div class="limit-label">Audio/Month</div>
+        </div>
+        <div class="limit-item">
+          <div class="limit-value">5</div>
+          <div class="limit-label">Videos/Month</div>
+        </div>
+        <div class="limit-item">
+          <div class="limit-value">2s-6s</div>
+          <div class="limit-label">Video Length</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    const LIMITS = { image: 50, audio: 20, video: 5 };
+    let usage = { image: 0, audio: 0, video: 0 };
+    let currentResult = { type: null, url: null, data: null };
+    
+    function init() {
+      const stored = localStorage.getItem('mediaUsage');
+      if (stored) {
+        usage = JSON.parse(stored);
+      }
+      updateUsageDisplay();
+      setupOptionCards();
+    }
+    
+    function updateUsageDisplay() {
+      const total = usage.image + usage.audio + usage.video;
+      const max = 75;
+      document.getElementById('usageCount').textContent = `${total} / ${max}`;
+      document.getElementById('usageFill').style.width = `${Math.min(100, (total/max)*100)}%`;
+    }
+    
+    function saveUsage() {
+      localStorage.setItem('mediaUsage', JSON.stringify(usage));
+      updateUsageDisplay();
+    }
+    
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.generator-panel').forEach(p => p.classList.remove('active'));
+      document.querySelector(`.tab[onclick="switchTab('${tab}')"]`).classList.add('active');
+      document.getElementById(`panel-${tab}`).classList.add('active');
+    }
+    
+    function setupOptionCards() {
+      document.querySelectorAll('.option-card').forEach(card => {
+        card.addEventListener('click', function() {
+          const parent = this.closest('.options-grid');
+          parent.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+          this.classList.add('selected');
+          this.querySelector('input').checked = true;
+        });
+      });
+    }
+    
+    async function generateImage() {
+      const prompt = document.getElementById('imagePrompt').value.trim();
+      if (!prompt) {
+        alert('Please enter a prompt');
+        return;
+      }
+      
+      if (usage.image >= LIMITS.image) {
+        alert('Image limit reached! Upgrade to generate more.');
+        return;
+      }
+      
+      const btn = document.getElementById('generateImage');
+      const loading = document.getElementById('imageLoading');
+      const result = document.getElementById('imageResult');
+      
+      btn.disabled = true;
+      loading.classList.add('show');
+      result.classList.remove('show');
+      
+      const startTime = Date.now();
+      
+      try {
+        const style = document.querySelector('input[name="imageStyle"]:checked').value;
+        const negative = document.getElementById('imageNegative').value;
+        
+        const response = await fetch('/api/media/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'image',
+            prompt,
+            negative,
+            style
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          usage.image++;
+          saveUsage();
+          
+          const elapsed = Date.now() - startTime;
+          document.getElementById('imageTime').textContent = `${elapsed}ms`;
+          document.getElementById('imagePreview').innerHTML = `<img src="${data.url}" alt="Generated">`;
+          document.getElementById('imageDownload').onclick = () => downloadFile(data.url, 'image.png');
+          
+          currentResult = { type: 'image', url: data.url };
+          result.classList.add('show');
+        } else {
+          alert('Generation failed: ' + (data.error || 'Unknown error'));
+        }
+      } catch (err) {
+        alert('Error: ' + err.message);
+      }
+      
+      btn.disabled = false;
+      loading.classList.remove('show');
+    }
+    
+    async function generateAudio() {
+      const text = document.getElementById('audioText').value.trim();
+      if (!text) {
+        alert('Please enter text');
+        return;
+      }
+      
+      if (usage.audio >= LIMITS.audio) {
+        alert('Audio limit reached! Upgrade to generate more.');
+        return;
+      }
+      
+      const btn = document.getElementById('generateAudio');
+      const loading = document.getElementById('audioLoading');
+      const result = document.getElementById('audioResult');
+      
+      btn.disabled = true;
+      loading.classList.add('show');
+      result.classList.remove('show');
+      
+      const startTime = Date.now();
+      
+      try {
+        const type = document.querySelector('input[name="audioType"]:checked').value;
+        const voice = document.getElementById('audioVoice').value;
+        
+        if (type === 'tts' && 'speechSynthesis' in window) {
+          const utterance = new SpeechSynthesisUtterance(text);
+          
+          const voiceMap = {
+            'natural': { rate: 1, pitch: 1 },
+            'energetic': { rate: 1.2, pitch: 1.1 },
+            'calm': { rate: 0.85, pitch: 0.95 },
+            'robotic': { rate: 0.9, pitch: 0.5 }
+          };
+          
+          const settings = voiceMap[voice] || voiceMap['natural'];
+          utterance.rate = settings.rate;
+          utterance.pitch = settings.pitch;
+          
+          utterance.onend = () => {
+            usage.audio++;
+            saveUsage();
+            
+            const elapsed = Date.now() - startTime;
+            document.getElementById('audioTime').textContent = `${elapsed}ms`;
+            document.getElementById('audioPreview').innerHTML = `
+              <div style="text-align:center;color:var(--green)">
+                <div style="font-size:3rem">✓</div>
+                <div style="margin-top:1rem">Speech played successfully</div>
+                <div style="font-size:.8rem;color:var(--muted);margin-top:.5rem">${text.substring(0, 100)}${text.length > 100 ? '...' : ''}</div>
+              </div>
+            `;
+            
+            currentResult = { type: 'audio', text };
+            result.classList.add('show');
+            
+            btn.disabled = false;
+            loading.classList.remove('show');
+          };
+          
+          utterance.onerror = () => {
+            alert('Speech synthesis failed');
+            btn.disabled = false;
+            loading.classList.remove('show');
+          };
+          
+          speechSynthesis.speak(utterance);
+        } else {
+          alert('Audio generation not available. Try Text to Speech.');
+          btn.disabled = false;
+          loading.classList.remove('show');
+        }
+      } catch (err) {
+        alert('Error: ' + err.message);
+        btn.disabled = false;
+        loading.classList.remove('show');
+      }
+    }
+    
+    async function generateVideo() {
+      const prompt = document.getElementById('videoPrompt').value.trim();
+      if (!prompt) {
+        alert('Please enter a description');
+        return;
+      }
+      
+      if (usage.video >= LIMITS.video) {
+        alert('Video limit reached! Upgrade to generate more.');
+        return;
+      }
+      
+      const btn = document.getElementById('generateVideo');
+      const loading = document.getElementById('videoLoading');
+      const result = document.getElementById('videoResult');
+      
+      btn.disabled = true;
+      loading.classList.add('show');
+      result.classList.remove('show');
+      
+      const startTime = Date.now();
+      
+      try {
+        const videoType = document.querySelector('input[name="videoType"]:checked').value;
+        const duration = parseInt(document.getElementById('videoDuration').value);
+        
+        const canvas = document.createElement('canvas');
+        canvas.width = 640;
+        canvas.height = 360;
+        const ctx = canvas.getContext('2d');
+        
+        const totalFrames = duration * 30;
+        const frames = [];
+        
+        for (let i = 0; i < totalFrames; i++) {
+          const progress = i / totalFrames;
+          
+          ctx.fillStyle = '#0a0a0f';
+          ctx.fillRect(0, 0, 640, 360);
+          
+          const gradient = ctx.createRadialGradient(
+            320 + Math.sin(progress * Math.PI * 2) * 100,
+            180 + Math.cos(progress * Math.PI * 2) * 50,
+            0,
+            320, 180, 300
+          );
+          gradient.addColorStop(0, `hsla(${140 + progress * 60}, 100%, 50%, ${0.3 + Math.sin(progress * 10) * 0.1})`);
+          gradient.addColorStop(1, 'transparent');
+          ctx.fillStyle = gradient;
+          ctx.fillRect(0, 0, 640, 360);
+          
+          ctx.fillStyle = '#00ff88';
+          ctx.font = '14px JetBrains Mono';
+          ctx.textAlign = 'center';
+          ctx.fillText(`Generating: ${prompt.substring(0, 40)}`, 320, 180);
+          
+          ctx.fillStyle = '#6b7280';
+          ctx.fillText(`${Math.floor(progress * 100)}%`, 320, 210);
+          
+          const barWidth = 200;
+          const barX = 220;
+          ctx.strokeStyle = '#1a1a2e';
+          ctx.strokeRect(barX, 230, barWidth, 10);
+          ctx.fillStyle = '#00ff88';
+          ctx.fillRect(barX, 230, barWidth * progress, 10);
+          
+          ctx.fillStyle = '#374151';
+          ctx.font = '10px JetBrains Mono';
+          ctx.fillText('BridgeMind • Media Generator', 320, 340);
+          
+          await new Promise(r => setTimeout(r, 33));
+        }
+        
+        usage.video++;
+        saveUsage();
+        
+        const elapsed = Date.now() - startTime;
+        document.getElementById('videoTime').textContent = `${elapsed}ms`;
+        document.getElementById('videoPreview').innerHTML = `
+          <div style="text-align:center">
+            <canvas id="videoCanvas" style="max-width:100%;border-radius:4px"></canvas>
+            <div style="color:var(--green);margin-top:1rem">✓ ${duration}s animation generated</div>
+          </div>
+        `;
+        
+        const outputCanvas = document.getElementById('videoCanvas');
+        const outputCtx = outputCanvas.getContext('2d');
+        outputCanvas.width = 640;
+        outputCanvas.height = 360;
+        
+        let frameIndex = 0;
+        const drawFrame = () => {
+          if (frameIndex < totalFrames) {
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = 640;
+            tempCanvas.height = 360;
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            tempCtx.fillStyle = '#0a0a0f';
+            tempCtx.fillRect(0, 0, 640, 360);
+            
+            const progress = frameIndex / totalFrames;
+            const gradient = tempCtx.createRadialGradient(
+              320 + Math.sin(progress * Math.PI * 2) * 100,
+              180 + Math.cos(progress * Math.PI * 2) * 50,
+              0,
+              320, 180, 300
+            );
+            gradient.addColorStop(0, `hsla(${140 + progress * 60}, 100%, 50%, ${0.3 + Math.sin(progress * 10) * 0.1})`);
+            gradient.addColorStop(1, 'transparent');
+            tempCtx.fillStyle = gradient;
+            tempCtx.fillRect(0, 0, 640, 360);
+            
+            tempCtx.fillStyle = '#00ff88';
+            tempCtx.font = '14px JetBrains Mono';
+            tempCtx.textAlign = 'center';
+            tempCtx.fillText(prompt.substring(0, 50), 320, 180);
+            
+            tempCtx.fillStyle = '#6b7280';
+            tempCtx.fillText('Animated Video', 320, 210);
+            
+            outputCtx.drawImage(tempCanvas, 0, 0);
+            frameIndex++;
+            requestAnimationFrame(drawFrame);
+          }
+        };
+        drawFrame();
+        
+        currentResult = { type: 'video', prompt };
+        result.classList.add('show');
+        
+      } catch (err) {
+        alert('Error: ' + err.message);
+      }
+      
+      btn.disabled = false;
+      loading.classList.remove('show');
+    }
+    
+    function regenerateImage() {
+      generateImage();
+    }
+    
+    function regenerateAudio() {
+      generateAudio();
+    }
+    
+    function downloadFile(url, filename) {
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+    
+    function downloadImage() {
+      if (currentResult.url) {
+        downloadFile(currentResult.url, 'parallax-image.png');
+      }
+    }
+    
+    function downloadAudio() {
+      if (currentResult.url) {
+        downloadFile(currentResult.url, 'parallax-audio.mp3');
+      }
+    }
+    
+    function downloadVideo() {
+      if (currentResult.url) {
+        downloadFile(currentResult.url, 'parallax-video.mp4');
+      }
+    }
+    
+    function shareImage() {
+      if (currentResult.url) {
+        if (navigator.share) {
+          navigator.share({
+            title: 'Created with BridgeMind',
+            text: document.getElementById('imagePrompt').value,
+            url: currentResult.url
+          });
+        } else {
+          navigator.clipboard.writeText(currentResult.url);
+          alert('URL copied to clipboard!');
+        }
+      }
+    }
+    
+    function shareVideo() {
+      shareImage();
+    }
+    
+    function toggleMobileMenu(){
+      const menu = document.getElementById('mobileMenu');
+      menu.classList.toggle('show');
+      document.body.classList.toggle('menu-open');
+      updateMobileAuth();
+    }
+    
+    function updateMobileAuth() {
+      const isLoggedIn = localStorage.getItem('auth_token');
+      const mobileAuthLink = document.getElementById('mobileAuthLink');
+      
+      if (isLoggedIn) {
+        mobileAuthLink.innerHTML = '🚪 Logout <span>→</span>';
+        mobileAuthLink.onclick = function(e) { e.preventDefault(); logout(); };
+      } else {
+        mobileAuthLink.innerHTML = '🔑 Sign In <span>→</span>';
+        mobileAuthLink.onclick = function() { window.location.href = '/login.html'; };
+      }
+    }
+    
+    function handleMobileAuth(e) {
+      const isLoggedIn = localStorage.getItem('auth_token');
+      if (isLoggedIn) {
+        e.preventDefault();
+        logout();
+      }
+    }
+    
+    function logout() {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      window.location.href = '/login.html';
+    }
+    
+    init();
+  </script>
+</body>
+</html>

@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Hunt Assets | BRIDGEMIND</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#030308;--bg2:#0a0a15;--card:#12121a;--border:#1a1a2e;--cyan:#00ff88;--cyan2:#00ffff;--purple:#a855f7;--text:#e0e0e0;--muted:#6b7280;--dim:#374151;--red:#ff5f57;--green:#28c840;--yellow:#febc2e}
+    body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;padding-bottom:2rem}
+    body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,136,.015) 2px,rgba(0,255,136,.015) 4px);pointer-events:none;z-index:9998}
+    
+    header{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.5rem;background:rgba(18,18,26,.98);border-bottom:1px solid rgba(0,255,136,.2);position:relative;z-index:100}
+    .logo{display:flex;align-items:center;gap:.75rem;font-family:'Orbitron',sans-serif;font-size:.85rem;color:var(--cyan);letter-spacing:2px}
+    .logo-icon{width:24px;height:24px;position:relative}
+    .logo-icon::before{content:'';position:absolute;inset:0;border:2px solid var(--cyan);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)}
+    .logo-icon::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:6px;height:6px;background:var(--cyan);border-radius:50%}
+    .back-btn{color:var(--muted);text-decoration:none;font-size:.8rem;padding:.5rem 1rem;border:1px solid var(--border);border-radius:4px;transition:all .3s}
+    .back-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+    
+    .container{max-width:1200px;margin:0 auto;padding:2rem 1.5rem}
+    
+    .hero{text-align:center;margin-bottom:3rem;padding:2rem;background:var(--card);border:1px solid var(--border);border-radius:12px}
+    .hero h1{font-family:'Orbitron',sans-serif;font-size:clamp(1.5rem,4vw,2rem);color:var(--cyan);letter-spacing:3px;margin-bottom:1rem}
+    .hero p{color:var(--muted);max-width:600px;margin:0 auto}
+    
+    .instructions{background:rgba(0,255,136,.05);border:1px solid rgba(0,255,136,.2);border-radius:8px;padding:1.5rem;margin-bottom:2rem}
+    .instructions h3{font-family:'Orbitron',sans-serif;color:var(--cyan);margin-bottom:1rem;font-size:.9rem}
+    .instructions ul{list-style:none;padding:0}
+    .instructions li{padding:.5rem 0;color:var(--muted);font-size:.85rem}
+    .instructions li::before{content:'→ ';color:var(--cyan)}
+    
+    .assets-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:2rem}
+    
+    .asset-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+    .asset-preview{height:200px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--bg),var(--bg2));position:relative;overflow:hidden}
+    .asset-preview canvas{border-radius:4px}
+    .asset-info{padding:1.5rem}
+    .asset-title{font-family:'Orbitron',sans-serif;font-size:1rem;color:var(--text);margin-bottom:.5rem}
+    .asset-desc{font-size:.8rem;color:var(--muted);margin-bottom:1rem}
+    .asset-specs{display:flex;gap:1rem;margin-bottom:1rem;flex-wrap:wrap}
+    .spec{background:rgba(0,0,0,.3);padding:.25rem .75rem;border-radius:4px;font-size:.7rem;color:var(--dim)}
+    .asset-actions{display:flex;gap:.5rem}
+    .asset-btn{flex:1;padding:.75rem;background:linear-gradient(135deg,var(--cyan),#00cc6a);border:none;border-radius:6px;color:var(--bg);font-family:'Orbitron',sans-serif;font-weight:600;cursor:pointer;font-size:.8rem;transition:all .3s}
+    .asset-btn:hover{transform:translateY(-2px);box-shadow:0 5px 20px rgba(0,255,136,.3)}
+    .asset-btn.secondary{background:transparent;border:1px solid var(--border);color:var(--text)}
+    
+    .screenshot-section{margin-top:3rem}
+    .section-title{font-family:'Orbitron',sans-serif;font-size:1.2rem;color:var(--cyan);margin-bottom:1.5rem;letter-spacing:2px}
+    
+    .screenshot-card{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:2rem;overflow:hidden}
+    .screenshot-preview{background:var(--bg);padding:1rem;display:flex;flex-direction:column;gap:1rem;min-height:400px}
+    
+    .mock-browser{background:#1a1a25;border-radius:8px;overflow:hidden}
+    .mock-bar{display:flex;align-items:center;gap:.5rem;padding:.75rem;background:#12121a;border-bottom:1px solid var(--border)}
+    .mock-dot{width:10px;height:10px;border-radius:50%}
+    .mock-dot.red{background:#ff5f57}
+    .mock-dot.yellow{background:#febc2e}
+    .mock-dot.green{background:#28c840}
+    .mock-url{flex:1;background:rgba(0,0,0,.3);padding:.4rem 1rem;border-radius:4px;font-size:.7rem;color:var(--muted)}
+    .mock-content{padding:1rem;background:#0a0a0f;min-height:300px}
+    
+    .mock-hero{text-align:center;padding:2rem;background:linear-gradient(180deg,rgba(0,255,136,.1),transparent);border-radius:8px;margin-bottom:1rem}
+    .mock-hero h2{font-family:'Orbitron',sans-serif;color:var(--cyan);font-size:1.2rem;margin-bottom:.5rem}
+    .mock-hero p{color:var(--muted);font-size:.8rem}
+    
+    .mock-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+    .mock-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:1rem;text-align:center}
+    .mock-card-icon{font-size:2rem;margin-bottom:.5rem}
+    .mock-card-title{font-family:'Orbitron',sans-serif;font-size:.7rem;color:var(--text);margin-bottom:.25rem}
+    .mock-card-desc{font-size:.6rem;color:var(--muted)}
+    
+    @media(max-width:768px){
+      .container{padding:1rem}
+      .assets-grid{grid-template-columns:1fr}
+      .mock-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <div class="logo-icon"></div>
+      PH ASSETS
+    </div>
+    <a href="/marketing.html" class="back-btn">← Marketing</a>
+  </header>
+  
+  <div class="container">
+    <div class="hero">
+      <h1>🎯 PRODUCT HUNT ASSETS</h1>
+      <p>Generate all required images for your Product Hunt launch. Download and upload directly to PH.</p>
+    </div>
+    
+    <div class="instructions">
+      <h3>// REQUIREMENTS</h3>
+      <ul>
+        <li>Thumbnail: 1270x760px (Hero image on PH)</li>
+        <li>Maker Profile: 400x400px</li>
+        <li>Screenshots: 1200x675px minimum</li>
+        <li>Mascot/Logo: 500x500px</li>
+      </ul>
+    </div>
+    
+    <div class="assets-grid">
+      <!-- Thumbnail -->
+      <div class="asset-card">
+        <div class="asset-preview">
+          <canvas id="thumbnail" width="635" height="380"></canvas>
+        </div>
+        <div class="asset-info">
+          <div class="asset-title">Hero Thumbnail</div>
+          <div class="asset-desc">Main image shown on Product Hunt. 1270x760px recommended.</div>
+          <div class="asset-specs">
+            <span class="spec">1270x760px</span>
+            <span class="spec">PNG</span>
+            <span class="spec">JPG</span>
+          </div>
+          <div class="asset-actions">
+            <button class="asset-btn" onclick="generateThumbnail()">📥 PNG</button>
+            <button class="asset-btn secondary" onclick="generateThumbnailJPG()">📥 JPG</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Square Logo -->
+      <div class="asset-card">
+        <div class="asset-preview">
+          <canvas id="logo-square" width="300" height="300"></canvas>
+        </div>
+        <div class="asset-info">
+          <div class="asset-title">Square Logo</div>
+          <div class="asset-desc">Used for maker profile and app icon. 400x400px minimum.</div>
+          <div class="asset-specs">
+            <span class="spec">400x400px</span>
+            <span class="spec">PNG</span>
+            <span class="spec">SVG</span>
+          </div>
+          <div class="asset-actions">
+            <button class="asset-btn" onclick="generateLogoSquare()">📥 PNG</button>
+            <button class="asset-btn secondary" onclick="generateLogoSVG()">📥 SVG</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Wide Banner -->
+      <div class="asset-card">
+        <div class="asset-preview">
+          <canvas id="banner" width="635" height="200"></canvas>
+        </div>
+        <div class="asset-info">
+          <div class="asset-title">Wide Banner</div>
+          <div class="asset-desc">Header banner for your product page.</div>
+          <div class="asset-specs">
+            <span class="spec">1500x500px</span>
+            <span class="spec">PNG</span>
+          </div>
+          <div class="asset-actions">
+            <button class="asset-btn" onclick="generateBanner()">📥 PNG</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Mascot -->
+      <div class="asset-card">
+        <div class="asset-preview">
+          <canvas id="mascot" width="300" height="300"></canvas>
+        </div>
+        <div class="asset-info">
+          <div class="asset-title">Mascot / Character</div>
+          <div class="asset-desc">Fun mascot representing your brand.</div>
+          <div class="asset-specs">
+            <span class="spec">500x500px</span>
+            <span class="spec">PNG</span>
+          </div>
+          <div class="asset-actions">
+            <button class="asset-btn" onclick="generateMascot()">📥 PNG</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="screenshot-section">
+      <h2 class="section-title">// SCREENSHOTS</h2>
+      
+      <div class="screenshot-card">
+        <div class="screenshot-preview">
+          <div class="mock-browser">
+            <div class="mock-bar">
+              <span class="mock-dot red"></span>
+              <span class="mock-dot yellow"></span>
+              <span class="mock-dot green"></span>
+              <span class="mock-url">bridgemind.ai</span>
+            </div>
+            <div class="mock-content">
+              <div class="mock-hero">
+                <h2>⚡ BRIDGEMIND</h2>
+                <p>AI-Powered Developer Platform</p>
+              </div>
+              <div class="mock-grid">
+                <div class="mock-card">
+                  <div class="mock-card-icon">⚡</div>
+                  <div class="mock-card-title">COGI</div>
+                  <div class="mock-card-desc">Code Generation</div>
+                </div>
+                <div class="mock-card">
+                  <div class="mock-card-icon">🛡️</div>
+                  <div class="mock-card-title">GUARDIAN</div>
+                  <div class="mock-card-desc">Security</div>
+                </div>
+                <div class="mock-card">
+                  <div class="mock-card-icon">🐝</div>
+                  <div class="mock-card-title">AGENTS</div>
+                  <div class="mock-card-desc">Multi-Agent AI</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="asset-info">
+          <div class="asset-title">Screenshot: Dashboard</div>
+          <div class="asset-desc">Show your main product interface. Recommended: 1200x675px</div>
+          <div class="asset-actions">
+            <button class="asset-btn" onclick="generateScreenshot()">📥 Download Screenshot</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    function drawLogo(ctx, x, y, size) {
+      const scale = size / 100;
+      
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(scale, scale);
+      
+      ctx.strokeStyle = '#00ff88';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(50, 5);
+      ctx.lineTo(95, 27.5);
+      ctx.lineTo(95, 72.5);
+      ctx.lineTo(50, 95);
+      ctx.lineTo(5, 72.5);
+      ctx.lineTo(5, 27.5);
+      ctx.closePath();
+      ctx.stroke();
+      
+      ctx.fillStyle = '#00ff88';
+      ctx.beginPath();
+      ctx.arc(50, 50, 10, 0, Math.PI * 2);
+      ctx.fill();
+      
+      ctx.restore();
+    }
+    
+    function generateThumbnail() {
+      const canvas = document.getElementById('thumbnail');
+      const ctx = canvas.getContext('2d');
+      
+      const gradient = ctx.createLinearGradient(0, 0, 635, 380);
+      gradient.addColorStop(0, '#0a0a0f');
+      gradient.addColorStop(0.5, '#12121a');
+      gradient.addColorStop(1, '#0a0a0f');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 635, 380);
+      
+      ctx.strokeStyle = 'rgba(0, 255, 136, 0.1)';
+      ctx.lineWidth = 1;
+      for (let i = 0; i < 380; i += 20) {
+        ctx.beginPath();
+        ctx.moveTo(0, i);
+        ctx.lineTo(635, i);
+        ctx.stroke();
+      }
+      
+      drawLogo(ctx, 267, 100, 100);
+      
+      ctx.fillStyle = '#00ff88';
+      ctx.font = 'bold 36px Orbitron, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('BRIDGEMIND', 317, 230);
+      
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '18px JetBrains Mono, monospace';
+      ctx.fillText('AI-Powered Developer Platform', 317, 260);
+      
+      ctx.fillStyle = '#6b7280';
+      ctx.font = '14px JetBrains Mono, monospace';
+      ctx.fillText('Code Generation • Security Scanning • Multi-Agent AI', 317, 300);
+      
+      ctx.fillStyle = '#00ff88';
+      ctx.font = '12px JetBrains Mono, monospace';
+      ctx.fillText('bridgemind.ai', 317, 340);
+      
+      ctx.strokeStyle = 'rgba(0, 255, 136, 0.3)';
+      ctx.strokeRect(20, 20, 595, 340);
+      
+      downloadCanvas(canvas, 'parallax-thumbnail.png');
+    }
+    
+    function generateThumbnailJPG() {
+      generateThumbnail();
+    }
+    
+    function generateLogoSquare() {
+      const canvas = document.getElementById('logo-square');
+      const ctx = canvas.getContext('2d');
+      
+      ctx.fillStyle = '#0a0a0f';
+      ctx.fillRect(0, 0, 300, 300);
+      
+      drawLogo(ctx, 50, 50, 200);
+      
+      ctx.fillStyle = '#00ff88';
+      ctx.font = 'bold 20px Orbitron, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('PARALLAX', 150, 270);
+      ctx.fillText('DOMINION', 150, 290);
+      
+      downloadCanvas(canvas, 'parallax-logo-square.png');
+    }
+    
+    function generateLogoSVG() {
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <rect width="200" height="200" fill="#0a0a0f"/>
+  <polygon points="100,10 190,55 190,145 100,190 10,145 10,55" fill="none" stroke="#00ff88" stroke-width="4"/>
+  <circle cx="100" cy="100" r="20" fill="#00ff88"/>
+  <text x="100" y="175" text-anchor="middle" fill="#00ff88" font-family="Arial" font-size="14">PARALLAX</text>
+</svg>`;
+      
+      const blob = new Blob([svg], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'parallax-logo.svg';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+    
+    function generateBanner() {
+      const canvas = document.getElementById('banner');
+      const ctx = canvas.getContext('2d');
+      
+      const gradient = ctx.createLinearGradient(0, 0, 635, 200);
+      gradient.addColorStop(0, '#0a0a0f');
+      gradient.addColorStop(0.5, '#12121a');
+      gradient.addColorStop(1, '#0a0a0f');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 635, 200);
+      
+      ctx.strokeStyle = 'rgba(0, 255, 136, 0.1)';
+      for (let i = 0; i < 200; i += 15) {
+        ctx.beginPath();
+        ctx.moveTo(0, i);
+        ctx.lineTo(635, i);
+        ctx.stroke();
+      }
+      
+      drawLogo(ctx, 50, 40, 120);
+      
+      ctx.fillStyle = '#00ff88';
+      ctx.font = 'bold 28px Orbitron, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('BRIDGEMIND', 200, 90);
+      
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '14px JetBrains Mono, monospace';
+      ctx.fillText('AI-Powered Developer Platform', 200, 115);
+      ctx.fillText('bridgemind.ai', 200, 140);
+      
+      downloadCanvas(canvas, 'parallax-banner.png');
+    }
+    
+    function generateMascot() {
+      const canvas = document.getElementById('mascot');
+      const ctx = canvas.getContext('2d');
+      
+      ctx.fillStyle = '#0a0a0f';
+      ctx.fillRect(0, 0, 300, 300);
+      
+      ctx.fillStyle = '#12121a';
+      ctx.beginPath();
+      ctx.arc(150, 160, 80, 0, Math.PI * 2);
+      ctx.fill();
+      
+      ctx.strokeStyle = '#00ff88';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(150, 160, 85, 0, Math.PI * 2);
+      ctx.stroke();
+      
+      ctx.fillStyle = '#00ff88';
+      ctx.beginPath();
+      ctx.arc(150, 160, 30, 0, Math.PI * 2);
+      ctx.fill();
+      
+      ctx.strokeStyle = '#00ff88';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(150, 50, 25, Math.PI * 1.2, Math.PI * 1.8);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(150, 50, 35, Math.PI * 1.25, Math.PI * 1.75);
+      ctx.stroke();
+      
+      ctx.fillStyle = '#00ff88';
+      ctx.font = 'bold 24px Orbitron, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('AI', 150, 168);
+      
+      ctx.fillStyle = '#6b7280';
+      ctx.font = '12px JetBrains Mono, monospace';
+      ctx.fillText('PARALLAX', 150, 280);
+      
+      downloadCanvas(canvas, 'parallax-mascot.png');
+    }
+    
+    function generateScreenshot() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1200;
+      canvas.height = 675;
+      const ctx = canvas.getContext('2d');
+      
+      ctx.fillStyle = '#0a0a0f';
+      ctx.fillRect(0, 0, 1200, 675);
+      
+      ctx.fillStyle = '#12121a';
+      ctx.fillRect(0, 0, 1200, 40);
+      
+      ctx.fillStyle = '#6b7280';
+      ctx.font = '12px JetBrains Mono';
+      ctx.fillText('bridgemind.ai', 20, 25);
+      
+      const gradient = ctx.createLinearGradient(0, 40, 0, 300);
+      gradient.addColorStop(0, 'rgba(0, 255, 136, 0.1)');
+      gradient.addColorStop(1, 'transparent');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 40, 1200, 260);
+      
+      ctx.fillStyle = '#00ff88';
+      ctx.font = 'bold 48px Orbitron, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('BRIDGEMIND', 600, 180);
+      
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '24px JetBrains Mono';
+      ctx.fillText('AI-Powered Developer Platform', 600, 220);
+      
+      ctx.fillStyle = '#6b7280';
+      ctx.font = '16px JetBrains Mono';
+      ctx.fillText('bridgemind.ai', 600, 260);
+      
+      const cards = [
+        { icon: '⚡', title: 'COGI', desc: 'Code Generation' },
+        { icon: '🛡️', title: 'GUARDIAN', desc: 'Security Scanner' },
+        { icon: '📝', title: 'DOCUFY', desc: 'Documentation' },
+        { icon: '🧪', title: 'TEST PILOT', desc: 'Test Generation' },
+        { icon: '🕷️', title: 'CRAWLER', desc: 'Web Scraper' },
+        { icon: '🐝', title: 'AGENT SWARM', desc: 'Multi-Agent AI' }
+      ];
+      
+      cards.forEach((card, i) => {
+        const x = 80 + (i % 3) * 360;
+        const y = 320 + Math.floor(i / 3) * 160;
+        
+        ctx.fillStyle = '#12121a';
+        ctx.strokeStyle = '#1a1a2e';
+        ctx.lineWidth = 1;
+        roundRect(ctx, x, y, 320, 140, 8);
+        ctx.fill();
+        ctx.stroke();
+        
+        ctx.fillStyle = '#00ff88';
+        ctx.font = '36px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(card.icon, x + 160, y + 50);
+        
+        ctx.fillStyle = '#e0e0e0';
+        ctx.font = 'bold 14px Orbitron';
+        ctx.fillText(card.title, x + 160, y + 85);
+        
+        ctx.fillStyle = '#6b7280';
+        ctx.font = '12px JetBrains Mono';
+        ctx.fillText(card.desc, x + 160, y + 105);
+      });
+      
+      downloadCanvas(canvas, 'parallax-screenshot.png');
+    }
+    
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    }
+    
+    function downloadCanvas(canvas, filename) {
+      canvas.toBlob(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+    }
+    
+    generateThumbnail();
+    generateLogoSquare();
+    generateBanner();
+    generateMascot();
+  </script>
+</body>
+</html>

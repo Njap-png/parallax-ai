@@ -1,0 +1,21 @@
+{
+  "name": "BridgeMind",
+  "short_name": "BridgeMind",
+  "description": "Vibe coding platform - code editor, terminal, and more",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#030308",
+  "theme_color": "#00ff88",
+  "categories": ["developer", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><polygon points='50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5' fill='%23030308' stroke='%2300ff88' stroke-width='6'/><circle cx='50' cy='50' r='12' fill='%2300ff88'/></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "prefer_related_applications": false
+}

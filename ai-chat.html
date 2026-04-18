@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Chat | BRIDGEMIND</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --bg:#0a0a0f;--bg2:#0d0d14;--bg3:#141420;--card:#12121a;--border:#252535;
+      --cyan:#00ff88;--cyan2:#00ffff;--purple:#a855f7;--magenta:#ff00ff;
+      --text:#e0e0e0;--muted:#6b7280;--dim:#404050;--red:#ff5f57;--yellow:#febc2e;--green:#28c840;
+      --glow:0 0 10px rgba(0,255,136,0.4),0 0 20px rgba(0,255,136,0.2);
+    }
+    html,body{height:100%;overflow:hidden}
+    body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);display:flex;flex-direction:column}
+    body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,136,.015) 2px,rgba(0,255,136,.015) 4px);pointer-events:none;z-index:0}
+    
+    /* HEADER */
+    header{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.5rem;background:rgba(13,13,20,.98);border-bottom:1px solid rgba(0,255,136,.15);position:relative;z-index:100}
+    header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),var(--purple),transparent)}
+    .logo{display:flex;align-items:center;gap:.75rem}
+    .logo-icon{width:28px;height:28px;position:relative}
+    .logo-icon::before{content:'';position:absolute;inset:0;border:2px solid var(--cyan);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);animation:pulse 2s ease-in-out infinite}
+    .logo-icon::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:8px;height:8px;background:var(--cyan);border-radius:50%;box-shadow:0 0 10px var(--cyan)}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+    .logo-text{font-family:'Orbitron',sans-serif;font-size:.9rem;color:var(--cyan);letter-spacing:3px;text-shadow:var(--glow)}
+    
+    .model-badge{display:flex;align-items:center;gap:.5rem;padding:.5rem 1rem;background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.3);border-radius:6px;font-size:.8rem;color:var(--cyan);font-family:'Orbitron',sans-serif}
+    
+    .header-actions{display:flex;gap:.75rem;align-items:center}
+    .mobile-menu-btn{display:none;background:rgba(0,0,0,.5);border:1px solid var(--border);color:var(--text);padding:.4rem .6rem;border-radius:4px;cursor:pointer;font-size:1.2rem}
+    .mobile-menu-btn:hover{border-color:var(--cyan);color:var(--cyan);background:var(--cyan);color:var(--bg)}
+    .mobile-menu{position:fixed;top:0;right:0;width:300px;max-width:85vw;height:100vh;background:rgba(13,13,20,.98);border-left:1px solid var(--border);padding:70px 0 1rem;z-index:2147483647!important;transform:translateX(100%);transition:transform .3s ease-in-out;overflow-y:auto;box-shadow:-10px 0 30px rgba(0,0,0,.5);-webkit-overflow-scrolling:touch}
+    .mobile-menu.show{transform:translateX(0)}
+    .mobile-menu a{padding:1rem 1.5rem;color:var(--muted);text-decoration:none;font-size:1rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+    .mobile-menu a:hover{color:var(--cyan);background:rgba(0,255,136,.05)}
+    .mobile-menu-close{position:absolute;top:1rem;right:1rem;background:none;border:1px solid var(--border);color:var(--muted);padding:.5rem .75rem;border-radius:4px;cursor:pointer;font-size:1.2rem;z-index:99998}
+    .mobile-menu-close:hover{border-color:var(--cyan);color:var(--cyan)}
+    .btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:.5rem 1rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.8rem;transition:all .3s}
+    .btn:hover{border-color:var(--cyan);color:var(--cyan)}
+    .btn-primary{background:var(--cyan);border-color:var(--cyan);color:var(--bg);font-weight:600}
+    .btn-primary:hover{background:#00cc6a;box-shadow:0 0 20px rgba(0,255,136,.3)}
+    @media(max-width:900px){.model-badge{display:none!important}.mobile-menu-btn{display:flex!important;align-items:center;justify-content:center}}
+    .menu-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:2147483646!important;opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s}
+    .menu-overlay.show{opacity:1;visibility:visible}
+    
+    /* MAIN */
+    main{flex:1;display:flex;flex-direction:column;position:relative;z-index:1;min-height:0}
+    
+    /* MESSAGES */
+    .messages{flex:1;overflow-y:auto;padding:1.5rem;display:flex;flex-direction:column;gap:1.5rem}
+    .message{display:flex;gap:1rem;max-width:85%}
+    .message.user{align-self:flex-end;flex-direction:row-reverse}
+    .message.assistant{align-self:flex-start}
+    .avatar{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+    .message.user .avatar{background:linear-gradient(135deg,var(--cyan),var(--cyan2));color:var(--bg)}
+    .message.assistant .avatar{background:linear-gradient(135deg,var(--purple),var(--magenta));color:var(--bg)}
+    .message-content{flex:1;min-width:0}
+    .message-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem}
+    .message-name{font-family:'Orbitron',sans-serif;font-size:.75rem;letter-spacing:1px}
+    .message.user .message-name{color:var(--cyan)}
+    .message.assistant .message-name{color:var(--purple)}
+    .message-time{font-size:.65rem;color:var(--dim)}
+    
+    .message-text{background:rgba(18,18,26,.8);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;line-height:1.7;font-size:.9rem;white-space:pre-wrap;word-break:break-word}
+    .message.user .message-text{background:linear-gradient(135deg,rgba(0,255,136,.15),rgba(0,255,255,.1));border-color:rgba(0,255,136,.3)}
+    .message.assistant .message-text{background:rgba(18,18,26,.9)}
+    
+    .message-text code{background:rgba(0,0,0,.4);padding:.15rem .4rem;border-radius:4px;font-size:.85em}
+    .message-text pre{background:rgba(0,0,0,.6);padding:1rem;border-radius:8px;overflow-x:auto;margin:.75rem 0;position:relative}
+    .message-text pre code{background:none;padding:0}
+    
+    /* CODE BLOCK WITH COPY */
+    .code-block{position:relative;margin:.75rem 0}
+    .code-block pre{background:rgba(0,0,0,.6);border:1px solid var(--border);border-radius:8px;padding:1rem;padding-top:2.5rem;overflow-x:auto;font-size:.85rem;line-height:1.6}
+    .code-block code{font-family:'JetBrains Mono',monospace}
+    .code-lang{position:absolute;top:0;left:0;right:0;padding:.4rem .75rem;background:rgba(0,0,0,.4);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:.7rem;color:var(--dim);border-radius:8px 8px 0 0}
+    .code-lang-name{color:var(--cyan);font-family:'Orbitron',sans-serif;text-transform:uppercase}
+    .copy-btn{background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.3);color:var(--cyan);padding:.2rem .6rem;border-radius:4px;cursor:pointer;font-size:.65rem;font-family:'Orbitron',sans-serif;transition:all .2s}
+    .copy-btn:hover{background:var(--cyan);color:var(--bg)}
+    .copy-btn.copied{background:var(--green);border-color:var(--green);color:var(--bg)}
+    
+    .typing{color:var(--muted);font-style:italic}
+    .typing::after{content:'';animation:dots 1.5s infinite}
+    @keyframes dots{0%{content:'.'}33%{content:'..'}66%{content:'...'}}
+    
+    /* WELCOME */
+    .welcome{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem}
+    .welcome-icon{width:80px;height:80px;background:linear-gradient(135deg,rgba(0,255,136,.2),rgba(168,85,247,.2));border:2px solid rgba(0,255,136,.3);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin-bottom:2rem;animation:float 3s ease-in-out infinite}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+    .welcome h2{font-family:'Orbitron',sans-serif;font-size:1.5rem;letter-spacing:3px;margin-bottom:1rem;background:linear-gradient(90deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .welcome p{color:var(--muted);max-width:500px;line-height:1.8;margin-bottom:2rem}
+    .quick-prompts{display:flex;flex-wrap:wrap;gap:.75rem;justify-content:center;max-width:600px}
+    .quick-btn{background:rgba(18,18,26,.8);border:1px solid var(--border);border-radius:20px;padding:.6rem 1.25rem;color:var(--muted);font-family:inherit;font-size:.8rem;cursor:pointer;transition:all .3s}
+    .quick-btn:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,255,136,.05)}
+    
+    /* INPUT */
+    .input-area{padding:1rem 1.5rem 1.5rem;background:rgba(13,13,20,.95);border-top:1px solid var(--border)}
+    .input-container{display:flex;gap:.75rem;align-items:flex-end;max-width:900px;margin:0 auto}
+    .input-wrapper{flex:1;position:relative}
+    .input-field{width:100%;background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;color:var(--text);font-family:inherit;font-size:.95rem;resize:none;outline:none;min-height:52px;max-height:160px;line-height:1.6;transition:border-color .3s,box-shadow .3s}
+    .input-field:focus{border-color:var(--cyan);box-shadow:0 0 20px rgba(0,255,136,.1)}
+    .input-field::placeholder{color:var(--dim)}
+    .send-btn{width:52px;height:52px;background:linear-gradient(135deg,var(--cyan),var(--cyan2));border:none;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.25rem;transition:all .3s;flex-shrink:0}
+    .send-btn:hover{transform:scale(1.05);box-shadow:0 0 25px rgba(0,255,136,.4)}
+    .send-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+    .input-hint{font-size:.7rem;color:var(--dim);margin-top:.5rem;text-align:center}
+    .input-hint kbd{background:var(--bg3);border:1px solid var(--border);padding:.15rem .4rem;border-radius:3px;margin:0 .2rem}
+    
+    /* TOAST */
+    .toast{position:fixed;bottom:6rem;right:1.5rem;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:1rem 1.5rem;display:flex;align-items:center;gap:.75rem;z-index:1001;animation:slideIn .3s ease-out;box-shadow:0 4px 20px rgba(0,0,0,.4);opacity:0;transform:translateX(100%);transition:all .3s}
+    .toast.show{opacity:1;transform:translateX(0)}
+    .toast.error{border-left:3px solid var(--red)}
+    .toast.success{border-left:3px solid var(--green)}
+    @keyframes slideIn{from{opacity:0;transform:translateX(100%)}to{opacity:1;transform:translateX(0)}}
+    
+    @media(max-width:900px){
+      .model-badge{display:none}
+      .mobile-menu-btn{display:block}
+    }
+    @media(max-width:768px){
+      *{max-width:100vw;overflow-x:hidden}
+      header{padding:.5rem .75rem}
+      .logo{font-size:.75rem}
+      .logo-icon{width:24px;height:24px}
+      .logo-text{font-size:.75rem;letter-spacing:2px}
+      .btn{padding:.4rem .75rem;font-size:.75rem}
+      .header-actions{gap:.5rem}
+      .messages{padding:.75rem;gap:1rem}
+      .message{max-width:95%}
+      .message-text{padding:.75rem;font-size:.85rem}
+      .avatar{width:30px;height:30px;font-size:.9rem}
+      .message-name{font-size:.7rem}
+      .message-time{font-size:.6rem}
+      .quick-prompts{flex-direction:column;gap:.5rem}
+      .quick-btn{padding:.5rem 1rem;font-size:.75rem}
+      .welcome{padding:1rem}
+      .welcome-icon{width:60px;height:60px;font-size:2rem}
+      .welcome h2{font-size:1.25rem}
+      .welcome p{font-size:.85rem}
+      .input-area{padding:.75rem}
+      .input-field{padding:.75rem;font-size:.85rem}
+      .send-btn{width:44px;height:44px;font-size:1rem}
+      .input-hint{font-size:.6rem}
+      .external-ai{bottom:4rem;left:.5rem;gap:.25rem}
+      .ext-ai-btn{padding:.4rem .6rem;font-size:.65rem}
+      .ext-ai-btn span:last-child{display:none}
+      .toast{left:.5rem;right:.5rem;bottom:5rem;padding:.75rem}
+      body{font-size:.85rem}
+    }
+    @media(max-width:480px){
+      *{overflow-x:hidden}
+      .message{max-width:98%}
+      .message-text{font-size:.8rem;padding:.5rem}
+      .welcome h2{font-size:1rem}
+      .welcome p{font-size:.75rem}
+      .code-block pre{padding:.5rem;font-size:.75rem}
+      body{font-size:.8rem}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <div class="logo-icon"></div>
+      <span class="logo-text">PARALLAX AI</span>
+    </div>
+    
+    <div class="model-badge">
+      <span>⚡</span>
+      <span>Groq (Llama 3.3)</span>
+    </div>
+    
+    <div class="header-actions">
+      <button class="btn btn-primary" onclick="clearChat()">🗑️ New Chat</button>
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
+    </div>
+  </header>
+  
+  <div class="menu-overlay" id="menuOverlay" onclick="toggleMobileMenu()"></div>
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="mobile-menu-close" onclick="toggleMobileMenu()">✕</button>
+    <a href="/">Home</a>
+    <a href="/agent-swarm.html">Agent Swarm</a>
+    <a href="/ai-chat.html" style="color:var(--cyan)">AI Chat</a>
+    <a href="/terminal-pro.html">Terminal</a>
+    <a href="/sandbox.html">Sandbox</a>
+    <a href="/services.html">Services</a>
+    <a href="/pricing.html">Pricing</a>
+    <a href="/dashboard.html" id="mobileDashboard">Dashboard</a>
+    <a href="/login.html" id="mobileAuthLink" onclick="handleMobileAuth(event)">Sign In</a>
+  </div>
+  
+  <script>
+    function toggleMobileMenu(){
+      const menu = document.getElementById('mobileMenu');
+      const overlay = document.getElementById('menuOverlay');
+      menu.classList.toggle('show');
+      overlay.classList.toggle('show');
+      document.body.style.overflow = menu.classList.contains('show') ? 'hidden' : '';
+      updateMobileAuth();
+    }
+    
+    function updateMobileAuth() {
+      const isLoggedIn = localStorage.getItem('auth_token');
+      const mobileAuthLink = document.getElementById('mobileAuthLink');
+      
+      if (isLoggedIn) {
+        mobileAuthLink.innerHTML = 'Logout <span>→</span>';
+        mobileAuthLink.onclick = function(e) { e.preventDefault(); logout(); };
+      } else {
+        mobileAuthLink.innerHTML = 'Sign In <span>→</span>';
+        mobileAuthLink.onclick = function() { window.location.href = '/login.html'; };
+      }
+    }
+    
+    function handleMobileAuth(e) {
+      const isLoggedIn = localStorage.getItem('auth_token');
+      if (isLoggedIn) {
+        e.preventDefault();
+        logout();
+      }
+    }
+    
+    function logout() {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      window.location.href = '/login.html';
+    }
+  </script>
+  
+  <main>
+    <div class="messages" id="messages">
+      <div class="welcome" id="welcome">
+        <div class="welcome-icon">💬</div>
+        <h2>AI CHAT ASSISTANT</h2>
+        <p>Powered by Groq with Llama 3.3. Ask me anything about coding, debugging, or any technical question.</p>
+        <div class="quick-prompts">
+          <button class="quick-btn" onclick="insertPrompt('Help me write a REST API in Python with FastAPI')">REST API in Python</button>
+          <button class="quick-btn" onclick="insertPrompt('Explain async/await in JavaScript with examples')">Async/Await in JS</button>
+          <button class="quick-btn" onclick="insertPrompt('How do I implement JWT authentication?')">JWT Auth</button>
+          <button class="quick-btn" onclick="insertPrompt('Debug this code and explain the issue')">Debug Code</button>
+          <button class="quick-btn" onclick="insertPrompt('Write a React hook for data fetching')">React Hook</button>
+          <button class="quick-btn" onclick="insertPrompt('Create a Docker compose file for Node.js + PostgreSQL')">Docker Compose</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="input-area">
+      <div class="input-container">
+        <div class="input-wrapper">
+          <textarea 
+            class="input-field" 
+            id="inputField" 
+            placeholder="Ask me anything... (Shift+Enter for new line, Enter to send)"
+            rows="1"
+            onkeydown="handleKeyDown(event)"
+            oninput="resizeInput()"
+          ></textarea>
+        </div>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+      </div>
+      <div class="input-hint">
+        <kbd>Enter</kbd> to send • <kbd>Shift</kbd>+<kbd>Enter</kbd> for new line
+      </div>
+    </div>
+  </main>
+  
+  <div class="toast" id="toast" style="display:none">
+    <span id="toastIcon">✓</span>
+    <span id="toastText">Message saved</span>
+  </div>
+
+  <script>
+    const BASE_URL = 'https://bridgemind.ai';
+    let messages = [];
+    let isLoading = false;
+    
+    const systemPrompt = `You are BridgeMind AI, a helpful coding assistant powered by Groq. You help with:
+- Writing code in any language (Python, JavaScript, TypeScript, Rust, Go, Java, C++, etc.)
+- Debugging and explaining code
+- System architecture and design patterns
+- Security best practices
+- Writing tests and documentation
+- DevOps and deployment
+
+When providing code, ALWAYS use proper markdown code blocks with the language specified. Example:
+\`\`\`python
+print("Hello World")
+\`\`\`
+
+Be concise, helpful, and provide working code examples.`;
+
+    function handleKeyDown(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    }
+    
+    function resizeInput() {
+      const ta = document.getElementById('inputField');
+      ta.style.height = 'auto';
+      ta.style.height = Math.min(ta.scrollHeight, 160) + 'px';
+    }
+    
+    function insertPrompt(text) {
+      document.getElementById('inputField').value = text;
+      resizeInput();
+      sendMessage();
+    }
+    
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    function detectLanguage(code) {
+      const firstLine = code.trim().split('\n')[0].toLowerCase();
+      const patterns = {
+        'python': ['import ', 'def ', 'from ', 'print(', '__init__', 'self.'],
+        'javascript': ['const ', 'let ', 'function ', '=>', 'require(', 'module.exports', 'console.'],
+        'typescript': [': string', ': number', 'interface ', 'type ', '<T>'],
+        'rust': ['fn ', 'let mut', 'impl ', 'pub fn', 'use ', '::'],
+        'go': ['func ', 'package ', 'import (', 'fmt.', 'go '],
+        'java': ['public class', 'private ', 'public static void', 'System.out.', '@Override'],
+        'cpp': ['#include', 'std::', 'int main()', 'cout <<', 'cin >>'],
+        'bash': ['#!/bin/bash', 'echo ', 'if [', 'fi', 'export '],
+        'sql': ['SELECT ', 'FROM ', 'WHERE ', 'INSERT INTO', 'CREATE TABLE'],
+        'html': ['<!DOCTYPE', '<html', '<div', '<head>', '<body>'],
+        'css': ['{', '}', 'color:', 'margin:', 'padding:'],
+        'json': ['{', '}', '": "]
+      };
+      
+      for (const [lang, keywords] of Object.entries(patterns)) {
+        if (keywords.some(k => code.includes(k))) return lang;
+      }
+      return 'text';
+    }
+    
+    function formatMessage(content) {
+      const codeBlockRegex = /```(\w*)\n?([\s\S]*?)```/g;
+      let formatted = escapeHtml(content);
+      
+      formatted = formatted.replace(/```(\w*)\n?([\s\S]*?)```/g, (match, lang, code) => {
+        const language = lang || detectLanguage(code);
+        const cleanCode = code.trim();
+        return `<div class="code-block" data-code="${escapeHtml(cleanCode)}">
+          <div class="code-lang">
+            <span class="code-lang-name">${language}</span>
+            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+          </div>
+          <pre><code>${escapeHtml(cleanCode)}</code></pre>
+        </div>`;
+      });
+      
+      formatted = formatted.replace(/\n/g, '<br>');
+      return formatted;
+    }
+    
+    function copyCode(btn) {
+      const codeBlock = btn.closest('.code-block');
+      const code = codeBlock.dataset.code;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = 'COPIED!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'COPY';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+    
+    function addMessage(role, content) {
+      const messagesDiv = document.getElementById('messages');
+      const welcome = document.getElementById('welcome');
+      if (welcome) welcome.remove();
+      
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const name = role === 'user' ? 'YOU' : 'PARALLAX AI';
+      const icon = role === 'user' ? '👤' : '🤖';
+      const formattedContent = role === 'assistant' ? formatMessage(content) : escapeHtml(content);
+      
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `message ${role}`;
+      msgDiv.innerHTML = `
+        <div class="avatar">${icon}</div>
+        <div class="message-content">
+          <div class="message-header">
+            <span class="message-name">${name}</span>
+            <span class="message-time">${time}</span>
+          </div>
+          <div class="message-text">${formattedContent}</div>
+        </div>
+      `;
+      
+      messagesDiv.appendChild(msgDiv);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+    
+    function addTypingIndicator() {
+      const messagesDiv = document.getElementById('messages');
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'message assistant';
+      typingDiv.id = 'typing';
+      typingDiv.innerHTML = `
+        <div class="avatar">🤖</div>
+        <div class="message-content">
+          <div class="message-header">
+            <span class="message-name">PARALLAX AI</span>
+          </div>
+          <div class="message-text typing">Thinking</div>
+        </div>
+      `;
+      messagesDiv.appendChild(typingDiv);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+    
+    function removeTypingIndicator() {
+      const typing = document.getElementById('typing');
+      if (typing) typing.remove();
+    }
+    
+    async function sendMessage() {
+      const input = document.getElementById('inputField');
+      const content = input.value.trim();
+      
+      if (!content || isLoading) return;
+      
+      isLoading = true;
+      document.getElementById('sendBtn').disabled = true;
+      
+      messages.push({ role: 'user', content });
+      addMessage('user', content);
+      input.value = '';
+      input.style.height = 'auto';
+      
+      addTypingIndicator();
+      
+      try {
+        const response = await callGroq(messages);
+        removeTypingIndicator();
+        messages.push({ role: 'assistant', content: response });
+        addMessage('assistant', response);
+      } catch (err) {
+        removeTypingIndicator();
+        addMessage('assistant', 'Sorry, I encountered an error. Please try again.\n\nError: ' + err.message);
+        showToast(err.message, 'error');
+      }
+      
+      isLoading = false;
+      document.getElementById('sendBtn').disabled = false;
+    }
+    
+    async function callGroq(msgs) {
+      try {
+        const res = await fetch(BASE_URL + '/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages: [
+              { role: 'system', content: systemPrompt },
+              ...msgs
+            ]
+          })
+        });
+        
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || 'API request failed');
+        }
+        
+        const data = await res.json();
+        return data.response || data.content || data.message || 'No response';
+      } catch (err) {
+        throw err;
+      }
+    }
+    
+    function clearChat() {
+      messages = [];
+      const messagesDiv = document.getElementById('messages');
+      messagesDiv.innerHTML = `
+        <div class="welcome" id="welcome">
+          <div class="welcome-icon">💬</div>
+          <h2>AI CHAT ASSISTANT</h2>
+          <p>Powered by Groq with Llama 3.3. Ask me anything about coding!</p>
+          <div class="quick-prompts">
+            <button class="quick-btn" onclick="insertPrompt('Help me write a REST API in Python with FastAPI')">REST API in Python</button>
+            <button class="quick-btn" onclick="insertPrompt('Explain async/await in JavaScript with examples')">Async/Await in JS</button>
+            <button class="quick-btn" onclick="insertPrompt('How do I implement JWT authentication?')">JWT Auth</button>
+            <button class="quick-btn" onclick="insertPrompt('Debug this code and explain the issue')">Debug Code</button>
+          </div>
+        </div>
+      `;
+      showToast('Chat cleared', 'success');
+    }
+    
+    function showToast(text, type = 'success') {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastText').textContent = text;
+      document.getElementById('toastIcon').textContent = type === 'error' ? '✗' : '✓';
+      toast.className = `toast ${type} show`;
+      toast.style.display = 'flex';
+      
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3000);
+    }
+    
+    document.getElementById('inputField').focus();
+  </script>
+</body>
+</html>

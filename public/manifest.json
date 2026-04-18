@@ -1,0 +1,45 @@
+{
+  "name": "Parallax Dominion",
+  "short_name": "Parallax",
+  "description": "Futuristic Developer Platform - AI Services, APIs, and Developer Tools",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050508",
+  "theme_color": "#00ff88",
+  "orientation": "any",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["developer tools", "productivity", "business"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Services",
+      "short_name": "Services",
+      "description": "View AI services",
+      "url": "/services.html",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "View your usage",
+      "url": "/dashboard.html",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Pricing",
+      "short_name": "Pricing",
+      "description": "View subscription plans",
+      "url": "/pricing.html",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+    }
+  ],
+  "prefer_related_applications": false
+}

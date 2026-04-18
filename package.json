@@ -1,0 +1,9 @@
+{
+  "name": "parallax-dominion",
+  "version": "1.0.0",
+  "description": "Parallax Dominion - Futuristic Developer Platform",
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In | BRIDGEMIND</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#030308;--bg2:#0a0a15;--card:#12121a;--border:#1a1a2e;--cyan:#00ff88;--cyan2:#00ffff;--purple:#a855f7;--magenta:#ff00ff;--text:#e0e0e0;--muted:#6b7280;--dim:#374151}
+    html{scroll-behavior:smooth}
+    body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;overflow-x:hidden}
+    body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,136,.015) 2px,rgba(0,255,136,.015) 4px);pointer-events:none;z-index:9998}
+    body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 50% 30%,rgba(0,255,136,.08) 0%,transparent 50%);pointer-events:none;z-index:0}
+
+    .term-bar{position:fixed;top:0;left:0;right:0;background:rgba(10,10,21,.9);padding:.5rem 2rem;display:flex;align-items:center;gap:.75rem;font-size:.75rem;color:var(--dim);border-bottom:1px solid rgba(0,255,136,.1);z-index:100}
+    .dot{width:8px;height:8px;border-radius:50%;animation:dotPulse 2s ease-in-out infinite}
+    .dot:nth-child(1){background:#ff5f57;animation-delay:0s}
+    .dot:nth-child(2){background:#febc2e;animation-delay:.3s}
+    .dot:nth-child(3){background:#28c840;animation-delay:.6s}
+    @keyframes dotPulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+    .container{width:100%;max-width:480px;padding:2rem;position:relative;z-index:1;margin-top:60px}
+
+    .logo{display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:2rem;text-decoration:none}
+    .logo-icon{width:40px;height:40px;position:relative}
+    .logo-icon::before{content:'';position:absolute;inset:0;border:2px solid var(--cyan);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);animation:pulse 2s ease-in-out infinite;box-shadow:0 0 15px var(--cyan),inset 0 0 15px rgba(0,255,136,.3)}
+    .logo-icon::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:10px;height:10px;background:var(--cyan);border-radius:50%;box-shadow:0 0 10px var(--cyan),0 0 20px var(--cyan);animation:glow 1.5s ease-in-out infinite}
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(.98)}}
+    @keyframes glow{0%,100%{box-shadow:0 0 10px var(--cyan),0 0 20px var(--cyan)}50%{box-shadow:0 0 20px var(--cyan),0 0 40px var(--cyan)}}
+    .logo-text{font-family:'Orbitron',sans-serif;font-size:1.2rem;color:var(--cyan);letter-spacing:3px;text-shadow:0 0 20px var(--cyan)}
+
+    .card{background:linear-gradient(180deg,rgba(18,18,26,.95),rgba(10,10,21,.95));border:1px solid rgba(0,255,136,.2);border-radius:8px;padding:2.5rem;position:relative;overflow:hidden}
+    .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),transparent)}
+    .card::after{content:'';position:absolute;top:-2px;left:-2px;right:-2px;bottom:-2px;border-radius:10px;background:linear-gradient(45deg,var(--cyan),var(--purple),var(--magenta),var(--cyan));z-index:-1;opacity:.2;filter:blur(15px);animation:borderGlow 6s linear infinite}
+    @keyframes borderGlow{0%{filter:blur(15px) hue-rotate(0deg)}100%{filter:blur(15px) hue-rotate(360deg)}}
+
+    .card-title{font-family:'Orbitron',sans-serif;font-size:1.5rem;color:var(--text);text-align:center;margin-bottom:.5rem;letter-spacing:3px}
+    .card-sub{text-align:center;color:var(--muted);font-size:.85rem;margin-bottom:2rem}
+
+    .tabs{display:flex;margin-bottom:2rem;border-bottom:1px solid rgba(0,255,136,.2)}
+    .tab{flex:1;padding:1rem;text-align:center;font-size:.85rem;color:var(--muted);cursor:pointer;transition:all .3s;position:relative;font-family:'Orbitron',sans-serif;letter-spacing:1px}
+    .tab::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--cyan);transform:scaleX(0);transition:transform .3s}
+    .tab:hover{color:var(--text)}
+    .tab.active{color:var(--cyan);text-shadow:0 0 10px var(--cyan)}
+    .tab.active::after{transform:scaleX(1)}
+
+    .form-group{margin-bottom:1.5rem}
+    .form-group label{display:block;font-size:.75rem;color:var(--muted);margin-bottom:.5rem;font-family:'Orbitron',sans-serif;letter-spacing:2px;text-transform:uppercase}
+    .form-group input{width:100%;padding:1rem 1.25rem;background:rgba(0,0,0,.3);border:1px solid rgba(0,255,136,.2);border-radius:4px;color:var(--text);font-size:1rem;font-family:'JetBrains Mono',monospace;transition:all .3s}
+    .form-group input:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,255,136,.1),0 0 20px rgba(0,255,136,.1)}
+    .form-group input::placeholder{color:var(--dim)}
+
+    .btn{width:100%;padding:1rem;border-radius:4px;font-size:1rem;font-weight:600;cursor:pointer;transition:all .4s;font-family:'Orbitron',sans-serif;letter-spacing:2px;border:none;position:relative;overflow:hidden}
+    .btn-primary{background:linear-gradient(135deg,var(--cyan),#00cc6a);color:var(--bg);box-shadow:0 0 30px rgba(0,255,136,.3)}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 40px rgba(0,255,136,.5);text-shadow:0 0 20px var(--bg)}
+    .btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+    .btn-primary.loading{color:transparent}
+    .btn-primary.loading::after{content:'';position:absolute;top:50%;left:50%;width:20px;height:20px;margin:-10px 0 0 -10px;border:2px solid var(--bg);border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .alert{background:rgba(255,68,68,.1);border:1px solid rgba(255,68,68,.3);color:#ff6b6b;padding:1rem;border-radius:4px;font-size:.85rem;margin-bottom:1.5rem;display:none}
+    .alert.show{display:block}
+    .alert.success{background:rgba(0,255,136,.1);border-color:rgba(0,255,136,.3);color:var(--cyan)}
+
+    .divider{display:flex;align-items:center;margin:2rem 0;color:var(--dim);font-size:.75rem}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(0,255,136,.1)}
+    .divider span{padding:0 1rem}
+
+    .demo{text-align:center;font-size:.8rem;color:var(--muted);margin-top:1.5rem}
+    .demo a{color:var(--cyan);text-decoration:none}
+    .demo a:hover{text-decoration:underline}
+
+    .back-link{display:block;text-align:center;margin-top:2rem;color:var(--muted);text-decoration:none;font-size:.85rem;transition:color .3s}
+    .back-link:hover{color:var(--cyan)}
+
+    /* MOBILE MENU */
+    .mobile-menu-btn{display:none;background:none;border:1px solid rgba(0,255,136,.3);color:var(--muted);padding:.4rem .6rem;border-radius:4px;cursor:pointer;font-size:1.2rem;z-index:99998}
+    .mobile-menu-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+    .mobile-menu{position:fixed;top:0;right:0;width:300px;max-width:85vw;height:100vh;background:var(--card);border-left:1px solid rgba(0,255,136,.2);padding:70px 0 1rem;z-index:2147483647!important;transform:translateX(100%);transition:transform .3s ease-in-out;overflow-y:auto;box-shadow:-10px 0 30px rgba(0,0,0,.5);-webkit-overflow-scrolling:touch}
+    .mobile-menu.show{transform:translateX(0)}
+    .mobile-menu a{padding:1rem 1.5rem;color:var(--muted);text-decoration:none;font-size:1rem;border-bottom:1px solid rgba(0,255,136,.1);display:flex;justify-content:space-between;align-items:center}
+    .mobile-menu a:hover{color:var(--cyan);background:rgba(0,255,136,.05)}
+    .mobile-menu-close{position:absolute;top:1rem;right:1rem;background:none;border:1px solid rgba(0,255,136,.3);color:var(--muted);padding:.5rem .75rem;border-radius:4px;cursor:pointer;font-size:1.2rem}
+    .mobile-menu-close:hover{border-color:var(--cyan);color:var(--cyan)}
+    .menu-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:2147483646!important;opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s}
+    .menu-overlay.show{opacity:1;visibility:visible}
+    
+    @media(max-width:768px){
+      *{max-width:100vw;overflow-x:hidden}
+      .mobile-menu-btn{display:block}
+      .term-bar span:last-of-type{display:none}
+    }
+    @media(max-width:480px){
+      *{overflow-x:hidden}
+      .card{padding:1rem}
+      .container{padding:.5rem}
+      .card-title{font-size:1.25rem}
+      .form-group{margin-bottom:1rem}
+      .form-group input{padding:.75rem;font-size:.9rem}
+      .btn{padding:.75rem;font-size:.9rem}
+      body{font-size:.85rem}
+    }
+  </style>
+</head>
+<body>
+  <div class="term-bar">
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <span>PARALLAX_DOMINION // DEVELOPER_CONSOLE</span>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu" style="margin-left:auto">☰</button>
+  </div>
+  
+  <div class="menu-overlay" id="menuOverlay" onclick="toggleMobileMenu()"></div>
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="mobile-menu-close" onclick="toggleMobileMenu()">✕</button>
+    <a href="/">Home</a>
+    <a href="/services.html">Services</a>
+    <a href="/agent-swarm.html">Agent Swarm</a>
+    <a href="/ai-chat.html">AI Chat</a>
+    <a href="/terminal-pro.html">Terminal</a>
+    <a href="/sandbox.html">Sandbox</a>
+    <a href="/pricing.html">Pricing</a>
+    <a href="/dashboard.html" id="mobileDashboard">Dashboard</a>
+    <a href="/login.html" id="mobileAuthLink" style="color:var(--cyan)">Sign In</a>
+  </div>
+  
+  <script>
+    function toggleMobileMenu(){
+      const menu = document.getElementById('mobileMenu');
+      const overlay = document.getElementById('menuOverlay');
+      menu.classList.toggle('show');
+      overlay.classList.toggle('show');
+      document.body.style.overflow = menu.classList.contains('show') ? 'hidden' : '';
+      updateMobileAuth();
+    }
+    
+    function updateMobileAuth() {
+      const isLoggedIn = localStorage.getItem('auth_token');
+      const mobileAuthLink = document.getElementById('mobileAuthLink');
+      const mobileDashboard = document.getElementById('mobileDashboard');
+      
+      if (isLoggedIn) {
+        mobileAuthLink.innerHTML = 'Logout <span>→</span>';
+        mobileAuthLink.onclick = function(e) { e.preventDefault(); logout(); };
+        mobileDashboard.style.display = 'block';
+      } else {
+        mobileAuthLink.innerHTML = 'Sign In <span>→</span>';
+        mobileAuthLink.style.color = 'var(--cyan)';
+        mobileDashboard.style.display = 'none';
+      }
+    }
+    
+    function logout() {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      window.location.href = '/login.html';
+    }
+  </script>
+  
+  <div class="container">
+    <a href="/" class="logo">
+      <div class="logo-icon"></div>
+      <span class="logo-text">PARALLAX_DOMINION</span>
+    </a>
+
+    <div class="card">
+      <div class="card-title">// ACCESS_TERMINAL</div>
+      <div class="card-sub">Sign in to your developer account</div>
+
+      <div class="tabs">
+        <div class="tab active" data-tab="login">SIGN_IN</div>
+        <div class="tab" data-tab="signup">CREATE_ACCOUNT</div>
+      </div>
+
+      <div class="alert" id="error"></div>
+      <div class="alert success" id="success"></div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label>Email_Address</label>
+          <input type="email" id="loginEmail" placeholder="developer@domain.com" required>
+        </div>
+        <div class="form-group">
+          <label>Access_Password</label>
+          <input type="password" id="loginPassword" placeholder="Enter your password" required>
+        </div>
+        <button type="submit" class="btn btn-primary" id="loginBtn">AUTHENTICATE</button>
+      </form>
+
+      <form id="signupForm" style="display:none">
+        <div class="form-group">
+          <label>Developer_Name</label>
+          <input type="text" id="signupName" placeholder="Your name">
+        </div>
+        <div class="form-group">
+          <label>Email_Address</label>
+          <input type="email" id="signupEmail" placeholder="developer@domain.com" required>
+        </div>
+        <div class="form-group">
+          <label>New_Password</label>
+          <input type="password" id="signupPassword" placeholder="Create password (min 6 chars)" required minlength="6">
+        </div>
+        <button type="submit" class="btn btn-primary" id="signupBtn">INITIALIZE_ACCOUNT</button>
+      </form>
+
+      <a href="/" class="back-link">← Return to Home</a>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = '/api/auth';
+    const tabs = document.querySelectorAll('.tab');
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+    const errorEl = document.getElementById('error');
+    const successEl = document.getElementById('success');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        if (tab.dataset.tab === 'login') {
+          loginForm.style.display = 'block';
+          signupForm.style.display = 'none';
+        } else {
+          loginForm.style.display = 'none';
+          signupForm.style.display = 'block';
+        }
+        errorEl.classList.remove('show');
+        successEl.classList.remove('show');
+      });
+    });
+
+    function showError(msg) {
+      errorEl.textContent = msg;
+      errorEl.classList.add('show');
+      successEl.classList.remove('show');
+    }
+
+    function showSuccess(msg) {
+      successEl.textContent = msg;
+      successEl.classList.add('show');
+      errorEl.classList.remove('show');
+    }
+
+    function setLoading(btn, loading) {
+      if (loading) {
+        btn.disabled = true;
+        btn.classList.add('loading');
+      } else {
+        btn.disabled = false;
+        btn.classList.remove('loading');
+      }
+    }
+
+    function saveAuth(token, user) {
+      localStorage.setItem('auth_token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+    }
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('loginBtn');
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      setLoading(btn, true);
+      errorEl.classList.remove('show');
+
+      try {
+        const res = await fetch(`${API_BASE}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          showError(data.error || 'Authentication failed');
+          setLoading(btn, false);
+          return;
+        }
+
+        saveAuth(data.token, data.user);
+        showSuccess('Authentication successful. Redirecting...');
+        const redirect = new URLSearchParams(window.location.search).get('redirect') || '/dashboard.html';
+        setTimeout(() => window.location.href = redirect, 1000);
+      } catch (err) {
+        showError('Connection error. Please try again.');
+        setLoading(btn, false);
+      }
+    });
+
+    signupForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('signupBtn');
+      const name = document.getElementById('signupName').value;
+      const email = document.getElementById('signupEmail').value;
+      const password = document.getElementById('signupPassword').value;
+      setLoading(btn, true);
+      errorEl.classList.remove('show');
+
+      try {
+        const res = await fetch(`${API_BASE}/signup`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password, name })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          showError(data.error || 'Registration failed');
+          setLoading(btn, false);
+          return;
+        }
+
+        showSuccess('Account initialized. Please sign in.');
+        setTimeout(() => {
+          tabs[0].click();
+          document.getElementById('loginEmail').value = email;
+        }, 1500);
+        setLoading(btn, false);
+      } catch (err) {
+        showError('Connection error. Please try again.');
+        setLoading(btn, false);
+      }
+    });
+
+    if (localStorage.getItem('auth_token')) {
+      window.location.href = '/dashboard.html';
+    }
+  </script>
+</body>
+</html>

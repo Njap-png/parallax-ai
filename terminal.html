@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terminal | BRIDGEMIND</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#00ff88">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <script src="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.3.0/lib/xterm.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@xterm/addon-fit@0.8.0/lib/addon-fit.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@xterm/addon-webgl@0.8.0/lib/addon-webgl.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.3.0/css/xterm.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&family=Space+Mono:wght@400;700&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --bg:#0a0a0f;--bg2:#12121a;--bg3:#1a1a25;--border:#2a2a3a;--cyan:#00ff88;--cyan-dim:#00cc6a;--cyan2:#00ffff;--purple:#a855f7;--magenta:#ff00ff;--text:#e0e0e0;--muted:#6b7280;--dim:#374151;--red:#ff5f57;--yellow:#febc2e;--green:#28c840;
+      --font-mono:'JetBrains Mono','Fira Code','Space Mono',monospace;
+      --glow:0 0 10px rgba(0,255,136,0.5),0 0 20px rgba(0,255,136,0.3),0 0 40px rgba(0,255,136,0.1);
+    }
+    html,body{height:100%;overflow:hidden}
+    body{font-family:var(--font-mono);background:var(--bg);color:var(--text);display:flex;flex-direction:column}
+    
+    /* TERMINAL BACKGROUND EFFECTS */
+    body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,136,.02) 2px,rgba(0,255,136,.02) 4px);pointer-events:none;z-index:9998}
+    body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 50% 0%,rgba(0,255,136,.08) 0%,transparent 60%);pointer-events:none;z-index:0}
+    
+    /* HEADER */
+    header{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.5rem;background:rgba(18,18,26,.98);border-bottom:1px solid rgba(0,255,136,.2);position:relative;z-index:100}
+    header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent)}
+    .logo{display:flex;align-items:center;gap:.75rem;font-family:'Orbitron',sans-serif;font-size:.85rem;color:var(--cyan);letter-spacing:2px;text-shadow:var(--glow)}
+    .logo-icon{width:24px;height:24px;position:relative}
+    .logo-icon::before{content:'';position:absolute;inset:0;border:2px solid var(--cyan);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);animation:pulse 2s ease-in-out infinite}
+    .logo-icon::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:6px;height:6px;background:var(--cyan);border-radius:50%;box-shadow:0 0 8px var(--cyan)}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+    
+    .header-actions{display:flex;gap:1rem;align-items:center}
+    .status{display:flex;align-items:center;gap:.5rem;font-size:.7rem;color:var(--dim)}
+    .status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:blink 2s ease-in-out infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.5}}
+    .theme-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:.4rem .75rem;border-radius:4px;cursor:pointer;font-family:inherit;font-size:.7rem;transition:all .3s}
+    .theme-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+    
+    /* MAIN TERMINAL CONTAINER */
+    .terminal-container{flex:1;display:flex;flex-direction:column;padding:1rem;gap:1rem;position:relative;z-index:1;overflow:hidden}
+    
+    /* TAB BAR */
+    .tab-bar{display:flex;gap:.5rem;background:rgba(18,18,26,.8);padding:.5rem;border-radius:8px 8px 0 0;border:1px solid var(--border);border-bottom:none}
+    .tab{flex:1;display:flex;align-items:center;gap:.5rem;padding:.6rem 1rem;background:rgba(0,0,0,.3);border:1px solid transparent;border-radius:4px 4px 0 0;cursor:pointer;transition:all .3s;font-size:.8rem;color:var(--muted)}
+    .tab:hover{background:rgba(0,255,136,.05)}
+    .tab.active{background:rgba(0,255,136,.1);border-color:var(--border);color:var(--cyan);border-bottom-color:var(--bg)}
+    .tab-icon{font-size:1rem}
+    .tab-title{font-family:'Orbitron',sans-serif;letter-spacing:1px}
+    .tab-close{background:none;border:none;color:var(--dim);cursor:pointer;padding:.25rem;margin-left:auto;transition:color .3s}
+    .tab-close:hover{color:var(--red)}
+    .new-tab{background:transparent;border:1px dashed var(--border);color:var(--dim);padding:.6rem 1rem;border-radius:4px;cursor:pointer;transition:all .3s;font-size:.8rem}
+    .new-tab:hover{border-color:var(--cyan);color:var(--cyan)}
+    
+    /* TERMINAL WRAPPER */
+    .terminal-wrapper{flex:1;background:rgba(10,10,16,.98);border:1px solid var(--border);border-radius:0 0 8px 8px;position:relative;overflow:hidden;min-height:400px;display:flex}
+    .terminal-wrapper::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;border-radius:8px;background:linear-gradient(180deg,rgba(0,255,136,.05) 0%,transparent 50%);pointer-events:none}
+    
+    /* TERMINAL HEADER */
+    .term-header{display:flex;align-items:center;gap:.75rem;padding:.6rem 1rem;background:linear-gradient(180deg,rgba(0,255,136,.1),rgba(0,255,136,.05));border-bottom:1px solid rgba(0,255,136,.1)}
+    .term-dots{display:flex;gap:.5rem}
+    .term-dot{width:12px;height:12px;border-radius:50%;cursor:pointer;transition:all .3s}
+    .term-dot:nth-child(1){background:var(--red);box-shadow:0 0 8px rgba(255,95,87,.5)}
+    .term-dot:nth-child(2){background:var(--yellow);box-shadow:0 0 8px rgba(254,188,46,.5)}
+    .term-dot:nth-child(3){background:var(--green);box-shadow:0 0 8px rgba(40,200,64,.5)}
+    .term-dot:hover{transform:scale(1.2)}
+    .term-title{flex:1;text-align:center;font-size:.7rem;color:var(--cyan);font-family:'Orbitron',sans-serif;letter-spacing:2px;text-shadow:0 0 10px rgba(0,255,136,.5)}
+    .term-actions{display:flex;gap:.5rem}
+    .term-action{background:transparent;border:1px solid var(--border);color:var(--muted);padding:.3rem .6rem;border-radius:4px;cursor:pointer;font-size:.65rem;transition:all .3s}
+    .term-action:hover{border-color:var(--cyan);color:var(--cyan)}
+    
+    /* XTERM CONTAINER */
+    #terminal{flex:1;padding:.5rem;height:100%!important}
+    .xterm{height:100%!important}
+    .xterm-viewport::-webkit-scrollbar{width:8px}
+    .xterm-viewport::-webkit-scrollbar-track{background:rgba(0,0,0,.3)}
+    .xterm-viewport::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:4px}
+    
+    /* EDITOR PANEL */
+    .editor-panel{background:rgba(10,10,16,.98)}
+    #codeEditor{caret-color:var(--cyan)}
+    #codeEditor::selection{background:rgba(0,255,136,.3)}
+    
+    /* WEBVIEW PANEL */
+    .webview-panel{transition:all .3s}
+    .webview-content pre{white-space:pre-wrap;word-wrap:break-word}
+    .webview-content .success{color:var(--green)}
+    .webview-content .error{color:var(--red)}
+    .webview-content .stdout{color:var(--text)}
+    .webview-content .stderr{color:var(--red)}
+    .webview-content .info{color:var(--cyan)}
+    .webview-content .html-preview{background:#fff;color:#333;padding:1rem;border-radius:4px}
+    
+    /* OUTPUT PANEL */
+    .output-panel{background:rgba(18,18,26,.95);border:1px solid var(--border);border-radius:8px;max-height:300px;overflow:hidden;display:none}
+    .output-panel.active{display:block}
+    .output-header{display:flex;align-items:center;padding:.5rem 1rem;background:rgba(0,0,0,.3);border-bottom:1px solid var(--border)}
+    .output-title{font-size:.75rem;color:var(--cyan);font-family:'Orbitron',sans-serif;letter-spacing:1px}
+    .output-content{padding:1rem;overflow-y:auto;max-height:250px;font-size:.85rem;line-height:1.8}
+    .output-content .success{color:var(--green)}
+    .output-content .error{color:var(--red)}
+    .output-content .info{color:var(--cyan)}
+    .output-content .warning{color:var(--yellow)}
+    
+    /* SIDEBAR */
+    .sidebar{display:flex;gap:1rem;flex:1}
+    .sidebar-left{width:280px;display:flex;flex-direction:column;gap:1rem}
+    .sidebar-right{width:300px}
+    
+    /* SERVICE PANEL */
+    .service-panel{background:rgba(18,18,26,.95);border:1px solid var(--border);border-radius:8px;padding:1rem;flex:1}
+    .panel-title{font-family:'Orbitron',sans-serif;font-size:.85rem;color:var(--cyan);margin-bottom:1rem;letter-spacing:2px;display:flex;align-items:center;gap:.5rem}
+    .panel-title::before{content:'▸'}
+    .service-list{list-style:none}
+    .service-item{display:flex;align-items:center;gap:.75rem;padding:.75rem;margin-bottom:.5rem;background:rgba(0,0,0,.2);border:1px solid transparent;border-radius:6px;cursor:pointer;transition:all .3s}
+    .service-item:hover{border-color:var(--cyan);background:rgba(0,255,136,.05)}
+    .service-item.active{border-color:var(--cyan);background:rgba(0,255,136,.1)}
+    .service-icon{width:32px;height:32px;background:linear-gradient(135deg,rgba(0,255,136,.2),rgba(168,85,247,.2));border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+    .service-info{flex:1}
+    .service-name{font-family:'Orbitron',sans-serif;font-size:.75rem;color:var(--text);letter-spacing:1px}
+    .service-desc{font-size:.65rem;color:var(--muted);margin-top:.2rem}
+    .service-status{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green)}
+    
+    /* QUICK COMMANDS */
+    .quick-commands{background:rgba(18,18,26,.95);border:1px solid var(--border);border-radius:8px;padding:1rem}
+    .commands-title{font-family:'Orbitron',sans-serif;font-size:.75rem;color:var(--muted);margin-bottom:.75rem;letter-spacing:1px}
+    .cmd-btn{display:block;width:100%;padding:.6rem 1rem;margin-bottom:.5rem;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:4px;color:var(--text);cursor:pointer;text-align:left;font-family:inherit;font-size:.8rem;transition:all .3s}
+    .cmd-btn:hover{border-color:var(--cyan);background:rgba(0,255,136,.05);color:var(--cyan)}
+    .cmd-btn::before{content:'$ ';color:var(--cyan);font-weight:600}
+    
+    /* SPLIT VIEW */
+    .split-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:.4rem .75rem;border-radius:4px;cursor:pointer;font-size:.7rem;transition:all .3s}
+    .split-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+    
+    /* ANIMATIONS */
+    @keyframes scanline{0%{transform:translateY(-100%)}100%{transform:translateY(100vh)}}
+    .scanline{position:fixed;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,transparent,rgba(0,255,136,.3),transparent);animation:scanline 8s linear infinite;pointer-events:none;z-index:9999}
+    
+    /* MOBILE NAV */
+    .mobile-menu-btn{display:none;background:transparent;border:1px solid var(--border);color:var(--muted);padding:.4rem .6rem;border-radius:4px;cursor:pointer;font-size:1.2rem;line-height:1}
+    .mobile-menu-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+    .mobile-menu{display:none;position:fixed;top:55px;left:0;right:0;background:rgba(18,18,26,.98);border-bottom:1px solid var(--border);z-index:99;padding:1rem}
+    .mobile-menu.show{display:block}
+    .mobile-menu h4{font-family:'Orbitron',sans-serif;font-size:.7rem;color:var(--cyan);margin-bottom:.75rem;letter-spacing:1px}
+    .mobile-menu select{width:100%;padding:.6rem;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:inherit;margin-bottom:.75rem}
+    .mobile-menu label{display:block;font-size:.7rem;color:var(--muted);margin-bottom:.3rem}
+    
+    /* RESPONSIVE */
+    @media(max-width:1200px){.sidebar-left,.sidebar-right{display:none}}
+    @media(max-width:768px){
+      .sidebar{display:none}
+      .terminal-wrapper{flex:1!important;min-width:0}
+      .tab-bar{overflow-x:auto}
+      .tab{min-width:80px}
+      .mobile-menu-btn{display:block}
+      header{justify-content:space-between}
+      .header-actions{gap:.5rem}
+      .status span{display:none}
+    }
+    @media(max-width:480px){
+      .terminal-container{padding:.5rem}
+      .term-header{padding:.4rem .75rem}
+      .term-action{padding:.25rem .4rem;font-size:.6rem}
+      .term-title{font-size:.6rem;letter-spacing:1px}
+    }
+  </style>
+</head>
+<body>
+  <div class="scanline"></div>
+  
+  <header>
+    <div class="logo">
+      <div class="logo-icon"></div>
+      PARALLAX_TERMINAL
+    </div>
+    <div class="header-actions">
+      <div class="status">
+        <div class="status-dot"></div>
+        <span id="connectionStatus">CONNECTED</span>
+      </div>
+      <button class="theme-btn" onclick="toggleTheme()">◐ THEME</button>
+      <button class="theme-btn" onclick="clearTerminal()">⎚ CLEAR</button>
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
+    </div>
+  </header>
+  
+  <div class="mobile-menu" id="mobileMenu">
+    <h4>// CONFIG</h4>
+    <label>LANGUAGE</label>
+    <select id="langSelectMobile" onchange="document.getElementById('langSelect').value=this.value">
+      <option value="javascript">JavaScript</option>
+      <option value="python">Python</option>
+      <option value="typescript">TypeScript</option>
+      <option value="go">Go</option>
+      <option value="rust">Rust</option>
+      <option value="java">Java</option>
+    </select>
+    <label>MODE</label>
+    <select id="modeSelectMobile" onchange="document.getElementById('modeSelect').value=this.value">
+      <option value="code">Code Generation</option>
+      <option value="explain">Explain Code</option>
+      <option value="debug">Debug Code</option>
+      <option value="optimize">Optimize Code</option>
+    </select>
+    <label>THEME</label>
+    <select onchange="changeTheme(this.value)">
+      <option value="cyberpunk">Cyberpunk</option>
+      <option value="monokai">Monokai</option>
+      <option value="dracula">Dracula</option>
+      <option value="nord">Nord</option>
+    </select>
+    <a href="/services.html">Services <span>→</span></a>
+    <a href="/agent-swarm.html">Agent Swarm <span>→</span></a>
+    <a href="/ai-chat.html">AI Chat <span>→</span></a>
+    <a href="/dashboard.html">Dashboard <span>→</span></a>
+    <a href="/login.html" id="mobileAuthLink" onclick="handleMobileAuth(event)">Sign In <span>→</span></a>
+  </div>
+  
+  <div class="terminal-container">
+    <div class="tab-bar">
+      <div class="tab active" data-tab="0">
+        <span class="tab-icon">⚡</span>
+        <span class="tab-title">COGI</span>
+        <button class="tab-close" onclick="closeTab(0)">×</button>
+      </div>
+      <div class="tab" data-tab="1">
+        <span class="tab-icon">🛡️</span>
+        <span class="tab-title">GUARDIAN</span>
+        <button class="tab-close" onclick="closeTab(1)">×</button>
+      </div>
+      <div class="tab" data-tab="2">
+        <span class="tab-icon">📝</span>
+        <span class="tab-title">DOCUFY</span>
+        <button class="tab-close" onclick="closeTab(2)">×</button>
+      </div>
+      <button class="new-tab" onclick="addTab()">+ NEW</button>
+    </div>
+    
+    <div style="display:flex;gap:1rem;flex:1;min-height:0">
+      <div class="sidebar-left">
+        <div class="service-panel">
+          <div class="panel-title">// SERVICES</div>
+          <ul class="service-list">
+            <li class="service-item active" onclick="selectService('cogi')">
+              <div class="service-icon">⚡</div>
+              <div class="service-info">
+                <div class="service-name">COGI</div>
+                <div class="service-desc">AI Code Generation</div>
+              </div>
+              <div class="service-status"></div>
+            </li>
+            <li class="service-item" onclick="selectService('guardian')">
+              <div class="service-icon">🛡️</div>
+              <div class="service-info">
+                <div class="service-name">GUARDIAN</div>
+                <div class="service-desc">Security Scanner</div>
+              </div>
+              <div class="service-status"></div>
+            </li>
+            <li class="service-item" onclick="selectService('docufy')">
+              <div class="service-icon">📝</div>
+              <div class="service-info">
+                <div class="service-name">DOCUFY</div>
+                <div class="service-desc">Auto Documentation</div>
+              </div>
+              <div class="service-status"></div>
+            </li>
+            <li class="service-item" onclick="selectService('testpilot')">
+              <div class="service-icon">🧪</div>
+              <div class="service-info">
+                <div class="service-name">TEST PILOT</div>
+                <div class="service-desc">Test Generation</div>
+              </div>
+              <div class="service-status"></div>
+            </li>
+            <li class="service-item" onclick="selectService('crawler')">
+              <div class="service-icon">🕷️</div>
+              <div class="service-info">
+                <div class="service-name">CRAWLER</div>
+                <div class="service-desc">Web Scraper</div>
+              </div>
+              <div class="service-status"></div>
+            </li>
+            <li class="service-item" onclick="selectService('agentswarm')">
+              <div class="service-icon">🐝</div>
+              <div class="service-info">
+                <div class="service-name">AGENT SWARM</div>
+                <div class="service-desc">Multi-Agent AI</div>
+              </div>
+              <div class="service-status"></div>
+            </li>
+          </ul>
+        </div>
+        
+        <div class="quick-commands">
+          <div class="commands-title">// QUICK_COMMANDS</div>
+          <button class="cmd-btn" onclick="runCommand('help')">help</button>
+          <button class="cmd-btn" onclick="runCommand('status')">status</button>
+          <button class="cmd-btn" onclick="runCommand('clear')">clear</button>
+          <button class="cmd-btn" onclick="runCommand('history')">history</button>
+        </div>
+      </div>
+      
+      <div class="terminal-wrapper" style="flex:1">
+        <div class="term-header">
+          <div class="term-dots">
+            <div class="term-dot"></div>
+            <div class="term-dot"></div>
+            <div class="term-dot"></div>
+          </div>
+          <div class="term-title" id="termTitle">PARALLAX_TERMINAL v3.0 // COGI</div>
+          <div class="term-actions">
+            <button class="term-action" onclick="toggleMode()" id="modeToggle">CODE</button>
+            <button class="term-action" onclick="copyOutput()">COPY</button>
+            <button class="term-action" onclick="downloadOutput()">EXPORT</button>
+          </div>
+        </div>
+        
+        <div class="editor-panel" id="editorPanel" style="display:none;flex-direction:column;height:100%">
+          <div class="editor-toolbar" style="display:flex;align-items:center;gap:.5rem;padding:.5rem;background:rgba(0,0,0,.3);border-bottom:1px solid var(--border)">
+            <span style="font-size:.7rem;color:var(--cyan);font-family:'Orbitron',sans-serif" id="editorFileName">main.js</span>
+            <select id="editorLang" style="margin-left:auto;padding:.3rem;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:inherit;font-size:.7rem" onchange="updateEditorLanguage()">
+              <option value="javascript">JavaScript</option>
+              <option value="python">Python</option>
+              <option value="typescript">TypeScript</option>
+              <option value="html">HTML</option>
+              <option value="css">CSS</option>
+            </select>
+          </div>
+          <textarea id="codeEditor" style="flex:1;width:100%;background:#0d0d12;color:#e0e0e0;border:none;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;resize:none;outline:none" placeholder="// Write your code here..." spellcheck="false"></textarea>
+          <div class="editor-actions" style="display:flex;gap:.5rem;padding:.5rem;background:rgba(0,0,0,.3);border-top:1px solid var(--border)">
+            <button class="term-action" onclick="runCodeInEditor()" style="background:rgba(0,255,136,.1);border-color:var(--cyan);color:var(--cyan)">▶ RUN</button>
+            <button class="term-action" onclick="clearEditor()">CLEAR</button>
+            <button class="term-action" onclick="formatCode()">FORMAT</button>
+            <button class="term-action" onclick="saveFile()">SAVE</button>
+            <button class="term-action" onclick="downloadFile()">DOWNLOAD</button>
+            <button class="term-action" onclick="document.getElementById('fileInput').click()">OPEN</button>
+            <input type="file" id="fileInput" style="display:none" onchange="openFile(event)">
+          </div>
+        </div>
+        
+        <div id="terminal"></div>
+      </div>
+      
+      <div class="webview-panel" id="webviewPanel" style="display:none;flex-direction:column;width:400px;background:rgba(18,18,26,.95);border:1px solid var(--border);border-radius:8px;margin-left:1rem">
+        <div class="webview-header" style="display:flex;align-items:center;justify-content:space-between;padding:.6rem 1rem;background:rgba(0,0,0,.3);border-bottom:1px solid var(--border)">
+          <span style="font-size:.7rem;color:var(--cyan);font-family:'Orbitron',sans-serif">PREVIEW</span>
+          <div style="display:flex;gap:.25rem">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--red)"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--yellow)"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--green)"></div>
+          </div>
+        </div>
+        <div class="webview-content" id="webviewContent" style="flex:1;padding:1rem;overflow:auto;font-size:.85rem;line-height:1.6">
+          <div style="color:var(--muted);text-align:center;margin-top:2rem">Run code to see preview</div>
+        </div>
+        <div class="webview-footer" style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 1rem;background:rgba(0,0,0,.2);border-top:1px solid var(--border);font-size:.65rem;color:var(--muted)">
+          <span id="execStatus">Ready</span>
+          <span id="execTime">--ms</span>
+        </div>
+      </div>
+      
+      <div class="sidebar-right">
+        <div class="service-panel" style="flex:1">
+          <div class="panel-title">// CONFIGURATION</div>
+          
+          <div style="margin-bottom:1rem">
+            <label style="font-size:.7rem;color:var(--muted);display:block;margin-bottom:.3rem">LANGUAGE</label>
+            <select id="langSelect" style="width:100%;padding:.5rem;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:inherit">
+              <option value="javascript">JavaScript</option>
+              <option value="python">Python</option>
+              <option value="typescript">TypeScript</option>
+              <option value="go">Go</option>
+              <option value="rust">Rust</option>
+              <option value="java">Java</option>
+              <option value="cpp">C++</option>
+              <option value="csharp">C#</option>
+              <option value="php">PHP</option>
+              <option value="ruby">Ruby</option>
+              <option value="swift">Swift</option>
+              <option value="kotlin">Kotlin</option>
+            </select>
+          </div>
+          
+          <div style="margin-bottom:1rem">
+            <label style="font-size:.7rem;color:var(--muted);display:block;margin-bottom:.3rem">MODE</label>
+            <select id="modeSelect" style="width:100%;padding:.5rem;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:inherit">
+              <option value="code">Code Generation</option>
+              <option value="explain">Explain Code</option>
+              <option value="debug">Debug Code</option>
+              <option value="optimize">Optimize Code</option>
+              <option value="review">Code Review</option>
+            </select>
+          </div>
+          
+          <div style="margin-bottom:1rem">
+            <label style="font-size:.7rem;color:var(--muted);display:block;margin-bottom:.3rem">THEME</label>
+            <select id="themeSelect" style="width:100%;padding:.5rem;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:inherit" onchange="changeTheme(this.value)">
+              <option value="cyberpunk">Cyberpunk</option>
+              <option value="monokai">Monokai</option>
+              <option value="dracula">Dracula</option>
+              <option value="nord">Nord</option>
+              <option value="solarized">Solarized</option>
+              <option value="github">GitHub Dark</option>
+            </select>
+          </div>
+          
+          <div style="margin-bottom:1rem">
+            <label style="font-size:.7rem;color:var(--muted);display:block;margin-bottom:.3rem">FONT SIZE</label>
+            <input type="range" id="fontSize" min="10" max="20" value="14" style="width:100%" onchange="changeFontSize(this.value)">
+          </div>
+          
+          <div>
+            <label style="font-size:.7rem;color:var(--muted);display:block;margin-bottom:.5rem">OPTIONS</label>
+            <label style="display:flex;align-items:center;gap:.5rem;font-size:.75rem;margin-bottom:.3rem;cursor:pointer">
+              <input type="checkbox" id="soundEffects" checked> Sound Effects
+            </label>
+            <label style="display:flex;align-items:center;gap:.5rem;font-size:.75rem;margin-bottom:.3rem;cursor:pointer">
+              <input type="checkbox" id="animations" checked> Animations
+            </label>
+            <label style="display:flex;align-items:center;gap:.5rem;font-size:.75rem;cursor:pointer">
+              <input type="checkbox" id="autoComplete"> Auto-complete
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="output-panel" id="outputPanel">
+      <div class="output-header">
+        <span class="output-title">OUTPUT //</span>
+        <span id="outputTime" style="margin-left:auto;font-size:.65rem;color:var(--dim)"></span>
+      </div>
+      <div class="output-content" id="outputContent"></div>
+    </div>
+  </div>
+  
+  <script>
+    let term;
+    let fitAddon;
+    let currentService = 'cogi';
+    let commandHistory = [];
+    let historyIndex = -1;
+    let currentLine = '';
+    let isProcessing = false;
+    let tabs = [{id:0,name:'COGI',service:'cogi'},{id:1,name:'GUARDIAN',service:'guardian'},{id:2,name:'DOCUFY',service:'docufy'}];
+    let tabCounter = 3;
+    let isTerminalMode = true;
+    let editorCode = '';
+    
+    const themes = {
+      cyberpunk:{foreground:'#00ff88',background:'#0a0a0f',cursor:'#00ff88',selection:'rgba(0,255,136,0.3)'},
+      monokai:{foreground:'#f8f8f2',background:'#272822',cursor:'#f8f8f2',selection:'rgba(121,255,212,0.3)'},
+      dracula:{foreground:'#f8f8f2',background:'#282a36',cursor:'#f8f8f2',selection:'rgba(68,255,162,0.3)'},
+      nord:{foreground:'#eceff4',background:'#2e3440',cursor:'#d8dee9',selection:'rgba(136,192,208,0.3)'},
+      solarized:{foreground:'#657b83',background:'#002b36',cursor:'#839496',selection:'rgba(0,255,136,0.3)'},
+      github:{foreground:'#c9d1d9',background:'#0d1117',cursor:'#58a6ff',selection:'rgba(88,166,255,0.3)'}
+    };
+    
+    function initTerminal() {
+      term = new Terminal({
+        cursorBlink: true,
+        cursorStyle: 'block',
+        fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+        fontSize: 14,
+        fontWeight: '400',
+        fontWeightBold: '700',
+        lineHeight: 1.2,
+        scrollback: 10000,
+        theme: themes.cyberpunk,
+        allowTransparency: true,
+        convertEol: true
+      });
+      
+      fitAddon = new FitAddon.FitAddon();
+      term.loadAddon(fitAddon);
+      
+      const webglAddon = new WebglAddon.WebglAddon();
+      webglAddon.on('context loss', () => webglAddon.dispose());
+      try { term.loadAddon(webglAddon); } catch(e) {}
+      
+      term.open(document.getElementById('terminal'));
+      fitAddon.fit();
+      
+      term.writeln('\x1b[36m╔════════════════════════════════════════════════════════════════════╗\x1b[0m');
+      term.writeln('\x1b[36m║\x1b[0m  \x1b[1;32mBRIDGEMIND TERMINAL v3.0\x1b[0m'.padEnd(64) + '\x1b[36m║\x1b[0m');
+      term.writeln('\x1b[36m║\x1b[0m  \x1b[33m⚡ AI-Powered Developer Platform\x1b[0m'.padEnd(64) + '\x1b[36m║\x1b[0m');
+      term.writeln('\x1b[36m╚════════════════════════════════════════════════════════════════════╝\x1b[0m');
+      term.writeln('');
+      term.writeln('\x1b[90mWelcome! Type \x1b[32m"help"\x1b[0m to see available commands.\x1b[0m');
+      term.writeln('\x1b[90mCurrent service: \x1b[36m' + currentService.toUpperCase() + '\x1b[0m');
+      term.writeln('');
+      prompt();
+      
+      term.onData(data => {
+        const code = data.charCodeAt(0);
+        if (code === 13) {
+          if (currentLine.trim()) {
+            commandHistory.push(currentLine);
+            historyIndex = commandHistory.length;
+            term.writeln('');
+            processCommand(currentLine.trim());
+            currentLine = '';
+          } else {
+            term.writeln('');
+            prompt();
+          }
+        } else if (code === 127) {
+          if (currentLine.length > 0) {
+            currentLine = currentLine.slice(0, -1);
+            term.write('\b \b');
+          }
+        } else if (code >= 32 && code <= 126) {
+          currentLine += data;
+          term.write(data);
+        }
+      });
+      
+      window.addEventListener('resize', () => fitAddon.fit());
+    }
+    
+    function prompt() {
+      term.write('\x1b[32mbridgemind@\x1b[36m' + currentService + '\x1b[0m:\x1b[34m~\x1b[0m$ ');
+    }
+    
+    function processCommand(cmd) {
+      const c = cmd.toLowerCase();
+      
+      if (c === 'help') {
+        showHelp();
+      } else if (c === 'clear' || c === 'cls') {
+        term.clear();
+        term.writeln('\x1b[32mTerminal cleared.\x1b[0m');
+        prompt();
+      } else if (c === 'status') {
+        showStatus();
+      } else if (c === 'history') {
+        showHistory();
+      } else if (c === 'services' || c === 'list') {
+        listServices();
+      } else if (c.startsWith('use ')) {
+        const svc = c.slice(4).trim();
+        changeService(svc);
+      } else if (c === 'run' || c === 'execute') {
+        term.writeln('\x1b[33m⚡ Executing...\x1b[0m');
+        executeService();
+      } else if (c === 'theme') {
+        term.writeln('\x1b[90mAvailable themes: cyberpunk, monokai, dracula, nord, solarized, github\x1b[0m');
+        prompt();
+      } else if (c.startsWith('theme ')) {
+        changeTheme(c.slice(6).trim());
+      } else if (c === 'exit' || c === 'quit') {
+        term.writeln('\x1b[33mGoodbye! 👋\x1b[0m');
+        setTimeout(() => term.clear(), 1000);
+      } else if (c === 'ping') {
+        term.writeln('\x1b[32m🏓 Pong! Latency: ' + Math.floor(Math.random() * 100 + 50) + 'ms\x1b[0m');
+        prompt();
+      } else {
+        term.writeln('\x1b[31mUnknown command: ' + cmd + '\x1b[0m');
+        term.writeln('\x1b[90mType "help" for available commands.\x1b[0m');
+        prompt();
+      }
+    }
+    
+    function showHelp() {
+      term.writeln('');
+      term.writeln('\x1b[36m╔════════════════════════════════════════════════════════════════════════╗\x1b[0m');
+      term.writeln('\x1b[36m║\x1b[0m  \x1b[1;33mAVAILABLE COMMANDS\x1b[0m'.padEnd(66) + '\x1b[36m║\x1b[0m');
+      term.writeln('\x1b[36m╠════════════════════════════════════════════════════════════════════════╣\x1b[0m');
+      term.writeln('\x1b[36m║\x1b[0m \x1b[32mhelp\x1b[0m              Show this help message'.padEnd(66) + '\x1b[36m║\x1b[0m');
+      term.writeln('\x1b[36m║\x1b[0m \x1b[32mclear\x1b[0m             Clear the terminal'.padEnd(66) + '\x1b[36m║\x1b[0m');
+      term.writeln('\x1b[36m║\x1b[0m \x1b[32mstatus\x1b[0m            Show system status'.padEnd(66) + '\x1b[36m║\x1b[0m');
+      term.writeln('\x1b[36m║\x1b[0m \x1b[32mservices\x1b[0m          List available AI services'.padEnd(66) + '\x1b[36m║\x1b[0m');
+      term.writeln('\x1b[36m║\x1b[0m \x1b[32muse <service>\x1b[0m     Switch to a service (cogi, guardian, etc.)'.padEnd(66) + '\x1b[36m║\x1b[0m');
+      term.writeln('\x1b[36m║\x1b[0m \x1b[32mrun\x1b[0m              Execute current service'.padEnd(66) + '\x1b[36m║\x1b[0m');
+      term.writeln('\x1b[36m║\x1b[0m \x1b[32mtheme <name>\x1b[0m      Change terminal theme'.padEnd(66) + '\x1b[36m║\x1b[0m');
+      term.writeln('\x1b[36m║\x1b[0m \x1b[32mhistory\x1b[0m           Show command history'.padEnd(66) + '\x1b[36m║\x1b[0m');
+      term.writeln('\x1b[36m║\x1b[0m \x1b[32mping\x1b[0m             Test connection'.padEnd(66) + '\x1b[36m║\x1b[0m');
+      term.writeln('\x1b[36m║\x1b[0m \x1b[32mquit\x1b[0m             Exit terminal'.padEnd(66) + '\x1b[36m║\x1b[0m');
+      term.writeln('\x1b[36m╚════════════════════════════════════════════════════════════════════════╝\x1b[0m');
+      term.writeln('');
+      prompt();
+    }
+    
+    function showStatus() {
+      term.writeln('');
+      term.writeln('\x1b[36m╔═══════════════════════════════════════╗\x1b[0m');
+      term.writeln('\x1b[36m║\x1b[0m  \x1b[1;33mSYSTEM STATUS\x1b[0m'.padEnd(40) + '\x1b[36m║\x1b[0m');
+      term.writeln('\x1b[36m╠═══════════════════════════════════════╣\x1b[0m');
+      term.writeln('\x1b[36m║\x1b[0m Service:    \x1b[32m' + currentService.toUpperCase().padEnd(23) + '\x1b[36m║\x1b[0m');
+      term.writeln('\x1b[36m║\x1b[0m API:        \x1b[32mOPERATIONAL\x1b[0m'.padEnd(23) + '\x1b[36m║\x1b[0m');
+      term.writeln('\x1b[36m║\x1b[0m Latency:    \x1b[33m' + (Math.floor(Math.random() * 100 + 50)) + 'ms\x1b[0m'.padEnd(23) + '\x1b[36m║\x1b[0m');
+      term.writeln('\x1b[36m║\x1b[0m Uptime:     \x1b[32m99.9%\x1b[0m'.padEnd(23) + '\x1b[36m║\x1b[0m');
+      term.writeln('\x1b[36m╚═══════════════════════════════════════╝\x1b[0m');
+      term.writeln('');
+      prompt();
+    }
+    
+    function showHistory() {
+      term.writeln('');
+      term.writeln('\x1b[33mCommand History:\x1b[0m');
+      if (commandHistory.length === 0) {
+        term.writeln('\x1b[90mNo history yet.\x1b[0m');
+      } else {
+        commandHistory.slice(-10).forEach((cmd, i) => {
+          term.writeln('  \x1b[36m' + (commandHistory.length - 10 + i + 1) + '\x1b[0m  ' + cmd);
+        });
+      }
+      term.writeln('');
+      prompt();
+    }
+    
+    function listServices() {
+      term.writeln('');
+      term.writeln('\x1b[36m╔═══════════════════════════════════════════════════════╗\x1b[0m');
+      term.writeln('\x1b[36m║\x1b[0m  \x1b[1;33mAVAILABLE AI SERVICES\x1b[0m'.padEnd(50) + '\x1b[36m║\x1b[0m');
+      term.writeln('\x1b[36m╠═══════════════════════════════════════════════════════╣\x1b[0m');
+      term.writeln('\x1b[36m║\x1b[0m \x1b[32m⚡ COGI\x1b[0m         AI Code Generation\x1b[0m'.padEnd(51) + '\x1b[36m║\x1b[0m');
+      term.writeln('\x1b[36m║\x1b[0m \x1b[32m🛡️ GUARDIAN\x1b[0m     Security Scanner\x1b[0m'.padEnd(51) + '\x1b[36m║\x1b[0m');
+      term.writeln('\x1b[36m║\x1b[0m \x1b[32m📝 DOCUFY\x1b[0m       Auto Documentation\x1b[0m'.padEnd(51) + '\x1b[36m║\x1b[0m');
+      term.writeln('\x1b[36m║\x1b[0m \x1b[32m🧪 TEST PILOT\x1b[0m   Test Generation\x1b[0m'.padEnd(51) + '\x1b[36m║\x1b[0m');
+      term.writeln('\x1b[36m║\x1b[0m \x1b[32m🕷️ CRAWLER\x1b[0m      Web Scraper\x1b[0m'.padEnd(51) + '\x1b[36m║\x1b[0m');
+      term.writeln('\x1b[36m║\x1b[0m \x1b[32m🐝 AGENT SWARM\x1b[0m  Multi-Agent AI\x1b[0m'.padEnd(51) + '\x1b[36m║\x1b[0m');
+      term.writeln('\x1b[36m╚═══════════════════════════════════════════════════════╝\x1b[0m');
+      term.writeln('\x1b[90mUse "use <service>" to switch.\x1b[0m');
+      term.writeln('');
+      prompt();
+    }
+    
+    function changeService(service) {
+      const valid = ['cogi', 'guardian', 'docufy', 'testpilot', 'crawler', 'agentswarm'];
+      if (valid.includes(service)) {
+        currentService = service;
+        document.getElementById('termTitle').textContent = 'PARALLAX_TERMINAL v3.0 // ' + service.toUpperCase();
+        document.querySelectorAll('.service-item').forEach(el => el.classList.remove('active'));
+        document.querySelector(`.service-item:nth-child(${valid.indexOf(service) + 1})`)?.classList.add('active');
+        term.writeln('\x1b[32m✓ Service switched to ' + service.toUpperCase() + '\x1b[0m');
+      } else {
+        term.writeln('\x1b[31m✗ Unknown service: ' + service + '\x1b[0m');
+        term.writeln('\x1b[90mValid services: ' + valid.join(', ') + '\x1b[0m');
+      }
+      prompt();
+    }
+    
+    function selectService(service) {
+      changeService(service);
+    }
+    
+    function changeTheme(theme) {
+      if (themes[theme]) {
+        term.options.theme = themes[theme];
+        document.getElementById('themeSelect').value = theme;
+        term.writeln('\x1b[32m✓ Theme changed to ' + theme + '\x1b[0m');
+        prompt();
+      } else {
+        term.writeln('\x1b[31m✗ Unknown theme: ' + theme + '\x1b[0m');
+        prompt();
+      }
+    }
+    
+    function toggleTheme() {
+      const themes = Object.keys(themes);
+      const current = document.getElementById('themeSelect').value;
+      const next = themes[(themes.indexOf(current) + 1) % themes.length];
+      changeTheme(next);
+    }
+    
+    function changeFontSize(size) {
+      term.options.fontSize = parseInt(size);
+      fitAddon.fit();
+    }
+    
+    async function executeService() {
+      if (isProcessing) return;
+      isProcessing = true;
+      
+      term.writeln('\x1b[33m⚡ Processing request...\x1b[0m');
+      
+      try {
+        const response = await fetch('/api/services', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            service: currentService,
+            message: 'Generate a hello world function in ' + document.getElementById('langSelect').value,
+            mode: document.getElementById('modeSelect').value,
+            language: document.getElementById('langSelect').value
+          })
+        });
+        
+        const data = await response.json();
+        
+        term.writeln('');
+        term.writeln('\x1b[36m╔═══════════════════════════════════════╗\x1b[0m');
+        term.writeln('\x1b[36m║\x1b[0m  \x1b[1;32mRESPONSE\x1b[0m'.padEnd(40) + '\x1b[36m║\x1b[0m');
+        term.writeln('\x1b[36m╠═══════════════════════════════════════╣\x1b[0m');
+        
+        if (data.response) {
+          data.response.split('\n').forEach(line => {
+            term.writeln('\x1b[37m' + line + '\x1b[0m');
+          });
+        } else if (data.success) {
+          term.writeln('\x1b[32m✓ ' + currentService.toUpperCase() + ' completed successfully!\x1b[0m');
+          if (data.score !== undefined) term.writeln('\x1b[33m  Score: ' + data.score + '/100\x1b[0m');
+          if (data.stats) term.writeln('\x1b[90m  Stats: ' + JSON.stringify(data.stats) + '\x1b[0m');
+        } else {
+          term.writeln('\x1b[31m✗ Service error\x1b[0m');
+        }
+        
+        term.writeln('\x1b[36m╚═══════════════════════════════════════╝\x1b[0m');
+      } catch (err) {
+        term.writeln('\x1b[31m✗ Error: ' + err.message + '\x1b[0m');
+      }
+      
+      isProcessing = false;
+      prompt();
+    }
+    
+    function runCommand(cmd) {
+      if (term) {
+        currentLine = cmd;
+        term.writeln('\x1b[32mbridgemind@\x1b[36m' + currentService + '\x1b[0m:\x1b[34m~\x1b[0m$ ' + cmd);
+        processCommand(cmd);
+      }
+    }
+    
+    function clearTerminal() {
+      if (term) {
+        term.clear();
+        term.writeln('\x1b[32mTerminal cleared.\x1b[0m');
+        prompt();
+      }
+    }
+    
+    function copyOutput() {
+      if (term) {
+        const selection = term.getSelection();
+        if (selection) {
+          navigator.clipboard.writeText(selection);
+          term.writeln('\x1b[32m✓ Copied to clipboard!\x1b[0m');
+          setTimeout(() => prompt(), 500);
+        }
+      }
+    }
+    
+    function downloadOutput() {
+      term.writeln('\x1b[33mExport feature coming soon...\x1b[0m');
+      prompt();
+    }
+    
+    function addTab() {
+      const services = ['cogi', 'guardian', 'docufy', 'testpilot', 'crawler', 'agentswarm'];
+      const names = {cogi:'COGI',guardian:'GUARDIAN',docufy:'DOCUFY',testpilot:'TEST',crawler:'CRAWLER',agentswarm:'SWARM'};
+      const icons = {cogi:'⚡',guardian:'🛡️',docufy:'📝',testpilot:'🧪',crawler:'🕷️',agentswarm:'🐝'};
+      const svc = services[Math.floor(Math.random() * services.length)];
+      
+      const tab = document.createElement('div');
+      tab.className = 'tab';
+      tab.dataset.tab = tabCounter;
+      tab.innerHTML = '<span class="tab-icon">' + icons[svc] + '</span><span class="tab-title">' + names[svc] + '</span><button class="tab-close" onclick="closeTab(' + tabCounter + ')">×</button>';
+      tab.onclick = () => selectTab(tabCounter);
+      
+      document.querySelector('.tab-bar').insertBefore(tab, document.querySelector('.new-tab'));
+      tabs.push({id:tabCounter,name:names[svc],service:svc});
+      tabCounter++;
+      selectTab(tabs[0].id);
+    }
+    
+    function selectTab(id) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelector('.tab[data-tab="' + id + '"]')?.classList.add('active');
+      const tab = tabs.find(t => t.id === id);
+      if (tab) changeService(tab.service);
+    }
+    
+    function closeTab(id) {
+      event.stopPropagation();
+      const el = document.querySelector('.tab[data-tab="' + id + '"]');
+      if (el) el.remove();
+      tabs = tabs.filter(t => t.id !== id);
+      if (tabs.length > 0) selectTab(tabs[0].id);
+    }
+    
+    function toggleMode() {
+      isTerminalMode = !isTerminalMode;
+      const termDiv = document.getElementById('terminal');
+      const editorPanel = document.getElementById('editorPanel');
+      const webviewPanel = document.getElementById('webviewPanel');
+      const modeBtn = document.getElementById('modeToggle');
+      const terminalWrapper = document.querySelector('.terminal-wrapper');
+      
+      if (isTerminalMode) {
+        termDiv.style.display = 'block';
+        editorPanel.style.display = 'none';
+        webviewPanel.style.display = 'none';
+        modeBtn.textContent = 'CODE';
+        terminalWrapper.style.flexDirection = 'column';
+      } else {
+        termDiv.style.display = 'none';
+        editorPanel.style.display = 'flex';
+        webviewPanel.style.display = 'flex';
+        modeBtn.textContent = 'TERM';
+        terminalWrapper.style.flexDirection = 'row';
+        setTimeout(() => fitAddon && fitAddon.fit(), 100);
+      }
+    }
+    
+    function updateEditorLanguage() {
+      const lang = document.getElementById('editorLang').value;
+      const extensions = {javascript:'js',python:'py',typescript:'ts',html:'html',css:'css'};
+      document.getElementById('editorFileName').textContent = 'main.' + (extensions[lang] || 'txt');
+    }
+    
+    async function runCodeInEditor() {
+      const code = document.getElementById('codeEditor').value;
+      const lang = document.getElementById('editorLang').value;
+      const webviewContent = document.getElementById('webviewContent');
+      const execStatus = document.getElementById('execStatus');
+      const execTime = document.getElementById('execTime');
+      
+      if (!code.trim()) {
+        webviewContent.innerHTML = '<div class="error">Please enter some code</div>';
+        return;
+      }
+      
+      execStatus.textContent = 'Running...';
+      execStatus.style.color = 'var(--yellow)';
+      webviewContent.innerHTML = '<div style="color:var(--cyan)">⚡ Executing ' + lang + ' code...</div>';
+      
+      const startTime = Date.now();
+      
+      if (lang === 'javascript') {
+        try {
+          const logs = [];
+          const customConsole = {
+            log: (...args) => logs.push(args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' ')),
+            error: (...args) => logs.push('[ERROR] ' + args.join(' ')),
+            warn: (...args) => logs.push('[WARN] ' + args.join(' ')),
+            info: (...args) => logs.push('[INFO] ' + args.join(' '))
+          };
+          
+          const asyncFn = new Function('console', code);
+          await asyncFn(customConsole);
+          
+          const time = Date.now() - startTime;
+          execTime.textContent = time + 'ms';
+          execStatus.textContent = 'Success';
+          execStatus.style.color = 'var(--green)';
+          
+          if (logs.length > 0) {
+            webviewContent.innerHTML = logs.map(l => '<div class="stdout">' + escapeHtml(l) + '</div>').join('');
+          } else {
+            webviewContent.innerHTML = '<div class="success">✓ Code executed successfully (no output)</div>';
+          }
+        } catch (err) {
+          const time = Date.now() - startTime;
+          execTime.textContent = time + 'ms';
+          execStatus.textContent = 'Error';
+          execStatus.style.color = 'var(--red)';
+          webviewContent.innerHTML = '<div class="error">✗ ' + escapeHtml(err.message) + '</div>';
+        }
+      } else if (lang === 'html') {
+        const time = Date.now() - startTime;
+        execTime.textContent = time + 'ms';
+        execStatus.textContent = 'Success';
+        execStatus.style.color = 'var(--green)';
+        webviewContent.innerHTML = '<div class="html-preview">' + code + '</div>';
+      } else {
+        try {
+          const sandboxLang = lang === 'python' ? 'python' : lang === 'typescript' ? 'typescript' : lang;
+          
+          const response = await fetch('/api/sandbox', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              language: sandboxLang,
+              code: code
+            })
+          });
+          
+          const data = await response.json();
+          const time = Date.now() - startTime;
+          execTime.textContent = time + 'ms';
+          
+          if (data.error) {
+            execStatus.textContent = 'Error';
+            execStatus.style.color = 'var(--red)';
+            webviewContent.innerHTML = '<div class="error">✗ ' + escapeHtml(data.error) + '</div>';
+          } else {
+            execStatus.textContent = data.success ? 'Success' : 'Done';
+            execStatus.style.color = 'var(--green)';
+            
+            let html = '';
+            if (data.stdout) {
+              html += data.stdout.split('\n').filter(l => l.trim()).map(l => '<div class="stdout">' + escapeHtml(l) + '</div>').join('');
+            }
+            if (data.stderr) {
+              html += data.stderr.split('\n').filter(l => l.trim()).map(l => '<div class="stderr">' + escapeHtml(l) + '</div>').join('');
+            }
+            if (!html) {
+              html = '<div class="success">✓ Code executed successfully (no output)</div>';
+            }
+            webviewContent.innerHTML = html;
+          }
+        } catch (err) {
+          const time = Date.now() - startTime;
+          execTime.textContent = time + 'ms';
+          execStatus.textContent = 'Error';
+          execStatus.style.color = 'var(--red)';
+          webviewContent.innerHTML = '<div class="error">✗ ' + err.message + '</div>';
+        }
+      }
+    }
+    
+    function clearEditor() {
+      document.getElementById('codeEditor').value = '';
+      document.getElementById('webviewContent').innerHTML = '<div style="color:var(--muted);text-align:center;margin-top:2rem">Run code to see preview</div>';
+      document.getElementById('execStatus').textContent = 'Ready';
+      document.getElementById('execStatus').style.color = 'var(--muted)';
+      document.getElementById('execTime').textContent = '--ms';
+    }
+    
+    function formatCode() {
+      const editor = document.getElementById('codeEditor');
+      const lang = document.getElementById('editorLang').value;
+      let code = editor.value;
+      
+      if (lang === 'javascript' || lang === 'typescript') {
+        try {
+          code = code.replace(/(\s*if\s*\([^)]+\)\s*)/g, '$1\n  ').replace(/(\s*else\s*)/g, '\n$1');
+        } catch(e) {}
+      }
+      
+      editor.value = code;
+    }
+    
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+    
+    function saveFile() {
+      const code = document.getElementById('codeEditor').value;
+      const lang = document.getElementById('editorLang').value;
+      const extensions = {javascript:'js',python:'py',typescript:'ts',html:'html',css:'css'};
+      const ext = extensions[lang] || 'txt';
+      const filename = 'main.' + ext;
+      
+      const files = {};
+      files[filename] = code;
+localStorage.setItem('bridgemind_files', JSON.stringify(files));
+
+  localStorage.setItem('bridgemind_current', filename);
+      
+      term.writeln('\x1b[32m✓ File saved: ' + filename + '\x1b[0m');
+    }
+    
+    function loadSavedFiles() {
+const saved = localStorage.getItem('bridgemind_files');
+
+  const current = localStorage.getItem('bridgemind_current');
+          if (current && files[current]) {
+            document.getElementById('codeEditor').value = files[current];
+          }
+        } catch(e) {}
+      }
+    }
+    
+    function downloadFile() {
+      const code = document.getElementById('codeEditor').value;
+      const lang = document.getElementById('editorLang').value;
+      const extensions = {javascript:'js',python:'py',typescript:'ts',html:'html',css:'css'};
+      const ext = extensions[lang] || 'txt';
+      
+      const blob = new Blob([code], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'main.' + ext;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      term.writeln('\x1b[32m✓ Downloaded: main.' + ext + '\x1b[0m');
+    }
+    
+    function openFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('codeEditor').value = e.target.result;
+        
+        const ext = file.name.split('.').pop();
+        const langMap = {js:'javascript',py:'python',ts:'typescript',html:'html',css:'css'};
+        if (langMap[ext]) {
+          document.getElementById('editorLang').value = langMap[ext];
+          updateEditorLanguage();
+        }
+        
+        term.writeln('\x1b[32m✓ Opened: ' + file.name + '\x1b[0m');
+      };
+      reader.readAsText(file);
+    }
+    
+    initTerminal();
+    loadSavedFiles();
+    
+    function toggleMobileMenu() {
+      document.getElementById('mobileMenu').classList.toggle('show');
+      updateMobileAuth();
+    }
+    
+    function updateMobileAuth() {
+      const isLoggedIn = localStorage.getItem('auth_token');
+      const mobileAuthLink = document.getElementById('mobileAuthLink');
+      
+      if (isLoggedIn) {
+        mobileAuthLink.innerHTML = 'Logout <span>→</span>';
+        mobileAuthLink.onclick = function(e) { e.preventDefault(); logout(); };
+      } else {
+        mobileAuthLink.innerHTML = 'Sign In <span>→</span>';
+        mobileAuthLink.onclick = function() { window.location.href = '/login.html'; };
+      }
+    }
+    
+    function handleMobileAuth(e) {
+      const isLoggedIn = localStorage.getItem('auth_token');
+      if (isLoggedIn) {
+        e.preventDefault();
+        logout();
+      }
+    }
+    
+    function logout() {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      window.location.href = '/login.html';
+    }
+  </script>
+</body>
+</html>

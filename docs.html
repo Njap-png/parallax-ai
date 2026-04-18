@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentation | BRIDGEMIND</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#050508;--bg2:#0a0a10;--card:#12121a;--border:#27272a;--cyan:#00ff88;--purple:#a855f7;--text:#e0e0e0;--muted:#9ca3af;--dim:#52525b}
+    body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+    body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(0,0,0,.03) 1px,rgba(0,0,0,.03) 2px);pointer-events:none;z-index:9999}
+    nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(5,5,8,.95);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);padding:.75rem 2rem;display:flex;justify-content:space-between;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;font-size:.85rem}
+    nav a:hover,nav a.active{color:var(--cyan)}
+    main{padding:80px 2rem 2rem;max-width:1000px;margin:0 auto}
+    h1{font-size:1.75rem;margin-bottom:.5rem;background:linear-gradient(90deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .sub{color:var(--muted);margin-bottom:2rem}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem}
+    .card h2{font-size:1.1rem;margin-bottom:1rem;color:var(--cyan)}
+    pre{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:1rem;font-size:.85rem;overflow-x:auto}
+    .kw{color:var(--purple)}.str{color:var(--cyan)}.cm{color:var(--dim)}
+    .endpoint{display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem}
+    .method{background:var(--cyan);color:var(--bg);padding:.25rem .5rem;border-radius:4px;font-size:.75rem;font-weight:600}
+    .path{color:var(--text)}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:.75rem;text-align:left;border-bottom:1px solid var(--border);font-size:.9rem}
+    th{color:var(--dim);font-weight:400}
+    .mobile-menu-btn{display:none;background:none;border:1px solid var(--border);color:var(--muted);padding:.4rem .6rem;border-radius:4px;cursor:pointer;font-size:1.2rem;margin-left:auto}
+    .mobile-menu-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+    .mobile-menu{display:none;position:fixed;top:60px;left:0;right:0;background:var(--card);border-bottom:1px solid var(--border);z-index:999;padding:1rem;flex-direction:column;gap:.5rem;max-height:80vh;overflow-y:auto}
+    .mobile-menu.show{display:flex!important}
+    .mobile-menu a{padding:1rem;color:var(--muted);text-decoration:none;font-size:.9rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+    .mobile-menu a:hover{color:var(--cyan)}
+    .mobile-menu .cta-mobile{background:var(--cyan);color:var(--bg);border:none;text-align:center;justify-content:center;border-radius:6px}
+    @media(max-width:768px){nav{flex-wrap:wrap;gap:.5rem}.mobile-menu-btn{display:flex!important;align-items:center;justify-content:center}.links{display:none!important}.cta{display:none!important}.mobile-menu{top:50px}}
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/">PARALLAX_DOMINION</a>
+    <div class="links">
+      <a href="/services.html">Services</a>
+      <a href="/pricing.html">Pricing</a>
+      <a href="/docs.html" class="active">Docs</a>
+      <a href="/dashboard.html" id="navDashboard" style="display:none">Dashboard</a>
+      <a href="#" id="navLogout" style="display:none" onclick="logout()">Logout</a>
+      <a href="/login.html" id="navLogin">Sign In</a>
+    </div>
+    <a href="/login.html" class="cta" id="navCta">Sign In</a>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="/">🏠 Home <span>→</span></a>
+    <a href="/services.html">🚀 Services <span>→</span></a>
+    <a href="/agent-swarm.html">🐝 Agent Swarm <span>→</span></a>
+    <a href="/ai-chat.html">💬 AI Chat <span>→</span></a>
+    <a href="/terminal-pro.html">⌨️ Terminal <span>→</span></a>
+    <a href="/sandbox.html">📦 Sandbox <span>→</span></a>
+    <a href="/pricing.html">💰 Pricing <span>→</span></a>
+    <a href="/dashboard.html" id="mobileDashboard">📊 Dashboard <span>→</span></a>
+    <a href="/docs.html" style="color:var(--cyan)">📚 Docs <span>→</span></a>
+    <a href="/api-docs.html">🔌 API <span>→</span></a>
+    <a href="/login.html" id="mobileAuthLink" onclick="handleMobileAuth(event)">🔑 Sign In <span>→</span></a>
+  </div>
+
+  <script>
+    function toggleMobileMenu(){
+      document.getElementById('mobileMenu').classList.toggle('show');
+      updateMobileAuth();
+    }
+    
+    function updateMobileAuth() {
+      const isLoggedIn = localStorage.getItem('auth_token');
+      const mobileAuthLink = document.getElementById('mobileAuthLink');
+      
+      if (isLoggedIn) {
+        mobileAuthLink.innerHTML = '🚪 Logout <span>→</span>';
+        mobileAuthLink.onclick = function(e) { e.preventDefault(); logout(); };
+      } else {
+        mobileAuthLink.innerHTML = '🔑 Sign In <span>→</span>';
+        mobileAuthLink.onclick = function() { window.location.href = '/login.html'; };
+      }
+    }
+    
+    function handleMobileAuth(e) {
+      const isLoggedIn = localStorage.getItem('auth_token');
+      if (isLoggedIn) {
+        e.preventDefault();
+        logout();
+      }
+    }
+    
+    function logout() {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      window.location.href = '/login.html';
+    }
+    function logout() {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      window.location.href = '/login.html';
+    }
+    if(localStorage.getItem('auth_token')){
+      document.getElementById('navDashboard').style.display='inline';
+      document.getElementById('navLogout').style.display='inline';
+      document.getElementById('navLogin').style.display='none';
+      document.getElementById('navCta').href = '/dashboard.html';
+      document.getElementById('navCta').textContent = 'Dashboard';
+    }
+  </script>
+
+  <main>
+    <h1>API DOCUMENTATION</h1>
+    <p class="sub">Build with BridgeMind API</p>
+
+    <div class="card">
+      <h2>Base URL</h2>
+      <pre>https://api.bridgemind.ai</pre>
+    </div>
+
+    <div class="card">
+      <h2>Authentication</h2>
+      <p style="color:var(--muted);margin-bottom:1rem">Include your API key in the Authorization header:</p>
+      <pre>Authorization: Bearer YOUR_API_KEY</pre>
+    </div>
+
+    <div class="card">
+      <h2>Endpoints</h2>
+      
+      <div class="endpoint"><span class="method">POST</span><span class="path">/services/cogi</span></div>
+      <p style="color:var(--muted);font-size:.85rem;margin-bottom:1rem">AI code generation</p>
+      <pre>{
+  <span class="str">"message"</span>: <span class="str">"Create a React button"</span>,
+  <span class="str">"language"</span>: <span class="str">"javascript"</span>,
+  <span class="str">"mode"</span>: <span class="str">"code"</span>
+}</pre>
+      <br>
+
+      <div class="endpoint"><span class="method">POST</span><span class="path">/services/guardian</span></div>
+      <p style="color:var(--muted);font-size:.85rem;margin-bottom:1rem">Security vulnerability scan</p>
+      <pre>{
+  <span class="str">"code"</span>: <span class="str">"your code here"</span>
+}</pre>
+      <br>
+
+      <div class="endpoint"><span class="method">POST</span><span class="path">/services/docufy</span></div>
+      <p style="color:var(--muted);font-size:.85rem;margin-bottom:1rem">Auto documentation</p>
+      <pre>{
+  <span class="str">"code"</span>: <span class="str">"your code here"</span>,
+  <span class="str">"language"</span>: <span class="str">"javascript"</span>
+}</pre>
+      <br>
+
+      <div class="endpoint"><span class="method">POST</span><span class="path">/services/testpilot</span></div>
+      <p style="color:var(--muted);font-size:.85rem;margin-bottom:1rem">Test generation</p>
+      <pre>{
+  <span class="str">"code"</span>: <span class="str">"your code here"</span>,
+  <span class="str">"framework"</span>: <span class="str">"jest"</span>
+}</pre>
+      <br>
+
+      <div class="endpoint"><span class="method">POST</span><span class="path">/services/crawler</span></div>
+      <p style="color:var(--muted);font-size:.85rem;margin-bottom:1rem">Web scraping</p>
+      <pre>{
+  <span class="str">"url"</span>: <span class="str">"https://example.com"</span>
+}</pre>
+      <br>
+
+      <div class="endpoint"><span class="method">POST</span><span class="path">/services/agentswarm</span></div>
+      <p style="color:var(--muted);font-size:.85rem;margin-bottom:1rem">Multi-agent automation</p>
+      <pre>{
+  <span class="str">"task"</span>: <span class="str">"Build an e-commerce API"</span>,
+  <span class="str">"agents"</span>: <span class="str">3</span>
+}</pre>
+    </div>
+
+    <div class="card">
+      <h2>Rate Limits</h2>
+      <table>
+        <tr><th>Plan</th><th>Requests/Minute</th><th>Requests/Month</th></tr>
+        <tr><td>Starter</td><td>30</td><td>10,000</td></tr>
+        <tr><td>Pro</td><td>100</td><td>27,000</td></tr>
+        <tr><td>Team</td><td>300</td><td>100,000</td></tr>
+        <tr><td>Enterprise</td><td>1000</td><td>Unlimited</td></tr>
+      </table>
+    </div>
+  </main>
+</body>
+</html>
