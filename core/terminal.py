@@ -15,6 +15,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from core.master_controller import master_controller, MasterController, AGENTS, AdaptiveMode
 from core.auto_decoder import auto_decoder
+from tools.mission_wizard import mission_wizard, start_mission, next_phase, mission_status, mission_help
 
 class Terminal:
     PROMPT = "\033[1;32mparallax>\033[0m "
@@ -354,11 +355,38 @@ class Terminal:
                 
         elif command in ["/ctf"]:
             if not args:
-                self.print_color("[!] CTF Mode - Enter challenge:", "yellow")
-                print("Usage: /ctf <challenge>")
+                self.print_color("[!] CTF Mode - List challenges:", "yellow")
+                from tools.ctf import ctf_engine
+                challs = ctf_engine.get_challenges()
+                for c in challs:
+                    self.print_color(f"  {c['name']:12} [{c['points']}pts] {c['category']} {c['solves']} solves", "cyan")
+            elif args.startswith("submit "):
+                from tools.ctf import ctf_engine
+                flag = args[7:].strip()
+                result = ctf_engine.submit_flag("player1", flag)
+                if result["valid"]:
+                    self.print_color(f"[+] {result['message']}", "green")
+                else:
+                    self.print_color(f"[!] {result['message']}", "red")
             else:
                 self.print_color(f"[!] CTF Challenge: {args}", "cyan")
-                print("[+] Ready for challenge - Enter your solution:")
+                print("[+] Use '/ctf submit <flag>' to submit")
+                
+        elif command in ["/mission"]:
+            if not args:
+                print(mission_help())
+            elif args.startswith("start "):
+                target = args[6:].strip()
+                result = start_mission(target)
+                self.print_color(f"[+] Starting mission: {result['phase_name']} Phase", "green")
+            elif args == "next":
+                result = next_phase()
+                print(json.dumps(result, indent=2))
+            elif args == "status":
+                result = mission_status()
+                print(json.dumps(result, indent=2))
+            else:
+                self.print_color("[!] Usage: /mission start <target> | next | status", "red")
                 
         elif command in ["/search"]:
             if not args:
