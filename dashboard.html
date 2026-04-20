@@ -373,7 +373,7 @@
       <button class="btn btn-outline" onclick="generateKey()" style="margin-top:1rem;width:100%">+ GENERATE_NEW_KEY</button>
       <div style="margin-top:1rem;padding:1rem;background:rgba(0,255,136,.05);border:1px solid rgba(0,255,136,.1);border-radius:6px">
         <div style="font-family:'Orbitron',sans-serif;font-size:.75rem;color:var(--cyan);margin-bottom:.5rem">⚡ QUICK TEST</div>
-        <code style="font-size:.75rem;color:var(--muted);word-break:break-all">curl -X POST https://bridgemind.ai/api/services -H "Content-Type: application/json" -d '{"service":"chat","message":"Hello"}'</code>
+        <code style="font-size:.75rem;color:var(--muted);word-break:break-all">curl -X POST https://parallaxdominion.vercel.app/api/services -H "Content-Type: application/json" -d '{"service":"chat","message":"Hello"}'</code>
       </div>
     </div>
 
@@ -404,7 +404,7 @@
         <button class="tab" onclick="showLang('py')">Python</button>
       </div>
       <pre id="code"><span class="cm"># Chat with AI</span>
-<span class="kw">curl</span> -X POST https://bridgemind.ai/api/services \
+<span class="kw">curl</span> -X POST https://parallaxdominion.vercel.app/api/services \
   -H <span class="str">"Content-Type: application/json"</span> \
   -d <span class="str">'{"service":"chat","message":"Hello!"}'</span></pre>
     </div>
@@ -421,7 +421,7 @@
   </main>
 
   <script>
-    const BASE_URL = 'https://bridgemind.ai';
+    const BASE_URL = 'https://parallaxdominion.vercel.app';
     const codes = {
       curl: '<span class="cm"># Chat with AI</span>\n<span class="kw">curl</span> -X POST ' + BASE_URL + '/api/services \\\n  -H <span class="str">"Content-Type: application/json"</span> \\\n  -d <span class="str">\'{"service":"chat","message":"Hello!"}\'</span>',
       js: '<span class="cm">// Chat with AI</span>\n<span class="kw">const</span> res = <span class="kw">await</span> fetch(<span class="str">\'' + BASE_URL + '/api/services\'</span>, {\n  method: <span class="str">\'POST\'</span>,\n  headers: { <span class="str">\'Content-Type\'</span>: <span class="str">\'application/json\'</span> },\n  body: JSON.stringify({ service: <span class="str">\'chat\'</span>, message: <span class="str">\'Hello!\'</span> })\n});\n<span class="kw">const</span> data = <span class="kw">await</span> res.json();\nconsole.log(data.response);',

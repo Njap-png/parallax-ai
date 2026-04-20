@@ -557,17 +557,17 @@ POST /api/sandbox - Code Execution
 GET  /api/health - Health Check
 
 For full documentation visit:
-https://bridgemind.ai/api-docs`,
+https://parallaxdominion.vercel.app/api-docs`,
         
         'getting-started.pdf': `GETTING STARTED WITH BRIDGEMIND
 ======================================
 
-1. Sign up at bridgemind.ai
+1. Sign up at parallaxdominion.vercel.app
 2. Get your API key from dashboard
 3. Start using AI services
 
 Quick Start:
-curl -X POST https://bridgemind.ai/api/services \\
+curl -X POST https://parallaxdominion.vercel.app/api/services \\
   -H "Content-Type: application/json" \\
   -d '{"service":"cogi","message":"Hello world"}'`,
         
@@ -587,11 +587,11 @@ Ctrl+S - Sandbox
 Ctrl+G - Services`,
         
         'sdk-boilerplate.js': `// Parallax SDK
-// Get your API key at https://bridgemind.ai/dashboard
+// Get your API key at https://parallaxdominion.vercel.app/dashboard
 
 const ParallaxSDK = {
   apiKey: 'YOUR_API_KEY',
-  baseUrl: 'https://bridgemind.ai/api',
+  baseUrl: 'https://parallaxdominion.vercel.app/api',
   
   async generateCode(prompt) {
     const res = await fetch(this.baseUrl + '/services', {
