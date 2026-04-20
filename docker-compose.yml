@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  parallax:
+    build: .
+    container_name: parallax-forge
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - PARALLAX_MODE=api
+      - PARALLAX_PORT=8080
+      - PARALLAX_HOST=0.0.0.0
+    networks:
+      - parallax-net
+    restart: unless-stopped
+    
+  terminal:
+    build: .
+    container_name: parallax-terminal
+    volumes:
+      - ./data:/app/data
+    environment:
+      - PARALLAX_MODE=terminal
+    networks:
+      - parallax-net
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+
+networks:
+  parallax-net:
+    driver: bridge

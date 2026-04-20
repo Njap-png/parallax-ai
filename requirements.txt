@@ -2,4 +2,4 @@ requests
 python-whois
 pyOpenSSL
 pefile
-argparse
+urllib3
