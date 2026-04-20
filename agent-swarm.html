@@ -90,19 +90,7 @@
     .stat-value{font-family:'Orbitron',sans-serif;color:var(--cyan);font-weight:600}
     .stat-label{color:var(--muted)}
 
-    /* AI LINKS */
-    .ai-links-section{padding:1rem;border-top:1px solid var(--border)}
-    .ai-links-title{font-size:.7rem;color:var(--muted);letter-spacing:1px;margin-bottom:.75rem;text-transform:uppercase}
-    .ai-links-grid{display:flex;flex-direction:column;gap:.5rem}
-    .ai-link{display:flex;align-items:center;gap:.5rem;padding:.6rem .75rem;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:6px;color:var(--text);text-decoration:none;font-size:.75rem;transition:all .3s}
-    .ai-link:hover{border-color:var(--cyan);background:rgba(0,255,136,.05)}
-    .ai-link-icon{font-size:1rem}
-    .ai-link-name{flex:1;font-weight:500}
-    .ai-link-badge{font-size:.6rem;padding:.15rem .4rem;background:rgba(0,255,136,.2);color:var(--cyan);border-radius:4px}
-    .ai-link.chatgpt:hover{border-color:#10a37f}
-    .ai-link.claude:hover{border-color:#d97706}
-    .ai-link.gemini:hover{border-color:#4285f4}
-    .ai-link.grok:hover{border-color:#9c27b0}
+    
 
     /* RESPONSIVE */
     @media(max-width:1024px){
@@ -210,7 +198,6 @@
       <span>🐝</span> DEPLOY
     </button>
     <a href="/services.html">Services <span>→</span></a>
-    <a href="/ai-chat.html">AI Chat <span>→</span></a>
     <a href="/dashboard.html" id="mobileDashboard">Dashboard <span>→</span></a>
     <a href="/login.html" id="mobileAuthLink" onclick="handleMobileAuth(event)">Sign In <span>→</span></a>
   </div>
@@ -308,31 +295,7 @@ Example: Build a complete user authentication system with JWT tokens, password h
         </button>
       </div>
 
-      <div class="ai-links-section">
-        <div class="ai-links-title">// AI_CHAT_TOOLS</div>
-        <div class="ai-links-grid">
-          <a href="https://chat.openai.com/" target="_blank" class="ai-link chatgpt">
-            <span class="ai-link-icon">🤖</span>
-            <span class="ai-link-name">ChatGPT</span>
-            <span class="ai-link-badge">GPT-4</span>
-          </a>
-          <a href="https://claude.ai/" target="_blank" class="ai-link claude">
-            <span class="ai-link-icon">🧠</span>
-            <span class="ai-link-name">Claude</span>
-            <span class="ai-link-badge">Sonnet</span>
-          </a>
-          <a href="https://aistudio.google.com/" target="_blank" class="ai-link gemini">
-            <span class="ai-link-icon">✨</span>
-            <span class="ai-link-name">Google AI Studio</span>
-            <span class="ai-link-badge">Gemini</span>
-          </a>
-          <a href="https://grok.x.com/" target="_blank" class="ai-link grok">
-            <span class="ai-link-icon">🌀</span>
-            <span class="ai-link-name">Grok</span>
-            <span class="ai-link-badge">xAI</span>
-          </a>
-        </div>
-      </div>
+      
     </aside>
 
     <section class="workspace">
