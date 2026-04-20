@@ -16,6 +16,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from core.master_controller import master_controller, MasterController, AGENTS, AdaptiveMode
 from core.auto_decoder import auto_decoder
 from tools.mission_wizard import mission_wizard, start_mission, next_phase, mission_status, mission_help
+from tools.hacking_tools import (network_tools, recon_tools, password_tools, exploit_tools, 
+                              privesc_tools, web_tools, forensics_tools)
 
 class Terminal:
     PROMPT = "\033[1;32mparallax>\033[0m "
@@ -60,27 +62,32 @@ class Terminal:
         
     def print_help(self):
         help_text = """
-\033[1;33m[COMMANDS]\033[0m
-  \033[1;32m/spawn\033[0m <agent> [<task>]  - Spawn sub-agent
-  \033[1;32m/return\033[0m <agent>        - Return agent result  
-  \033[1;32m/hunt\033[0m <target>         - Start bug bounty hunt
-  \033[1;32m/scan\033[0m <target>         - Scan target
-  \033[1;32m/recon\033[0m <target>         - Reconnaissance
-  \033[1;32m/decode\033[0m <data>         - Decode data
-  \033[1;32m/encode\033[0m <data>        - Encode data
-  \033[1;32m/hash\033[0m <data>         - Calculate hashes
-  \033[1;32m/analyze\033[0m <file>        - Analyze file/malware
-  \033[1;32m/mission\033[0m [<plan>]     - Plan/execute mission
+\033[1;33m[MAIN COMMANDS]\033[0m
+  \033[1;32m/spawn\033[0m <agent>         - Spawn sub-agent (RECON, HUNT, MALWARE, etc)
+  \033[1;32m/return\033[0m <agent>       - Return agent
+  \033[1;32m/scan\033[0m <target>        - Port/vuln scan
+  \033[1;32m/recon\033[0m <target>       - Reconnaissance
+  \033[1;32m/decode\033[0m <data>       - Auto-decode
+  \033[1;32m/hash\033[0m <data>         - Hash calculation
+  \033[1;32m/mission\033[0m             - 5-phase mission
+  \033[1;32m/ctf\033[0m                - CTF challenges
+
+\033[1;33m[HACKING TOOLS]\033[0m
+  \033[1;32m/portscan\033[0m <host>       - Scan ports
+  \033[1;32m/subdom\033[0m <domain>     - Subdomain enum
+  \033[1;32m/whois\033[0m <domain>      - WHOIS lookup
+  \033[1;32m/dirb\033[0m <url>          - Directory busting
+  \033[1;32m/xss\033[0m <url>           - Test XSS
+  \033[1;32m/sqli\033[0m <url>           - Test SQLi
+  \033[1;32m/ssrf\033[0m <url>           - Test SSRF
+  \033[1;32m/privesc\033[0m            - Linux privesc check
+  \033[1;32m/strings\033[0m <file>       - Extract strings
+  \033[1;32m/forensics\033[0m <file>      - Forensics analysis
+
+\033[1;33m[SYSTEM]\033[0m
+  \033[1;32m/status\033[0m             - System status
   \033[1;32m/evolve\033[0m              - Self-evolution
-  \033[1;32m/learn\033[0m <topic> <data>  - Learn knowledge
-  \033[1;32m/ctf\033[0m <challenge>      - CTF mode
-  \033[1;32m/report\033[0m <type>        - Generate report
-  \033[1;32m/scope\033[0m add/remove     - Manage scope
-  \033[1;32m/status\033[0m              - Show status
-  \033[1;32m/agents\033[0m              - List agents
-  \033[1;32m/search\033[0m <query>        - Web search
-  \033[1;32m/web\033[0m <url>            - Navigate web
-  \033[1;32m/clear\033[0m               - Clear screen
+  \033[1;32m/scope\033[0m add/remove    - Scope management
   \033[1;32m/help\033[0m                - Show help
   \033[1;32m/exit\033[0m                - Exit
 """
@@ -410,7 +417,96 @@ class Terminal:
                 print(result[:500] if len(result) > 500 else result)
             except Exception as e:
                 self.print_color(f"[!] Fetch failed: {str(e)}", "red")
-                
+
+        elif command in ["/portscan", "port"]:
+            if not args:
+                self.print_color("Usage: /portscan <host>", "red")
+                return True
+            self.print_color(f"[!] Scanning ports on {args}...", "yellow")
+            try:
+                result = network_tools.scan_ports(args)
+                print(json.dumps({"open": result.output["open_ports"]}, indent=2))
+            except Exception as e:
+                self.print_color(f"[!] Scan failed: {str(e)}", "red")
+
+        elif command in ["/subdom", "subdomains"]:
+            if not args:
+                self.print_color("Usage: /subdom <domain>", "red")
+                return True
+            self.print_color(f"[!] Enumerating subdomains...", "yellow")
+            result = recon_tools.subdomain_enum(args)
+            print(json.dumps({"subdomains": result.output["count"], "found": [s["subdomain"] for s in result.output["subdomains"]]}, indent=2))
+
+        elif command in ["/whois"]:
+            if not args:
+                self.print_color("Usage: /whois <domain>", "red")
+                return True
+            result = recon_tools.whois_lookup(args)
+            print(json.dumps(result.output if result.output else {"error": result.error}, indent=2))
+
+        elif command in ["/dirb", "direnum"]:
+            if not args:
+                self.print_color("Usage: /dirb <url>", "red")
+                return True
+            result = web_tools.enumerate_directories(args)
+            print(json.dumps({"found": result.output["count"], "dirs": result.output["found"]}, indent=2))
+
+        elif command in ["/xss"]:
+            if not args:
+                self.print_color("Usage: /xss <url>", "red")
+                return True
+            result = web_tools.test_xss(args)
+            print(json.dumps({"vulnerable": len(result.findings) > 0, "findings": [{"param": result.output.get("param")}]}, indent=2))
+
+        elif command in ["/sqli"]:
+            if not args:
+                self.print_color("Usage: /sqli <url>", "red")
+                return True
+            result = web_tools.test_sqli(args)
+            print(json.dumps({"vulnerable": len(result.findings) > 0}, indent=2))
+
+        elif command in ["/ssrf"]:
+            if not args:
+                self.print_color("Usage: /ssrf <url>", "red")
+                return True
+            result = web_tools.test_ssrf(args)
+            print(json.dumps({"vulnerable": len(result.findings) > 0}, indent=2))
+
+        elif command in ["/privesc"]:
+            self.print_color("[!] Checking privilege escalation vectors...", "yellow")
+            result = privesc_tools.check_linux_privesc()
+            print(json.dumps({"findings": len(result.findings), "details": result.output}, indent=2))
+
+        elif command in ["/strings"]:
+            if not args:
+                self.print_color("Usage: /strings <file>", "red")
+                return True
+            self.print_color(f"[!] Extracting strings from {args}...", "yellow")
+            result = forensics_tools.analyze_file(args)
+            print(json.dumps({"strings": result.output.get("strings_count", 0), "urls_found": len(result.output.get("urls", []))}, indent=2))
+
+        elif command in ["/forensics"]:
+            if not args:
+                self.print_color("Usage: /forensics <file>", "red")
+                return True
+            result = forensics_tools.analyze_file(args)
+            print(json.dumps({"type": result.output.get("type"), "entropy": result.output.get("entropy"), "size": result.output.get("size")}, indent=2))
+
+        elif command in ["/hashcat"]:
+            if not args:
+                self.print_color("Usage: /hashcat <hash> <wordlist>", "red")
+                return True
+            parts = args.split()
+            if len(parts) >= 2:
+                wordlist = open(parts[1]).read().splitlines()
+                result = password_tools.dictionary_attack(parts[0], wordlist[:1000])
+                if result.success:
+                    self.print_color(f"[+] Cracked: {result.output['password']}", "green")
+                else:
+                    self.print_color("[!] Not found", "red")
+            else:
+                self.print_color("Usage: /hashcat <hash> <wordlist>", "red")
+
         elif command.startswith("/"):
             self.print_color(f"[!] Unknown command: {command}", "red")
             self.print_color("Type /help for available commands", "yellow")
