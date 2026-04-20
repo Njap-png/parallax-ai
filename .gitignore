@@ -1,56 +1,19 @@
-# Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
-*.egg
+*.db
+*.sqlite
+*.sqlite3
+.env
+.venv
+env/
+venv/
+*.log
 *.egg-info/
 dist/
 build/
-*.egg
-
-# Django
-*.log
-local_settings.py
-db.sqlite3
-media/
-staticfiles/
-
-# Virtual environments
-venv/
-env/
-.env
-.venv/
-
-# Node
-node_modules/
-.npm
-.next/
-out/
-dist/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# Testing
-.coverage
-htmlcov/
 .pytest_cache/
-.tox/
-
-# Misc
+.mypy_cache/
 .DS_Store
-Thumbs.db
-.ruff_cache/
-.vercel
-
-# Environment variables (keep secrets safe)
-.env
-.env.local
-.env.production
-.env.*.local
