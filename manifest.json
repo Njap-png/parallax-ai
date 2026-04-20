@@ -1,6 +1,6 @@
 {
-  "name": "BridgeMind",
-  "short_name": "BridgeMind",
+  "name": "Parallax",
+  "short_name": "Parallax",
   "description": "Vibe coding platform - code editor, terminal, and more",
   "start_url": "/",
   "display": "standalone",

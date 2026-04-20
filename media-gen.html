@@ -641,7 +641,7 @@
           
           ctx.fillStyle = '#374151';
           ctx.font = '10px JetBrains Mono';
-          ctx.fillText('BridgeMind • Media Generator', 320, 340);
+          ctx.fillText('Parallax • Media Generator', 320, 340);
           
           await new Promise(r => setTimeout(r, 33));
         }
@@ -751,7 +751,7 @@
       if (currentResult.url) {
         if (navigator.share) {
           navigator.share({
-            title: 'Created with BridgeMind',
+            title: 'Created with Parallax',
             text: document.getElementById('imagePrompt').value,
             url: currentResult.url
           });
