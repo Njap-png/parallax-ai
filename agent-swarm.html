@@ -20,6 +20,7 @@
     .logo-icon::before{content:'';position:absolute;inset:0;border:2px solid var(--cyan);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);animation:pulse 2s ease-in-out infinite}
     .logo-icon::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:8px;height:8px;background:var(--cyan);border-radius:50%}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+    @keyframes pulseGlow{0%,100%{box-shadow:0 0 5px rgba(0,255,136,.2)}50%{box-shadow:0 0 25px rgba(0,255,136,.5)}}
 
     /* MAIN */
     main{display:flex;height:calc(100vh - 60px);position:relative;z-index:1}
@@ -62,19 +63,20 @@
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 
     /* RESULTS AREA */
-    .results{flex:1;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem;padding:1rem;overflow-y:auto;background:rgba(0,0,0,.2)}
+    .results{flex:1;display:flex;flex-direction:column;gap:1rem;padding:1rem;overflow-y:auto;background:rgba(0,0,0,.2)}
 
-    .result-card{background:linear-gradient(180deg,rgba(18,18,26,.98),rgba(10,10,15,.98));border:1px solid var(--border);border-radius:8px;overflow:hidden;display:flex;flex-direction:column}
+    .result-card{background:linear-gradient(180deg,rgba(18,18,26,.98),rgba(10,10,15,.98));border:1px solid var(--border);border-radius:8px;overflow:hidden;display:flex;flex-direction:column;min-height:200px}
+    .result-card.ready{border-color:var(--cyan);box-shadow:0 0 20px rgba(0,255,136,.15)}
     .result-header{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;background:rgba(0,0,0,.3);border-bottom:1px solid var(--border)}
     .result-icon{font-size:1.25rem}
     .result-info{flex:1}
     .result-name{font-family:'Orbitron',sans-serif;font-size:.8rem;letter-spacing:1px}
-    .result-status{width:8px;height:8px;border-radius:50%;background:var(--yellow)}
-    .result-status.ready{background:var(--green)}
-    .result-status.error{background:var(--red)}
+    .result-status{width:10px;height:10px;border-radius:50%;background:var(--yellow);box-shadow:0 0 10px var(--yellow)}
+    .result-status.ready{background:var(--green);box-shadow:0 0 10px var(--green)}
+    .result-status.error{background:var(--red);box-shadow:0 0 10px var(--red)}
     .result-latency{font-size:.65rem;color:var(--muted)}
 
-    .result-body{flex:1;padding:1rem;overflow-y:auto;font-size:.8rem;line-height:1.8;white-space:pre-wrap;max-height:400px}
+    .result-body{flex:1;padding:1rem;overflow-y:auto;font-size:.85rem;line-height:1.8;white-space:pre-wrap;min-height:150px;color:#fff}
     .result-body.loading{color:var(--yellow);font-style:italic}
 
     /* SYNTHESIS */
@@ -375,7 +377,7 @@ Example: Build a complete user authentication system with JWT tokens, password h
       }
     }
 
-    async function runSwarm() {
+async function runSwarm() {
       if (isRunning) return;
       
       const task = document.getElementById('taskInput').value.trim();
@@ -383,6 +385,153 @@ Example: Build a complete user authentication system with JWT tokens, password h
         alert('Please describe your task');
         return;
       }
+
+      if (selectedAgents.length === 0) {
+        alert('Please select at least one agent');
+        return;
+      }
+
+      isRunning = true;
+      const btn = document.getElementById('runBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span>⏳</span> DEPLOYING...';
+
+      const resultsArea = document.getElementById('resultsArea');
+      const model = document.getElementById('modelSelect').value;
+
+      resultsArea.innerHTML = selectedAgents.map(agent => `
+        <div class="result-card" id="result-${agent}" style="animation:pulseGlow 1.5s ease-in-out infinite">
+          <div class="result-header">
+            <span class="result-icon">${agentIcons[agent]}</span>
+            <div class="result-info">
+              <div class="result-name">${agent.toUpperCase()}</div>
+              <div class="result-latency">Initializing...</div>
+            </div>
+            <div class="result-status" id="status-${agent}"></div>
+          </div>
+          <div class="result-body loading" id="body-${agent}">
+            ⏳ Connecting to Parallax swarm...
+          </div>
+        </div>
+      `).join('');
+
+      document.getElementById('statsBar').style.display = 'flex';
+
+      try {
+        const response = await fetch('/api/services', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            service: 'agentswarm',
+            task: task,
+            agents: selectedAgents,
+            model: model
+          })
+        });
+
+        const data = await response.json();
+        console.log('Swarm response:', data);
+
+        document.getElementById('statAgents').textContent = data.stats?.agentsDeployed || selectedAgents.length;
+        document.getElementById('statCompleted').textContent = data.stats?.completed || selectedAgents.length;
+        document.getElementById('statTokens').textContent = (data.stats?.totalTokens || 0).toLocaleString();
+        document.getElementById('statTime').textContent = `${data.stats?.totalLatency || 0}ms`;
+
+        if (data.error) {
+          resultsArea.innerHTML = `
+            <div class="result-card" style="grid-column:1/-1;border-color:var(--red)">
+              <div class="result-header">
+                <span class="result-icon">⚠️</span>
+                <div class="result-info">
+                  <div class="result-name">ERROR</div>
+                </div>
+              </div>
+              <div class="result-body" style="color:var(--red)">
+                ${data.error}
+
+                ${data.hint ? `<div style="margin-top:1rem;color:var(--muted)">${data.hint}</div>` : ''}
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        if (data.results && data.results.length > 0) {
+          data.results.forEach(result => {
+            const cardEl = document.getElementById(`result-${result.name.toLowerCase()}`);
+            const bodyEl = document.getElementById(`body-${result.name.toLowerCase()}`);
+            const statusEl = document.getElementById(`status-${result.name.toLowerCase()}`);
+            const latencyEl = document.querySelector(`#result-${result.name.toLowerCase()} .result-latency`);
+
+            if (cardEl) {
+              cardEl.classList.add('ready');
+              cardEl.style.animation = 'none';
+            }
+
+            if (bodyEl) {
+              bodyEl.classList.remove('loading');
+              bodyEl.style.color = '#e0e0e0';
+              bodyEl.textContent = result.response || result.error || 'No response received';
+            }
+
+            if (statusEl) {
+              statusEl.classList.add(result.status === 'completed' ? 'ready' : 'error');
+            }
+
+            if (latencyEl) {
+              latencyEl.textContent = `${result.latency || 0}ms`;
+            }
+          });
+        } else {
+          resultsArea.innerHTML = `
+            <div class="result-card">
+              <div class="result-header">
+                <span class="result-icon">📭</span>
+                <div class="result-info">
+                  <div class="result-name">NO RESULTS</div>
+                </div>
+              </div>
+              <div class="result-body">
+                No agent responses received. Check if GROQ_API_KEY is configured.
+              </div>
+            </div>
+          `;
+        }
+
+        if (data.synthesis) {
+          resultsArea.innerHTML += `
+            <div class="synthesis">
+              <div class="synthesis-header">
+                <span class="synthesis-icon">🧠</span>
+                <span class="synthesis-title">SYNTHESIS</span>
+              </div>
+              <div class="synthesis-body">${data.synthesis}</div>
+            </div>
+          `;
+        }
+
+      } catch (err) {
+        console.error('Swarm error:', err);
+        resultsArea.innerHTML = `
+          <div class="result-card" style="grid-column:1/-1;border-color:var(--red)">
+            <div class="result-header">
+              <span class="result-icon">❌</span>
+              <div class="result-info">
+                <div class="result-name">ERROR</div>
+                <div class="result-latency">${err.message}</div>
+              </div>
+            </div>
+            <div class="result-body" style="color:var(--red)">
+              Failed to connect to API: ${err.message}
+            </div>
+          </div>
+        `;
+      }
+
+      isRunning = false;
+      btn.disabled = false;
+      btn.innerHTML = '<span>🐝</span> DEPLOY SWARM';
+    }
 
       if (selectedAgents.length === 0) {
         alert('Please select at least one agent');
