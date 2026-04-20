@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Changelog | BRIDGEMIND</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#030308;--bg2:#0a0a15;--card:#12121a;--border:#1a1a2e;--cyan:#00ff88;--cyan2:#00ffff;--purple:#a855f7;--magenta:#ff00ff;--text:#e0e0e0;--muted:#6b7280;--dim:#374151;--glow:rgba(0,255,136,.3)}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+    nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(3,3,8,.95);border-bottom:1px solid var(--border);backdrop-filter:blur(20px)}
+    nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent)}
+    .nav{max-width:1400px;margin:0 auto;padding:.75rem 2rem;display:flex;justify-content:space-between;align-items:center}
+    .logo{display:flex;align-items:center;gap:.75rem;text-decoration:none;color:var(--text);font-weight:600;letter-spacing:2px;font-family:'Orbitron',sans-serif;font-size:.9rem}
+    .logo-icon{width:28px;height:28px;position:relative}
+    .logo-icon::before{content:'';position:absolute;inset:0;border:2px solid var(--cyan);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);animation:pulse 2s ease-in-out infinite}
+    .logo-icon::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:6px;height:6px;background:var(--cyan);border-radius:50%;box-shadow:0 0 10px var(--cyan)}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+    .links{display:flex;gap:1.5rem}
+    .links a{color:var(--muted);text-decoration:none;font-size:.85rem;transition:all .3s}
+    .links a:hover,.links a.active{color:var(--cyan)}
+    .cta{padding:.5rem 1.25rem;border:1px solid var(--cyan);color:var(--cyan);text-decoration:none;font-size:.75rem;border-radius:4px;transition:all .3s;font-family:'Orbitron',sans-serif}
+    .cta:hover{background:var(--cyan);color:var(--bg)}
+    
+    main{padding:120px 2rem 4rem;max-width:900px;margin:0 auto}
+    .tag{color:var(--cyan);font-size:.8rem;letter-spacing:4px;text-transform:uppercase;font-family:'Orbitron',sans-serif}
+    h1{font-size:3rem;margin:1rem 0 3rem;font-family:'Orbitron',sans-serif;letter-spacing:4px;background:linear-gradient(90deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    
+    .timeline{border-left:2px solid var(--border);padding-left:2rem;margin-left:1rem}
+    .entry{position:relative;padding-bottom:3rem}
+    .entry::before{content:'';position:absolute;left:-2.6rem;top:0;width:16px;height:16px;background:var(--cyan);border-radius:50%;box-shadow:0 0 15px var(--glow)}
+    .entry-date{color:var(--cyan);font-family:'Orbitron',sans-serif;font-size:.8rem;letter-spacing:2px;margin-bottom:.5rem}
+    .entry h3{font-family:'Orbitron',sans-serif;margin-bottom:1rem;letter-spacing:1px}
+    .entry-content{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:1.5rem}
+    .change{display:flex;align-items:flex-start;gap:1rem;padding:.75rem 0;border-bottom:1px solid var(--border)}
+    .change:last-child{border-bottom:none;padding-bottom:0}
+    .change:first-child{padding-top:0}
+    .badge{padding:.15rem .5rem;border-radius:4px;font-size:.65rem;font-weight:600;font-family:'Orbitron',sans-serif;text-transform:uppercase;flex-shrink:0}
+    .badge-new{background:rgba(0,255,136,.2);color:var(--cyan)}
+    .badge-imp{background:rgba(168,85,247,.2);color:var(--purple)}
+    .badge-fix{background:rgba(255,95,87,.2);color:#ff5f57}
+    .badge-sec{background:rgba(255,149,0,.2);color:#ff9500}
+    .change-text{color:var(--muted);font-size:.9rem}
+    
+    footer{padding:4rem 2rem;text-align:center;color:var(--muted);font-size:.85rem;border-top:1px solid var(--border)}
+    footer a{color:var(--cyan);text-decoration:none}
+    .mobile-menu-btn{display:none;background:none;border:1px solid var(--border);color:var(--muted);padding:.4rem .6rem;border-radius:4px;cursor:pointer;font-size:1.2rem;margin-left:auto}
+    .mobile-menu-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+    .mobile-menu{display:none;position:fixed;top:60px;left:0;right:0;background:var(--card);border-bottom:1px solid var(--border);z-index:999;padding:1rem;flex-direction:column;gap:.5rem;max-height:80vh;overflow-y:auto}
+    .mobile-menu.show{display:flex!important}
+    .mobile-menu a{padding:1rem;color:var(--muted);text-decoration:none;font-size:.9rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+    .mobile-menu a:hover{color:var(--cyan)}
+    .mobile-menu .cta-mobile{background:var(--cyan);color:var(--bg);border:none;text-align:center;justify-content:center;border-radius:6px}
+    @media(max-width:768px){.links{display:none!important}.mobile-menu-btn{display:flex!important;align-items:center;justify-content:center}.cta{display:none!important}.nav{justify-content:space-between}}
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav">
+      <a href="/" class="logo">
+        <div class="logo-icon"></div>
+        PARALLAX_DOMINION
+      </a>
+      <div class="links">
+        <a href="/">Home</a>
+        <a href="/services">Services</a>
+        <a href="/pricing">Pricing</a>
+        <a href="/blog">Blog</a>
+        <a href="/changelog" class="active">Changelog</a>
+        <a href="/api-docs">API</a>
+      </div>
+      <a href="/login.html" class="cta" id="navCta">GET STARTED</a>
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
+    </div>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="/">🏠 Home <span>→</span></a>
+    <a href="/services.html">🚀 Services <span>→</span></a>
+    <a href="/agent-swarm.html">🐝 Agent Swarm <span>→</span></a>
+    <a href="/ai-chat.html">💬 AI Chat <span>→</span></a>
+    <a href="/terminal-pro.html">⌨️ Terminal <span>→</span></a>
+    <a href="/sandbox.html">📦 Sandbox <span>→</span></a>
+    <a href="/pricing.html">💰 Pricing <span>→</span></a>
+    <a href="/dashboard.html" id="mobileDashboard">📊 Dashboard <span>→</span></a>
+    <a href="/docs.html">📚 Docs <span>→</span></a>
+    <a href="/changelog.html" style="color:var(--cyan)">📝 Changelog <span>→</span></a>
+    <a href="/login.html" id="mobileAuthLink" onclick="handleMobileAuth(event)" class="cta-mobile" style="color:var(--bg)">🔑 Get Started <span>→</span></a>
+  </div>
+
+  <main>
+    <span class="tag">// CHANGELOG</span>
+    <h1>Platform Updates</h1>
+    
+    <div class="timeline">
+      <div class="entry">
+        <div class="entry-date">FEB 15, 2026</div>
+        <h3>Agent Swarm 2.0 Launch</h3>
+        <div class="entry-content">
+          <div class="change">
+            <span class="badge badge-new">NEW</span>
+            <span class="change-text">Agent Swarm with 8 specialized AI agents: Architect, Coder, Reviewer, Tester, Docs, Optimizer, Security, Analyst</span>
+          </div>
+          <div class="change">
+            <span class="badge badge-new">NEW</span>
+            <span class="change-text">Real-time agent visualization dashboard</span>
+          </div>
+          <div class="change">
+            <span class="badge badge-imp">IMPROVED</span>
+            <span class="change-text">Parallel agent execution with latency tracking</span>
+          </div>
+          <div class="change">
+            <span class="badge badge-imp">IMPROVED</span>
+            <span class="change-text">Agent synthesis - results combined into final solution</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="entry">
+        <div class="entry-date">FEB 10, 2026</div>
+        <h3>Security Suite Enhancement</h3>
+        <div class="entry-content">
+          <div class="change">
+            <span class="badge badge-new">NEW</span>
+            <span class="change-text">AI-powered vulnerability detection with severity scoring</span>
+          </div>
+          <div class="change">
+            <span class="badge badge-new">NEW</span>
+            <span class="change-text">OWASP Top 10 automated scanning</span>
+          </div>
+          <div class="change">
+            <span class="badge badge-new">NEW</span>
+            <span class="change-text">Auto-generated secure code fixes</span>
+          </div>
+          <div class="change">
+            <span class="badge badge-sec">SECURITY</span>
+            <span class="change-text">Enhanced input sanitization detection</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="entry">
+        <div class="entry-date">FEB 5, 2026</div>
+        <h3>Free Tier & UI Updates</h3>
+        <div class="entry-content">
+          <div class="change">
+            <span class="badge badge-new">NEW</span>
+            <span class="change-text">Free tier: 100 API calls/month</span>
+          </div>
+          <div class="change">
+            <span class="badge badge-new">NEW</span>
+            <span class="change-text">Interactive API tester on homepage</span>
+          </div>
+          <div class="change">
+            <span class="badge badge-new">NEW</span>
+            <span class="change-text">Dark/Light theme toggle</span>
+          </div>
+          <div class="change">
+            <span class="badge badge-imp">IMPROVED</span>
+            <span class="change-text">Live latency metrics in navigation</span>
+          </div>
+          <div class="change">
+            <span class="badge badge-imp">IMPROVED</span>
+            <span class="change-text">Keyboard shortcuts (Ctrl+T, Ctrl+S, etc.)</span>
+          </div>
+          <div class="change">
+            <span class="badge badge-fix">FIX</span>
+            <span class="change-text">Cookie consent banner compliance</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="entry">
+        <div class="entry-date">JAN 28, 2026</div>
+        <h3>Initial Launch</h3>
+        <div class="entry-content">
+          <div class="change">
+            <span class="badge badge-new">NEW</span>
+            <span class="change-text">COGI - AI Code Generation</span>
+          </div>
+          <div class="change">
+            <span class="badge badge-new">NEW</span>
+            <span class="change-text">Guardian - Security Scanning</span>
+          </div>
+          <div class="change">
+            <span class="badge badge-new">NEW</span>
+            <span class="change-text">Docufy - Documentation Generation</span>
+          </div>
+          <div class="change">
+            <span class="badge badge-new">NEW</span>
+            <span class="change-text">TestPilot - Test Generation</span>
+          </div>
+          <div class="change">
+            <span class="badge badge-new">NEW</span>
+            <span class="change-text">Crawler - Web Scraping</span>
+          </div>
+          <div class="change">
+            <span class="badge badge-new">NEW</span>
+            <span class="change-text">Code Sandbox with 13+ languages</span>
+          </div>
+          <div class="change">
+            <span class="badge badge-new">NEW</span>
+            <span class="change-text">Terminal Pro - Split-screen editor</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <footer>
+    <p>© 2026 BRIDGEMIND | <a href="/">Home</a> | <a href="/terms">Terms</a> | <a href="/privacy">Privacy</a></p>
+  </footer>
+  <script>
+    function toggleMobileMenu(){
+      document.getElementById('mobileMenu').classList.toggle('show');
+      updateMobileAuth();
+    }
+    
+    function updateMobileAuth() {
+      const isLoggedIn = localStorage.getItem('auth_token');
+      const mobileAuthLink = document.getElementById('mobileAuthLink');
+      
+      if (isLoggedIn) {
+        mobileAuthLink.innerHTML = '🚪 Logout <span>→</span>';
+        mobileAuthLink.onclick = function(e) { e.preventDefault(); logout(); };
+      } else {
+        mobileAuthLink.innerHTML = '🔑 Get Started <span>→</span>';
+        mobileAuthLink.onclick = function() { window.location.href = '/login.html'; };
+      }
+    }
+    
+    function handleMobileAuth(e) {
+      const isLoggedIn = localStorage.getItem('auth_token');
+      if (isLoggedIn) {
+        e.preventDefault();
+        logout();
+      }
+    }
+    
+    function logout() {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      window.location.href = '/login.html';
+    }
+    if(localStorage.getItem('auth_token')){
+      document.getElementById('navCta').href = '/dashboard.html';
+      document.getElementById('navCta').textContent = 'Dashboard';
+    }
+  </script>
+</body>
+</html>

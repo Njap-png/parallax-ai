@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Sandbox | BRIDGEMIND</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#030308;--bg2:#0a0a15;--card:#12121a;--border:#1a1a2e;--cyan:#00ff88;--cyan2:#00ffff;--purple:#a855f7;--text:#e0e0e0;--muted:#6b7280;--dim:#374151;--red:#ff5f57;--green:#28c840;--yellow:#febc2e}
+    html,body{height:100%;overflow:hidden}
+    body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);display:flex;flex-direction:column}
+    body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,136,.015) 2px,rgba(0,255,136,.015) 4px);pointer-events:none;z-index:9998}
+
+    header{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.5rem;background:rgba(18,18,26,.98);border-bottom:1px solid rgba(0,255,136,.2);position:relative;z-index:100;height:60px;flex-shrink:0}
+    header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent)}
+    .logo{display:flex;align-items:center;gap:1rem;font-family:Orbitron,sans-serif;font-size:1rem;color:var(--cyan);letter-spacing:2px}
+    .logo-icon{width:32px;height:32px;position:relative}
+    .logo-icon::before{content:'';position:absolute;inset:0;border:2px solid var(--cyan);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)}
+    .logo-icon::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:8px;height:8px;background:var(--cyan);border-radius:50%}
+    .header-right{display:flex;gap:1rem;align-items:center}
+    .status{display:flex;align-items:center;gap:.75rem;font-size:.85rem}
+    .status-dot{width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+    main{display:flex;flex:1;position:relative;z-index:1;min-height:0;overflow:hidden}
+
+    .sidebar{width:320px;background:rgba(18,18,26,.95);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0}
+    .section{padding:1rem;border-bottom:1px solid var(--border)}
+    .section-title{font-family:Orbitron,sans-serif;font-size:.75rem;color:var(--cyan);letter-spacing:2px;margin-bottom:1rem}
+    .lang-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem}
+    .lang-btn{padding:.75rem;border:1px solid var(--border);border-radius:8px;background:rgba(0,0,0,.3);color:var(--muted);font-family:inherit;font-size:.8rem;cursor:pointer;transition:all .2s;text-align:center;font-weight:500}
+    .lang-btn:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,255,136,.05)}
+    .lang-btn.active{border-color:var(--cyan);background:rgba(0,255,136,.1);color:var(--cyan);box-shadow:0 0 15px rgba(0,255,136,.3)}
+    .templates{list-style:none;max-height:150px;overflow-y:auto}
+    .template{width:100%;padding:.875rem;margin-bottom:.5rem;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-family:inherit;font-size:.85rem;text-align:left;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.75rem}
+    .template:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,255,136,.05)}
+    .template-icon{font-size:1.25rem}
+
+    .editor-area{flex:1;display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden}
+    .editor-header{display:flex;align-items:center;padding:.75rem 1.5rem;background:rgba(0,0,0,.5);border-bottom:1px solid var(--border);gap:1rem;flex-shrink:0}
+    .file-tab{font-family:Orbitron,sans-serif;font-size:.9rem;color:var(--text);display:flex;align-items:center;gap:.75rem;padding:.5rem 1rem;background:rgba(18,18,26,.95);border:1px solid var(--border);border-radius:8px 8px 0 0;margin-bottom:-1px}
+    .lang-badge{padding:.25rem .75rem;background:rgba(0,255,136,.2);border-radius:6px;font-size:.75rem;color:var(--cyan);font-weight:500}
+    .header-actions{display:flex;gap:.75rem;margin-left:auto}
+    .action-btn{background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.3);color:var(--cyan);padding:.5rem 1rem;border-radius:8px;cursor:pointer;font-family:inherit;font-size:.85rem;transition:all .2s;font-weight:500}
+    .action-btn:hover{background:rgba(0,255,136,.2);box-shadow:0 0 15px rgba(0,255,136,.2)}
+
+    .editor-wrapper{flex:1;display:flex;background:rgba(10,10,15,.98);min-height:0;overflow:hidden}
+    .line-numbers{width:60px;background:rgba(0,0,0,.3);border-right:1px solid var(--border);padding:1rem;font-size:1rem;color:var(--dim);text-align:right;line-height:1.6;overflow:hidden;user-select:none;flex-shrink:0;font-size:14px}
+    .editor{flex:1;background:transparent;border:none;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:1rem;line-height:1.6;padding:1rem;resize:none;outline:none;tab-size:2;min-height:0;overflow:auto}
+    .editor::selection{background:rgba(0,255,136,.3)}
+
+    .output-area{display:flex;flex-direction:column;border-top:1px solid var(--border);background:rgba(0,0,0,.3);height:280px;flex-shrink:0}
+    .output-header{display:flex;align-items:center;padding:.5rem 1.5rem;background:rgba(18,18,26,.95);border-bottom:1px solid var(--border);gap:1rem}
+    .output-tabs{display:flex;gap:.5rem}
+    .output-tab{padding:.5rem 1rem;background:transparent;border:1px solid transparent;border-radius:8px;color:var(--muted);font-family:inherit;font-size:.9rem;cursor:pointer;transition:all .2s;font-weight:500}
+    .output-tab:hover{color:var(--text)}
+    .output-tab.active{border-color:var(--border);color:var(--cyan);background:rgba(0,255,136,.05)}
+    .output-stats{display:flex;gap:1.5rem;margin-left:auto;font-size:.85rem;color:var(--dim)}
+    .stat-value{color:var(--cyan);font-weight:500}
+    .stat-success{color:var(--green)}
+    .stat-error{color:var(--red)}
+
+    .output-body{flex:1;padding:1rem;overflow:auto;font-size:.9rem;line-height:1.6;font-family:'JetBrains Mono',monospace;min-height:0}
+    .output-line{white-space:pre-wrap;word-break:break-all;margin-bottom:.3rem}
+    .output-line.stdout{color:#e0e0e0}
+    .output-line.stderr{color:var(--red);border-left:3px solid var(--red);padding-left:.75rem}
+    .output-line.system{color:var(--dim)}
+    .output-line.success{color:var(--green)}
+    .output-line.error-detail{background:rgba(255,95,87,.1);border:1px solid rgba(255,95,87,.3);border-radius:8px;padding:1rem;margin:.5rem 0}
+    .error-title{color:var(--red);font-weight:600;margin-bottom:.5rem;font-size:1rem}
+    .error-suggestion{color:var(--yellow);font-size:.9rem;margin-top:.75rem;padding-top:.75rem;border-top:1px solid rgba(255,95,87,.2)}
+    .apply-fix-btn{margin-top:1rem;padding:.75rem 1.5rem;background:var(--red);border:none;border-radius:8px;color:white;cursor:pointer;font-family:inherit;font-size:.9rem;font-weight:500}
+    .apply-fix-btn:hover{background:#e04a42;box-shadow:0 0 15px rgba(255,95,87,.3)}
+    .empty{color:var(--dim);font-style:italic;text-align:center;padding:2rem;font-size:1rem}
+
+    .controls{display:flex;align-items:center;gap:1rem;padding:1rem 1.5rem;background:rgba(18,18,26,.98);border-top:1px solid var(--border);flex-shrink:0}
+    .run-btn{flex:1;padding:1rem;background:linear-gradient(135deg,var(--cyan),#00cc6a);border:none;border-radius:10px;color:var(--bg);font-family:Orbitron,sans-serif;font-weight:700;cursor:pointer;transition:all .3s;display:flex;align-items:center;justify-content:center;gap:.75rem;font-size:1rem}
+    .run-btn:hover{transform:translateY(-3px);box-shadow:0 10px 40px rgba(0,255,136,.4)}
+    .run-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+    .run-btn.running{background:var(--yellow)}
+    .secondary-btn{padding:1rem 1.5rem;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--muted);font-family:inherit;cursor:pointer;transition:all .2s;font-size:.9rem;font-weight:500}
+    .secondary-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+    .shortcut{font-size:.75rem;color:var(--dim);padding:.25rem .5rem;background:rgba(0,0,0,.3);border-radius:6px}
+
+    .ai-panel{display:flex;align-items:center;gap:1rem;padding:.75rem 1.5rem;background:rgba(168,85,247,.1);border-top:1px solid rgba(168,85,247,.3);flex-shrink:0}
+    .ai-panel-label{font-size:.9rem;color:var(--purple);white-space:nowrap;font-weight:500}
+    .ai-input{flex:1;background:rgba(0,0,0,.5);border:1px solid rgba(168,85,247,.3);border-radius:10px;padding:.75rem 1rem;color:var(--text);font-family:inherit;font-size:.9rem;outline:none}
+    .ai-input:focus{border-color:var(--purple);box-shadow:0 0 15px rgba(168,85,247,.2)}
+    .ai-btn{background:var(--purple);border:none;border-radius:10px;padding:.75rem 1.5rem;color:white;font-family:inherit;font-size:.9rem;cursor:pointer;font-weight:500}
+    .ai-btn:hover{background:#9333ea;box-shadow:0 0 20px rgba(168,85,247,.3)}
+
+    @media(max-width:900px){
+      .sidebar{display:none}
+      main{flex-direction:column}
+      .editor-area{flex:1;min-height:400px}
+      .output-area{height:250px}
+      .ai-panel{flex-wrap:wrap}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <div class="logo-icon"></div>
+      CODE_SANDBOX
+    </div>
+    <div class="header-right">
+      <div class="status">
+        <div class="status-dot"></div>
+        <span>AI Powered</span>
+      </div>
+      <a href="/" style="color:var(--muted);text-decoration:none;font-size:.9rem">← Home</a>
+    </div>
+  </header>
+
+  <main>
+    <aside class="sidebar">
+      <div class="section">
+        <div class="section-title">// LANGUAGE</div>
+        <div class="lang-grid">
+          <button class="lang-btn active" onclick="setLang('javascript', this)">JS</button>
+          <button class="lang-btn" onclick="setLang('python', this)">PY</button>
+          <button class="lang-btn" onclick="setLang('html', this)">HTML</button>
+          <button class="lang-btn" onclick="setLang('css', this)">CSS</button>
+          <button class="lang-btn" onclick="setLang('typescript', this)">TS</button>
+          <button class="lang-btn" onclick="setLang('go', this)">GO</button>
+          <button class="lang-btn" onclick="setLang('rust', this)">RS</button>
+          <button class="lang-btn" onclick="setLang('java', this)">JAVA</button>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-title">// TEMPLATES</div>
+        <div class="templates">
+          <button class="template" onclick="loadTemplate('hello')"><span class="template-icon">👋</span> Hello World</button>
+          <button class="template" onclick="loadTemplate('fibonacci')"><span class="template-icon">📊</span> Fibonacci</button>
+          <button class="template" onclick="loadTemplate('arrays')"><span class="template-icon">📦</span> Arrays</button>
+          <button class="template" onclick="loadTemplate('class')"><span class="template-icon">🏗️</span> OOP Class</button>
+          <button class="template" onclick="loadTemplate('async')"><span class="template-icon">⏳</span> Async/Await</button>
+          <button class="template" onclick="loadTemplate('api')"><span class="template-icon">🌐</span> REST API</button>
+          <button class="template" onclick="loadTemplate('htmlpage')"><span class="template-icon">🎨</span> HTML Page</button>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-title">// EXECUTION</div>
+        <div style="font-size:.85rem;color:var(--dim);line-height:1.8">
+          <div style="color:var(--green)">✓ JavaScript: Native Run</div>
+          <div style="color:var(--green)">✓ HTML/CSS: Live Preview</div>
+          <div style="color:var(--purple)">✓ Other: AI Generate</div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="editor-area">
+      <div class="editor-header">
+        <div class="file-tab"><span>📄</span><span id="fileName">main.js</span></div>
+        <span class="lang-badge" id="langBadge">JavaScript</span>
+        <div class="header-actions">
+          <button class="action-btn" onclick="copyCode()">📋 Copy</button>
+          <button class="action-btn" onclick="formatCode()">✨ Format</button>
+        </div>
+      </div>
+      <div class="editor-wrapper">
+        <div class="line-numbers" id="lineNumbers">1</div>
+        <textarea class="editor" id="codeEditor" spellcheck="false" oninput="updateLines()" onkeydown="handleTab(event)">// Welcome to Parallax Code Sandbox!
+// Click RUN or press Ctrl+Enter
+
+console.log("Hello, World!");
+console.log("Testing the sandbox...");
+
+const numbers = [1, 2, 3, 4, 5];
+console.log("Numbers:", numbers);
+
+for (let i = 1; i <= 3; i++) {
+  console.log("Count:", i);
+}</textarea>
+      </div>
+
+      <div class="output-area">
+        <div class="output-header">
+          <div class="output-tabs">
+            <button class="output-tab active" onclick="showTab('output')" id="tabOutput">OUTPUT</button>
+            <button class="output-tab" onclick="showTab('errors')" id="tabErrors">ERRORS</button>
+          </div>
+          <div class="output-stats">
+            <span>Time: <span class="stat-value" id="execTime">-</span></span>
+            <span>Status: <span class="stat-value" id="execStatus">Ready</span></span>
+          </div>
+        </div>
+        <div class="output-body" id="outputBody">
+          <div class="empty">Click RUN or press Ctrl+Enter to execute</div>
+        </div>
+        <div id="errorSection" style="display:none;flex:1;padding:1rem;overflow:auto"></div>
+      </div>
+
+      <div class="ai-panel">
+        <span class="ai-panel-label">🤖 AI</span>
+        <input type="text" class="ai-input" id="aiInput" placeholder="Describe code to generate..." onkeydown="if(event.key==='Enter')generateCode()">
+        <button class="ai-btn" onclick="generateCode()">Generate</button>
+      </div>
+
+      <div class="controls">
+        <button class="secondary-btn" onclick="clearOutput()">Clear</button>
+        <button class="secondary-btn" onclick="downloadCode()">Save</button>
+        <span class="shortcut">Ctrl+Enter</span>
+        <button class="run-btn" id="runBtn" onclick="runCode()">
+          <span>▶</span> RUN CODE
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let currentLang = 'javascript';
+    let isRunning = false;
+    let outputs = [];
+    let errorLogs = [];
+
+    const extensions = {javascript:'js',python:'py',typescript:'ts',html:'html',css:'css',go:'go',rust:'rs',java:'java'};
+
+    const templates = {
+      javascript: {
+        hello: `// Hello World\nconsole.log("Hello, World!");\nconsole.log("Welcome to Parallax!");`,
+        fibonacci: `// Fibonacci Sequence\nfunction fib(n) {\n  if (n <= 1) return n;\n  return fib(n-1) + fib(n-2);\n}\nfor (let i = 0; i < 10; i++) {\n  console.log("F(" + i + ") = " + fib(i));\n}`,
+        arrays: `// Arrays\nconst nums = [1, 2, 3, 4, 5];\nconsole.log("Sum:", nums.reduce((a,b) => a+b, 0));\nconsole.log("Double:", nums.map(n => n*2));`,
+        class: `// Class\nclass User {\n  constructor(name) {\n    this.name = name;\n  }\n  greet() { return "Hello, " + this.name; }\n}\nconst user = new User("Dev");\nconsole.log(user.greet());`,
+        async: `// Async\nasync function fetchData() {\n  return new Promise(r => setTimeout(() => r("Done!"), 100));\n}\nfetchData().then(console.log);`,
+        api: `// API\nconst endpoints = [\n  { method: "GET", path: "/api/users" },\n  { method: "POST", path: "/api/users" }\n];\nendpoints.forEach(e => console.log(e.method, e.path));`
+      },
+      python: { hello: `# Hello\nprint("Hello, World!")` },
+      html: { htmlpage: `<!DOCTYPE html>\n<html>\n<head><title>Page</title></head>\n<body>\n  <h1>Hello World!</h1>\n  <button onclick="alert('Clicked!')">Click</button>\n</body>\n</html>` }
+    };
+
+    function setLang(lang, btn) {
+      currentLang = lang;
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      document.getElementById('fileName').textContent = 'main.' + (extensions[lang] || 'txt');
+      document.getElementById('langBadge').textContent = lang.charAt(0).toUpperCase() + lang.slice(1);
+    }
+
+    function loadTemplate(name) {
+      const code = templates[currentLang]?.[name] || templates.javascript[name];
+      if (code) { document.getElementById('codeEditor').value = code; updateLines(); }
+    }
+
+    function updateLines() {
+      const lines = document.getElementById('codeEditor').value.split('\n').length;
+      document.getElementById('lineNumbers').textContent = Array.from({length: lines}, (_, i) => i + 1).join('\n');
+    }
+
+    function handleTab(e) {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const editor = document.getElementById('codeEditor');
+        const start = editor.selectionStart;
+        editor.value = editor.value.substring(0, start) + '  ' + editor.value.substring(editor.selectionEnd);
+        editor.selectionStart = editor.selectionEnd = start + 2;
+        updateLines();
+      }
+    }
+
+    function showTab(tab) {
+      document.querySelectorAll('.output-tab').forEach(t => t.classList.remove('active'));
+      document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+      const body = document.getElementById('outputBody');
+      const errorSection = document.getElementById('errorSection');
+      if (tab === 'output') {
+        body.style.display = 'block'; errorSection.style.display = 'none';
+        body.innerHTML = outputs.length > 0 ? outputs.map(o => `<div class="output-line stdout">${escapeHtml(o)}</div>`).join('') : '<div class="empty">No output</div>';
+      } else {
+        body.style.display = 'none'; errorSection.style.display = 'block';
+        if (errorLogs.length > 0) {
+          errorSection.innerHTML = errorLogs.map(err => `
+            <div class="output-line error-detail">
+              <div class="error-title">❌ ${escapeHtml(err.message)}</div>
+              ${err.suggestion ? `<div style="color:var(--yellow);font-size:.9rem;margin-top:.5rem">💡 ${escapeHtml(err.suggestion)}</div>` : ''}
+              <button class="apply-fix-btn" onclick="applyFix('${escapeHtml(err.fix || '')}')">Apply Fix</button>
+            </div>
+          `).join('');
+        } else {
+          errorSection.innerHTML = '<div class="empty" style="color:var(--green)">✅ No errors - code ran successfully!</div>';
+        }
+      }
+    }
+
+    function applyFix(fix) {
+      if (fix) { document.getElementById('codeEditor').value = fix; updateLines(); document.getElementById('execStatus').textContent = 'Fix Applied!'; }
+    }
+
+    function clearOutput() { outputs = []; errorLogs = []; document.getElementById('outputBody').innerHTML = '<div class="empty">Click RUN</div>'; document.getElementById('execTime').textContent = '-'; document.getElementById('execStatus').textContent = 'Ready'; }
+    function downloadCode() { const b = new Blob([document.getElementById('codeEditor').value], {type:'text/plain'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'main.' + (extensions[currentLang]||'txt'); a.click(); }
+    function copyCode() { navigator.clipboard.writeText(document.getElementById('codeEditor').value); document.getElementById('execStatus').textContent = 'Copied!'; setTimeout(() => document.getElementById('execStatus').textContent = 'Ready', 1500); }
+    function formatCode() { let c = document.getElementById('codeEditor').value; if (currentLang === 'javascript') { c = c.replace(/\s+/g,' ').replace(/{\s+/g,' {\n  ').replace(/}\s+/g,'}\n').replace(/;\s+/g,';\n'); document.getElementById('codeEditor').value = c; updateLines(); } document.getElementById('execStatus').textContent = 'Formatted!'; }
+
+    async function runCode() {
+      if (isRunning) return;
+      const code = document.getElementById('codeEditor').value.trim();
+      if (!code) { outputs = ['Enter code']; showTab('output'); return; }
+      isRunning = true;
+      const btn = document.getElementById('runBtn');
+      btn.disabled = true; btn.classList.add('running'); btn.innerHTML = '<span>⏳</span> RUNNING...';
+      outputs = []; errorLogs = []; const startTime = Date.now();
+      try {
+        if (currentLang === 'javascript') { await runJavaScript(code); }
+        else { outputs.push('Use AI to generate code for ' + currentLang); }
+        document.getElementById('execTime').textContent = (Date.now() - startTime) + 'ms';
+        document.getElementById('execStatus').textContent = errorLogs.length === 0 ? 'Success ✅' : 'Errors ⚠️';
+        showTab(errorLogs.length > 0 ? 'errors' : 'output');
+      } catch (err) { errorLogs.push(analyzeError(err)); document.getElementById('execStatus').textContent = 'Error ❌'; showTab('errors'); }
+      isRunning = false; btn.disabled = false; btn.classList.remove('running'); btn.innerHTML = '<span>▶</span> RUN CODE';
+    }
+
+    function analyzeError(err) {
+      const msg = err.message || String(err);
+      let suggestion = '', fix = '';
+      if (msg.includes('getContext')) { suggestion = 'Cannot use getContext() in sandbox. Use console.log() instead.'; fix = document.getElementById('codeEditor').value.replace(/\.getContext\([^)]*\)/g, '// getContext removed'); }
+      else if (msg.includes('Cannot read properties of null')) { suggestion = 'Variable is null. Check if it exists first.'; }
+      else if (msg.includes('is not defined')) { suggestion = 'Variable not declared. Declare it first.'; }
+      return { message: msg, suggestion, fix };
+    }
+
+    async function runJavaScript(code) {
+      const logs = [];
+      const safeConsole = { log: (...a) => logs.push(a.map(x => typeof x === 'object' ? JSON.stringify(x) : String(x)).join(' ')), error: (...a) => logs.push('[ERROR] ' + a.join(' ')), warn: (...a) => logs.push('[WARN] ' + a.join(' ')) };
+      try { new Function('console', code)(safeConsole); } catch (e) { throw e; }
+      if (logs.length === 0) logs.push('Code executed (no output)');
+      outputs.push(...logs);
+    }
+
+    async function generateCode() {
+      const input = document.getElementById('aiInput').value.trim();
+      if (!input) return;
+      document.getElementById('aiInput').value = '';
+      document.getElementById('execStatus').textContent = 'AI generating...';
+      try {
+        const res = await fetch('/api/ai/groq', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({message:`Generate ${currentLang} code: ${input}`}) });
+        const data = await res.json();
+        if (data.response) {
+          let code = data.response;
+          const m = code.match(/```(?:\w+)?\n?([\s\S]*?)```/);
+          if (m) code = m[1];
+          document.getElementById('codeEditor').value = code;
+          updateLines();
+          document.getElementById('execStatus').textContent = 'Generated!';
+        }
+      } catch (e) { document.getElementById('execStatus').textContent = 'AI Error'; }
+    }
+
+    function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+    document.addEventListener('keydown', (e) => { if (e.ctrlKey && e.key === 'Enter') { e.preventDefault(); runCode(); } });
+    updateLines();
+  </script>
+</body>
+</html>

@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Downloads | BRIDGEMIND</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#030308;--bg2:#0a0a15;--card:#12121a;--border:#1a1a2e;--cyan:#00ff88;--cyan2:#00ffff;--purple:#a855f7;--text:#e0e0e0;--muted:#6b7280;--dim:#374151;--red:#ff5f57;--green:#28c840;--yellow:#febc2e;--blue:#3b82f6}
+    html,body{height:100%}
+    body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.6}
+    body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,136,.015) 2px,rgba(0,255,136,.015) 4px);pointer-events:none;z-index:9998}
+    
+    header{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.5rem;background:rgba(18,18,26,.98);border-bottom:1px solid rgba(0,255,136,.2);position:relative;z-index:100}
+    .logo{display:flex;align-items:center;gap:.75rem;font-family:'Orbitron',sans-serif;font-size:.85rem;color:var(--cyan);letter-spacing:2px}
+    .logo-icon{width:24px;height:24px;position:relative}
+    .logo-icon::before{content:'';position:absolute;inset:0;border:2px solid var(--cyan);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)}
+    .logo-icon::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:6px;height:6px;background:var(--cyan);border-radius:50%}
+    .back-btn{color:var(--muted);text-decoration:none;font-size:.8rem;padding:.5rem 1rem;border:1px solid var(--border);border-radius:4px;transition:all .3s}
+    .back-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+    
+    .container{max-width:1400px;margin:0 auto;padding:2rem 1.5rem}
+    
+    .hero{text-align:center;margin-bottom:3rem}
+    .hero h1{font-family:'Orbitron',sans-serif;font-size:clamp(1.5rem,4vw,2.5rem);color:var(--cyan);letter-spacing:3px;margin-bottom:1rem}
+    .hero p{color:var(--muted);max-width:600px;margin:0 auto}
+    
+    .tabs{display:flex;gap:.5rem;margin-bottom:2rem;overflow-x:auto;padding-bottom:.5rem;flex-wrap:wrap}
+    .tab{padding:.75rem 1.5rem;background:var(--card);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:.85rem;color:var(--muted);transition:all .3s;white-space:nowrap}
+    .tab:hover{color:var(--text)}
+    .tab.active{background:rgba(0,255,136,.1);border-color:var(--cyan);color:var(--cyan)}
+    .tab-icon{margin-right:.5rem}
+    
+    .downloads-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem}
+    
+    .download-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;transition:all .3s;display:flex;flex-direction:column}
+    .download-card:hover{border-color:var(--cyan);transform:translateY(-4px);box-shadow:0 10px 30px rgba(0,255,136,.1)}
+    
+    .file-preview{height:120px;background:rgba(0,0,0,.3);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;overflow:hidden}
+    .file-preview img{max-width:100%;max-height:100%;object-fit:cover;border-radius:8px}
+    .file-icon{font-size:3rem}
+    
+    .file-type{display:inline-block;padding:.25rem .75rem;background:rgba(0,255,136,.1);border-radius:20px;font-size:.7rem;color:var(--cyan);margin-bottom:.5rem}
+    .file-name{font-family:'Orbitron',sans-serif;font-size:.9rem;color:var(--text);margin-bottom:.5rem}
+    .file-desc{font-size:.8rem;color:var(--muted);flex:1;margin-bottom:1rem}
+    .file-meta{display:flex;justify-content:space-between;font-size:.7rem;color:var(--dim);margin-bottom:1rem;padding-top:.75rem;border-top:1px solid var(--border)}
+    
+    .download-btn{width:100%;padding:.75rem;background:linear-gradient(135deg,var(--cyan),#00cc6a);border:none;border-radius:6px;color:var(--bg);font-family:'Orbitron',sans-serif;font-weight:600;cursor:pointer;transition:all .3s;display:flex;align-items:center;justify-content:center;gap:.5rem}
+    .download-btn:hover{transform:translateY(-2px);box-shadow:0 5px 20px rgba(0,255,136,.3)}
+    
+    .category{display:none}
+    .category.active{display:block}
+    
+    .search-box{max-width:400px;margin:0 auto 2rem;position:relative}
+    .search-input{width:100%;padding:1rem 1rem 1rem 3rem;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:.9rem}
+    .search-input:focus{outline:none;border-color:var(--cyan)}
+    .search-icon{position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--muted)}
+    
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:3rem}
+    .stat-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:1.5rem;text-align:center}
+    .stat-value{font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--cyan)}
+    .stat-label{font-size:.8rem;color:var(--muted);margin-top:.5rem}
+    
+    @media(max-width:768px){
+      .container{padding:1rem}
+      .downloads-grid{grid-template-columns:1fr}
+      .tabs{justify-content:center}
+      .tab{padding:.5rem 1rem;font-size:.75rem}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <div class="logo-icon"></div>
+      DOWNLOADS
+    </div>
+    <a href="/" class="back-btn">← Back</a>
+  </header>
+  
+  <div class="container">
+    <div class="hero">
+      <h1>📥 DOWNLOAD CENTER</h1>
+      <p>Download resources, assets, and files from Parallax. All files are free to use.</p>
+    </div>
+    
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-value" id="totalFiles">12</div>
+        <div class="stat-label">Total Files</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">Free</div>
+        <div class="stat-label">100% Free</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">HD</div>
+        <div class="stat-label">Quality</div>
+      </div>
+    </div>
+    
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-input" placeholder="Search files..." id="searchInput" oninput="filterFiles()">
+    </div>
+    
+    <div class="tabs">
+      <div class="tab active" onclick="filterCategory('all')">
+        <span class="tab-icon">📦</span>All
+      </div>
+      <div class="tab" onclick="filterCategory('docs')">
+        <span class="tab-icon">📄</span>Documents
+      </div>
+      <div class="tab" onclick="filterCategory('images')">
+        <span class="tab-icon">🖼️</span>Images
+      </div>
+      <div class="tab" onclick="filterCategory('videos')">
+        <span class="tab-icon">🎬</span>Videos
+      </div>
+      <div class="tab" onclick="filterCategory('audio')">
+        <span class="tab-icon">🎵</span>Audio
+      </div>
+      <div class="tab" onclick="filterCategory('templates')">
+        <span class="tab-icon">📋</span>Templates
+      </div>
+    </div>
+    
+    <div class="downloads-grid" id="downloadsGrid">
+      <!-- Documents -->
+      <div class="download-card" data-category="docs">
+        <span class="file-type">PDF</span>
+        <div class="file-preview">
+          <span class="file-icon">📄</span>
+        </div>
+        <div class="file-name">API Documentation</div>
+        <div class="file-desc">Complete API reference with examples for all endpoints</div>
+        <div class="file-meta">
+          <span>PDF • 2.4 MB</span>
+          <span>Updated: Apr 2026</span>
+        </div>
+        <button class="download-btn" onclick="downloadFile('api-docs.pdf')">
+          📥 DOWNLOAD
+        </button>
+      </div>
+      
+      <div class="download-card" data-category="docs">
+        <span class="file-type">PDF</span>
+        <div class="file-preview">
+          <span class="file-icon">📗</span>
+        </div>
+        <div class="file-name">Getting Started Guide</div>
+        <div class="file-desc">Step-by-step tutorial to get started with Parallax</div>
+        <div class="file-meta">
+          <span>PDF • 1.8 MB</span>
+          <span>Updated: Apr 2026</span>
+        </div>
+        <button class="download-btn" onclick="downloadFile('getting-started.pdf')">
+          📥 DOWNLOAD
+        </button>
+      </div>
+      
+      <div class="download-card" data-category="docs">
+        <span class="file-type">MD</span>
+        <div class="file-preview">
+          <span class="file-icon">📋</span>
+        </div>
+        <div class="file-name">Cheat Sheet</div>
+        <div class="file-desc">Quick reference guide for all AI services and commands</div>
+        <div class="file-meta">
+          <span>Markdown • 156 KB</span>
+          <span>Updated: Apr 2026</span>
+        </div>
+        <button class="download-btn" onclick="downloadFile('cheatsheet.md')">
+          📥 DOWNLOAD
+        </button>
+      </div>
+      
+      <!-- Images -->
+      <div class="download-card" data-category="images">
+        <span class="file-type">SVG</span>
+        <div class="file-preview">
+          <svg viewBox="0 0 100 100" width="80" height="80">
+            <polygon points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5" fill="none" stroke="#00ff88" stroke-width="3"/>
+            <circle cx="50" cy="50" r="10" fill="#00ff88"/>
+          </svg>
+        </div>
+        <div class="file-name">Logo - Dark</div>
+        <div class="file-desc">Parallax logo on dark background</div>
+        <div class="file-meta">
+          <span>SVG • 4 KB</span>
+          <span>Updated: Apr 2026</span>
+        </div>
+        <button class="download-btn" onclick="downloadSVG('logo-dark')">
+          📥 DOWNLOAD
+        </button>
+      </div>
+      
+      <div class="download-card" data-category="images">
+        <span class="file-type">PNG</span>
+        <div class="file-preview">
+          <svg viewBox="0 0 100 100" width="80" height="80">
+            <polygon points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5" fill="none" stroke="#00ff88" stroke-width="3"/>
+            <circle cx="50" cy="50" r="10" fill="#00ff88"/>
+          </svg>
+        </div>
+        <div class="file-name">Logo - Transparent</div>
+        <div class="file-desc">Logo with transparent background for any surface</div>
+        <div class="file-meta">
+          <span>PNG • 24 KB</span>
+          <span>Updated: Apr 2026</span>
+        </div>
+        <button class="download-btn" onclick="downloadPNG('logo-transparent')">
+          📥 DOWNLOAD
+        </button>
+      </div>
+      
+      <div class="download-card" data-category="images">
+        <span class="file-type">SVG</span>
+        <div class="file-preview">
+          <svg viewBox="0 0 24 24" width="60" height="60" fill="#00ff88">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div class="file-name">Icon Pack</div>
+        <div class="file-desc">Service icons for COGI, GUARDIAN, DOCUFY, and more</div>
+        <div class="file-meta">
+          <span>SVG • 32 KB</span>
+          <span>Updated: Apr 2026</span>
+        </div>
+        <button class="download-btn" onclick="downloadIcons()">
+          📥 DOWNLOAD
+        </button>
+      </div>
+      
+      <div class="download-card" data-category="images">
+        <span class="file-type">OG</span>
+        <div class="file-preview">
+          <div style="width:100%;height:100%;background:linear-gradient(135deg,#0a0a0f,#12121a);display:flex;align-items:center;justify-content:center;border-radius:8px">
+            <span style="font-family:'Orbitron';color:#00ff88;font-size:1.5rem">PARALLAX</span>
+          </div>
+        </div>
+        <div class="file-name">Social Preview</div>
+        <div class="file-desc">1200x630 Open Graph image for social sharing</div>
+        <div class="file-meta">
+          <span>PNG • 156 KB</span>
+          <span>Updated: Apr 2026</span>
+        </div>
+        <button class="download-btn" onclick="downloadFile('social-preview.png')">
+          📥 DOWNLOAD
+        </button>
+      </div>
+      
+      <!-- Videos -->
+      <div class="download-card" data-category="videos">
+        <span class="file-type">MP4</span>
+        <div class="file-preview">
+          <span class="file-icon">🎬</span>
+        </div>
+        <div class="file-name">Platform Demo</div>
+        <div class="file-desc">2-minute overview of all Parallax features</div>
+        <div class="file-meta">
+          <span>MP4 • 48 MB</span>
+          <span>Updated: Apr 2026</span>
+        </div>
+        <button class="download-btn" onclick="downloadFile('demo.mp4')">
+          📥 DOWNLOAD
+        </button>
+      </div>
+      
+      <div class="download-card" data-category="videos">
+        <span class="file-type">GIF</span>
+        <div class="file-preview">
+          <span class="file-icon">🎞️</span>
+        </div>
+        <div class="file-name">Terminal Preview</div>
+        <div class="file-desc">Animated preview of the Parallax Terminal interface</div>
+        <div class="file-meta">
+          <span>GIF • 4 MB</span>
+          <span>Updated: Apr 2026</span>
+        </div>
+        <button class="download-btn" onclick="downloadFile('terminal-preview.gif')">
+          📥 DOWNLOAD
+        </button>
+      </div>
+      
+      <!-- Audio -->
+      <div class="download-card" data-category="audio">
+        <span class="file-type">MP3</span>
+        <div class="file-preview">
+          <span class="file-icon">🎵</span>
+        </div>
+        <div class="file-name">Brand Sound</div>
+        <div class="file-desc">Short notification sound for the platform</div>
+        <div class="file-meta">
+          <span>MP3 • 128 KB</span>
+          <span>Updated: Apr 2026</span>
+        </div>
+        <button class="download-btn" onclick="playAudio('brand-sound.mp3')">
+          ▶ PREVIEW
+        </button>
+      </div>
+      
+      <div class="download-card" data-category="audio">
+        <span class="file-type">WAV</span>
+        <div class="file-preview">
+          <span class="file-icon">🔔</span>
+        </div>
+        <div class="file-name">Notification Tone</div>
+        <div class="file-desc">Alert sound for completed tasks</div>
+        <div class="file-meta">
+          <span>WAV • 256 KB</span>
+          <span>Updated: Apr 2026</span>
+        </div>
+        <button class="download-btn" onclick="playAudio('notification.wav')">
+          ▶ PREVIEW
+        </button>
+      </div>
+      
+      <!-- Templates -->
+      <div class="download-card" data-category="templates">
+        <span class="file-type">JSON</span>
+        <div class="file-preview">
+          <span class="file-icon">{ }</span>
+        </div>
+        <div class="file-name">API Response Template</div>
+        <div class="file-desc">Sample JSON response structure for all services</div>
+        <div class="file-meta">
+          <span>JSON • 12 KB</span>
+          <span>Updated: Apr 2026</span>
+        </div>
+        <button class="download-btn" onclick="downloadJSON('api-response-template.json')">
+          📥 DOWNLOAD
+        </button>
+      </div>
+      
+      <div class="download-card" data-category="templates">
+        <span class="file-type">JS</span>
+        <div class="file-preview">
+          <span class="file-icon">⚡</span>
+        </div>
+        <div class="file-name">SDK Boilerplate</div>
+        <div class="file-desc">Ready-to-use JavaScript SDK integration template</div>
+        <div class="file-meta">
+          <span>JavaScript • 8 KB</span>
+          <span>Updated: Apr 2026</span>
+        </div>
+        <button class="download-btn" onclick="downloadFile('sdk-boilerplate.js')">
+          📥 DOWNLOAD
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    let currentCategory = 'all';
+    
+    function filterCategory(category) {
+      currentCategory = category;
+      
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+        if (tab.textContent.toLowerCase().includes(category) || (category === 'all' && tab.textContent.includes('All'))) {
+          tab.classList.add('active');
+        }
+      });
+      
+      const cards = document.querySelectorAll('.download-card');
+      cards.forEach(card => {
+        if (category === 'all' || card.dataset.category === category) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      
+      updateStats();
+    }
+    
+    function filterFiles() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const cards = document.querySelectorAll('.download-card');
+      
+      cards.forEach(card => {
+        const name = card.querySelector('.file-name').textContent.toLowerCase();
+        const desc = card.querySelector('.file-desc').textContent.toLowerCase();
+        
+        if ((currentCategory === 'all' || card.dataset.category === currentCategory) && 
+            (name.includes(query) || desc.includes(query))) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      
+      updateStats();
+    }
+    
+    function updateStats() {
+      const visible = document.querySelectorAll('.download-card[style*="flex"], .download-card:not([style*="none"])');
+      document.getElementById('totalFiles').textContent = Array.from(document.querySelectorAll('.download-card')).filter(c => c.style.display !== 'none').length;
+    }
+    
+    function downloadFile(filename) {
+      showToast(`Generating ${filename}...`, 'info');
+      
+      setTimeout(() => {
+        const content = getFileContent(filename);
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showToast(`✓ ${filename} downloaded!`, 'success');
+      }, 500);
+    }
+    
+    function downloadSVG(name) {
+      const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <polygon points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5" fill="none" stroke="#00ff88" stroke-width="3"/>
+  <circle cx="50" cy="50" r="10" fill="#00ff88"/>
+</svg>`;
+      
+      const blob = new Blob([svgContent], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${name}.svg`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      showToast('✓ Logo downloaded as SVG!', 'success');
+    }
+    
+    function downloadPNG(name) {
+      const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <rect width="200" height="200" fill="#0a0a0f"/>
+  <polygon points="100,10 190,55 190,145 100,190 10,145 10,55" fill="none" stroke="#00ff88" stroke-width="4"/>
+  <circle cx="100" cy="100" r="20" fill="#00ff88"/>
+</svg>`;
+      
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 512;
+      const ctx = canvas.getContext('2d');
+      
+      const img = new Image();
+      img.onload = () => {
+        ctx.drawImage(img, 0, 0, 512, 512);
+        canvas.toBlob(blob => {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${name}.png`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          showToast('✓ Logo downloaded as PNG!', 'success');
+        });
+      };
+      img.src = 'data:image/svg+xml;base64,' + btoa(svgContent);
+    }
+    
+    function downloadIcons() {
+      const icons = {
+        cogi: '<svg viewBox="0 0 24 24"><path fill="#00ff88" d="M13 3v2h4l-5 7v3h-2l-5-7v-3h4z"/></svg>',
+        guardian: '<svg viewBox="0 0 24 24"><path fill="#00ff88" d="M12 2L4 5v6c0 5.55 3.84 10.74 8 12 4.16-1.26 8-6.45 8-12V5l-8-3z"/></svg>',
+        docufy: '<svg viewBox="0 0 24 24"><path fill="#00ff88" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>',
+        testpilot: '<svg viewBox="0 0 24 24"><path fill="#00ff88" d="M19.8 10.7L4.2 5l-.7 1.9L17.6 12H5c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-6c0-1.1-.9-2-2-2H5.8l1.6-1.8c.4-.4.6-.9.6-1.5 0-1.1.9-2 2-2h8.6l1.6 1.8c.4.4.6.9.6 1.5 0 1.1-.9 2-2 2H17v2h2.3c.6 0 1.1-.2 1.5-.6z"/></svg>',
+        crawler: '<svg viewBox="0 0 24 24"><path fill="#00ff88" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>'
+      };
+      
+      let zipContent = '';
+      Object.entries(icons).forEach(([name, svg]) => {
+        zipContent += `${name}.svg: ${svg}\n\n`;
+      });
+      
+      const blob = new Blob([zipContent], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'parallax-icons.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      showToast('✓ Icon pack downloaded!', 'success');
+    }
+    
+    function downloadJSON(name) {
+      const template = {
+        success: true,
+        service: "cogi",
+        response: "// Generated code here",
+        metadata: {
+          tokens: 150,
+          latency: "186ms",
+          model: "mixtral-8x7b",
+          timestamp: new Date().toISOString()
+        }
+      };
+      
+      const blob = new Blob([JSON.stringify(template, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      showToast('✓ Template downloaded!', 'success');
+    }
+    
+    function playAudio(filename) {
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.value = 800;
+      oscillator.type = 'sine';
+      
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.5);
+      
+      showToast('▶ Playing audio preview...', 'info');
+    }
+    
+    function getFileContent(filename) {
+      const files = {
+        'api-docs.pdf': `BRIDGEMIND - API DOCUMENTATION
+================================
+
+Version: 3.0
+Last Updated: April 2026
+
+ENDPOINTS
+---------
+POST /api/services - AI Services
+POST /api/sandbox - Code Execution  
+GET  /api/health - Health Check
+
+For full documentation visit:
+https://parallaxdominion.vercel.app/api-docs`,
+        
+        'getting-started.pdf': `GETTING STARTED WITH BRIDGEMIND
+======================================
+
+1. Sign up at parallaxdominion.vercel.app
+2. Get your API key from dashboard
+3. Start using AI services
+
+Quick Start:
+curl -X POST https://parallaxdominion.vercel.app/api/services \\
+  -H "Content-Type: application/json" \\
+  -d '{"service":"cogi","message":"Hello world"}'`,
+        
+        'cheatsheet.md': `# BRIDGEMIND CHEAT SHEET
+
+## Services
+- COGI: Code generation
+- GUARDIAN: Security scanning
+- DOCUFY: Documentation
+- TEST PILOT: Test generation
+- CRAWLER: Web scraping
+- AGENT SWARM: Multi-agent AI
+
+## Keyboard Shortcuts
+Ctrl+T - Terminal
+Ctrl+S - Sandbox
+Ctrl+G - Services`,
+        
+        'sdk-boilerplate.js': `// Parallax SDK
+// Get your API key at https://parallaxdominion.vercel.app/dashboard
+
+const ParallaxSDK = {
+  apiKey: 'YOUR_API_KEY',
+  baseUrl: 'https://parallaxdominion.vercel.app/api',
+  
+  async generateCode(prompt) {
+    const res = await fetch(this.baseUrl + '/services', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        service: 'cogi',
+        message: prompt,
+        apiKey: this.apiKey
+      })
+    });
+    return res.json();
+  }
+};
+
+// Usage
+ParallaxSDK.generateCode('Create a REST API').then(console.log);`,
+        
+        'demo.mp4': '[Video file - demo content not available for direct download]',
+        'terminal-preview.gif': '[GIF file - preview not available for direct download]',
+        'brand-sound.mp3': '[Audio file - use playAudio() for preview]',
+        'notification.wav': '[Audio file - use playAudio() for preview]',
+        'social-preview.png': '[Image file - generated dynamically]'
+      };
+      
+      return files[filename] || 'File content';
+    }
+    
+    function showToast(message, type) {
+      const toast = document.createElement('div');
+      toast.style.cssText = `position:fixed;top:20px;right:20px;padding:1rem 1.5rem;background:var(--card);border:1px solid var(--${type === 'success' ? 'green' : 'cyan'});border-radius:8px;z-index:10000;color:var(--text);animation:slideIn .3s ease;font-family:'JetBrains Mono',monospace`;
+      
+      const style = document.createElement('style');
+      style.textContent = '@keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}';
+      document.head.appendChild(style);
+      
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+  </script>
+</body>
+</html>

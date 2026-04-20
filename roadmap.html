@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roadmap | BRIDGEMIND</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#030308;--bg2:#0a0a15;--card:#12121a;--border:#1a1a2e;--cyan:#00ff88;--cyan2:#00ffff;--purple:#a855f7;--magenta:#ff00ff;--text:#e0e0e0;--muted:#6b7280;--dim:#374151;--glow:rgba(0,255,136,.3)}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+    nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(3,3,8,.95);border-bottom:1px solid var(--border);backdrop-filter:blur(20px)}
+    nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent)}
+    .nav{max-width:1400px;margin:0 auto;padding:.75rem 2rem;display:flex;justify-content:space-between;align-items:center}
+    .logo{display:flex;align-items:center;gap:.75rem;text-decoration:none;color:var(--text);font-weight:600;letter-spacing:2px;font-family:'Orbitron',sans-serif;font-size:.9rem}
+    .logo-icon{width:28px;height:28px;position:relative}
+    .logo-icon::before{content:'';position:absolute;inset:0;border:2px solid var(--cyan);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);animation:pulse 2s ease-in-out infinite}
+    .logo-icon::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:6px;height:6px;background:var(--cyan);border-radius:50%;box-shadow:0 0 10px var(--cyan)}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+    .links{display:flex;gap:1.5rem}
+    .links a{color:var(--muted);text-decoration:none;font-size:.85rem;transition:all .3s}
+    .links a:hover,.links a.active{color:var(--cyan)}
+    .cta{padding:.5rem 1.25rem;border:1px solid var(--cyan);color:var(--cyan);text-decoration:none;font-size:.75rem;border-radius:4px;transition:all .3s;font-family:'Orbitron',sans-serif}
+    .cta:hover{background:var(--cyan);color:var(--bg);box-shadow:0 0 30px var(--glow)}
+    
+    main{padding:120px 2rem 4rem;max-width:1200px;margin:0 auto}
+    .tag{color:var(--cyan);font-size:.8rem;letter-spacing:4px;text-transform:uppercase;font-family:'Orbitron',sans-serif}
+    h1{font-size:3rem;margin:1rem 0 1rem;font-family:'Orbitron',sans-serif;letter-spacing:4px;background:linear-gradient(90deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .desc{color:var(--muted);font-size:1.1rem;max-width:600px;margin-bottom:3rem;line-height:1.8}
+    
+    .quarters{display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:2rem}
+    .quarter{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:2rem}
+    .quarter-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+    .quarter-title{font-family:'Orbitron',sans-serif;font-size:1.1rem;letter-spacing:2px}
+    .quarter-badge{padding:.25rem .75rem;border-radius:4px;font-size:.7rem;font-family:'Orbitron',sans-serif;text-transform:uppercase}
+    .badge-done{background:rgba(0,255,136,.2);color:var(--cyan)}
+    .badge-progress{background:rgba(255,188,0,.2);color:#ffbc00}
+    .badge-planned{background:rgba(168,85,247,.2);color:var(--purple)}
+    .badge-research{background:rgba(100,100,100,.2);color:var(--muted)}
+    
+    .item{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid rgba(255,255,255,.03)}
+    .item:last-child{border-bottom:none;padding-bottom:0}
+    .item-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--glow),rgba(168,85,247,.2));border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem}
+    .item-content{flex:1}
+    .item-title{font-weight:600;margin-bottom:.25rem}
+    .item-desc{color:var(--muted);font-size:.85rem;line-height:1.6}
+    .item-meta{display:flex;gap:1rem;margin-top:.5rem;font-size:.75rem;color:var(--dim)}
+    .item-meta span{display:flex;align-items:center;gap:.25rem}
+    
+    .contribute{background:linear-gradient(135deg,rgba(0,255,136,.1),rgba(168,85,247,.1));border:1px solid var(--cyan);border-radius:12px;padding:3rem;text-align:center;margin-top:4rem}
+    .contribute h2{font-family:'Orbitron',sans-serif;margin-bottom:1rem;letter-spacing:2px}
+    .contribute p{color:var(--muted);margin-bottom:2rem;max-width:500px;margin-left:auto;margin-right:auto}
+    .contribute-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+    .contribute-btn{padding:1rem 2rem;border-radius:8px;font-family:'Orbitron',sans-serif;font-size:.85rem;text-decoration:none;transition:all .3s}
+    .contribute-btn.primary{background:var(--cyan);color:var(--bg)}
+    .contribute-btn.secondary{background:transparent;border:1px solid var(--border);color:var(--text)}
+    .contribute-btn:hover{transform:translateY(-2px);box-shadow:0 0 30px var(--glow)}
+    
+    footer{padding:4rem 2rem;text-align:center;color:var(--muted);font-size:.85rem;border-top:1px solid var(--border)}
+    footer a{color:var(--cyan);text-decoration:none}
+    .mobile-menu-btn{display:none;background:none;border:1px solid var(--border);color:var(--muted);padding:.4rem .6rem;border-radius:4px;cursor:pointer;font-size:1.2rem;margin-left:auto}
+    .mobile-menu-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+    .mobile-menu{display:none;position:fixed;top:60px;left:0;right:0;background:var(--card);border-bottom:1px solid var(--border);z-index:999;padding:1rem;flex-direction:column;gap:.5rem;max-height:80vh;overflow-y:auto}
+    .mobile-menu.show{display:flex!important}
+    .mobile-menu a{padding:1rem;color:var(--muted);text-decoration:none;font-size:.9rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+    .mobile-menu a:hover{color:var(--cyan)}
+    .mobile-menu .cta-mobile{background:var(--cyan);color:var(--bg);border:none;text-align:center;justify-content:center;border-radius:6px}
+    @media(max-width:768px){.links{display:none!important}.mobile-menu-btn{display:flex!important;align-items:center;justify-content:center}.cta{display:none!important}.nav{justify-content:space-between}}
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav">
+      <a href="/" class="logo">
+        <div class="logo-icon"></div>
+        PARALLAX_DOMINION
+      </a>
+      <div class="links">
+        <a href="/">Home</a>
+        <a href="/services">Services</a>
+        <a href="/pricing">Pricing</a>
+        <a href="/blog">Blog</a>
+        <a href="/roadmap" class="active">Roadmap</a>
+        <a href="/api-docs">API</a>
+      </div>
+      <a href="/login.html" class="cta" id="navCta">GET STARTED</a>
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
+    </div>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="/">🏠 Home <span>→</span></a>
+    <a href="/services.html">🚀 Services <span>→</span></a>
+    <a href="/agent-swarm.html">🐝 Agent Swarm <span>→</span></a>
+    <a href="/ai-chat.html">💬 AI Chat <span>→</span></a>
+    <a href="/terminal-pro.html">⌨️ Terminal <span>→</span></a>
+    <a href="/sandbox.html">📦 Sandbox <span>→</span></a>
+    <a href="/pricing.html">💰 Pricing <span>→</span></a>
+    <a href="/dashboard.html" id="mobileDashboard">📊 Dashboard <span>→</span></a>
+    <a href="/docs.html">📚 Docs <span>→</span></a>
+    <a href="/roadmap.html" style="color:var(--cyan)">🗺️ Roadmap <span>→</span></a>
+    <a href="/login.html" id="mobileAuthLink" onclick="handleMobileAuth(event)" class="cta-mobile" style="color:var(--bg)">🔑 Get Started <span>→</span></a>
+  </div>
+
+  <main>
+    <span class="tag">// ROADMAP</span>
+    <h1>Product Roadmap</h1>
+    <p class="desc">See what we're building next. This roadmap is updated regularly based on user feedback and our development progress.</p>
+    
+    <div class="quarters">
+      <div class="quarter">
+        <div class="quarter-header">
+          <span class="quarter-title">Q1 2026</span>
+          <span class="quarter-badge badge-done">COMPLETED</span>
+        </div>
+        <div class="item">
+          <div class="item-icon">🐝</div>
+          <div class="item-content">
+            <div class="item-title">Agent Swarm 2.0</div>
+            <div class="item-desc">Multi-agent collaboration with 8 specialized AI agents working in parallel</div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">🛡️</div>
+          <div class="item-content">
+            <div class="item-title">AI Security Scanning</div>
+            <div class="item-desc">Advanced vulnerability detection with OWASP Top 10 coverage</div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">🌙</div>
+          <div class="item-content">
+            <div class="item-title">Dark/Light Mode</div>
+            <div class="item-desc">Theme toggle with localStorage persistence</div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">📱</div>
+          <div class="item-content">
+            <div class="item-title">PWA Support</div>
+            <div class="item-desc">Installable web app with offline support</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="quarter">
+        <div class="quarter-header">
+          <span class="quarter-title">Q2 2026</span>
+          <span class="quarter-badge badge-progress">IN PROGRESS</span>
+        </div>
+        <div class="item">
+          <div class="item-icon">🐙</div>
+          <div class="item-content">
+            <div class="item-title">GitHub Integration</div>
+            <div class="item-desc">Auto PR reviews, security scans on commit, auto-fix suggestions</div>
+            <div class="item-meta">
+              <span>📅 Target: March 2026</span>
+              <span>👍 245 votes</span>
+            </div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">🔌</div>
+          <div class="item-content">
+            <div class="item-title">VS Code Extension</div>
+            <div class="item-desc">Inline AI suggestions, real-time security alerts, one-click tests</div>
+            <div class="item-meta">
+              <span>📅 Target: April 2026</span>
+              <span>👍 189 votes</span>
+            </div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">📊</div>
+          <div class="item-content">
+            <div class="item-title">Analytics Dashboard</div>
+            <div class="item-desc">API usage tracking, cost analysis, performance metrics</div>
+            <div class="item-meta">
+              <span>📅 Target: April 2026</span>
+              <span>👍 156 votes</span>
+            </div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">🤖</div>
+          <div class="item-content">
+            <div class="item-title">Custom AI Models</div>
+            <div class="item-desc">Upload and fine-tune models for your specific use cases</div>
+            <div class="item-meta">
+              <span>📅 Target: May 2026</span>
+              <span>👍 134 votes</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="quarter">
+        <div class="quarter-header">
+          <span class="quarter-title">Q3 2026</span>
+          <span class="quarter-badge badge-planned">PLANNED</span>
+        </div>
+        <div class="item">
+          <div class="item-icon">🎨</div>
+          <div class="item-content">
+            <div class="item-title">UI Component Generator</div>
+            <div class="item-desc">Generate React, Vue, or Svelte components from designs</div>
+            <div class="item-meta">
+              <span>📅 Target: June 2026</span>
+              <span>👍 98 votes</span>
+            </div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">📱</div>
+          <div class="item-content">
+            <div class="item-title">Mobile App</div>
+            <div class="item-desc">iOS and Android apps for on-the-go AI assistance</div>
+            <div class="item-meta">
+              <span>📅 Target: July 2026</span>
+              <span>👍 87 votes</span>
+            </div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">🔄</div>
+          <div class="item-content">
+            <div class="item-title">CI/CD Integration</div>
+            <div class="item-desc">Jenkins, GitHub Actions, GitLab CI integration</div>
+            <div class="item-meta">
+              <span>📅 Target: August 2026</span>
+              <span>👍 76 votes</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="quarter">
+        <div class="quarter-header">
+          <span class="quarter-title">Future</span>
+          <span class="quarter-badge badge-research">RESEARCH</span>
+        </div>
+        <div class="item">
+          <div class="item-icon">🌍</div>
+          <div class="item-content">
+            <div class="item-title">Self-Hosted Option</div>
+            <div class="item-desc">Deploy Parallax on your own infrastructure</div>
+            <div class="item-meta">
+              <span>📅 TBD</span>
+              <span>👍 234 votes</span>
+            </div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">🎓</div>
+          <div class="item-content">
+            <div class="item-title">AI Learning Platform</div>
+            <div class="item-desc">Interactive coding courses powered by AI tutors</div>
+            <div class="item-meta">
+              <span>📅 TBD</span>
+              <span>👍 167 votes</span>
+            </div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">🌐</div>
+          <div class="item-content">
+            <div class="item-title">Enterprise SSO</div>
+            <div class="item-desc">SAML, OAuth, Azure AD integration for enterprise teams</div>
+            <div class="item-meta">
+              <span>📅 TBD</span>
+              <span>👍 145 votes</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="contribute">
+      <h2>Shape the Future</h2>
+      <p>Have a feature idea? Want to contribute? We welcome feedback from the community.</p>
+      <div class="contribute-btns">
+        <a href="https://github.com/Njap-png/Parallax-Dominion/issues" target="_blank" class="contribute-btn primary">Request Feature</a>
+        <a href="https://github.com/Njap-png/Parallax-Dominion" target="_blank" class="contribute-btn secondary">Contribute on GitHub</a>
+        <a href="/contact" class="contribute-btn secondary">Contact Us</a>
+      </div>
+    </div>
+  </main>
+  
+  <footer>
+    <p>© 2026 BRIDGEMIND | <a href="/">Home</a> | <a href="/terms">Terms</a> | <a href="/privacy">Privacy</a></p>
+  </footer>
+  <script>
+    function toggleMobileMenu(){
+      document.getElementById('mobileMenu').classList.toggle('show');
+      updateMobileAuth();
+    }
+    
+    function updateMobileAuth() {
+      const isLoggedIn = localStorage.getItem('auth_token');
+      const mobileAuthLink = document.getElementById('mobileAuthLink');
+      
+      if (isLoggedIn) {
+        mobileAuthLink.innerHTML = '🚪 Logout <span>→</span>';
+        mobileAuthLink.onclick = function(e) { e.preventDefault(); logout(); };
+      } else {
+        mobileAuthLink.innerHTML = '🔑 Get Started <span>→</span>';
+        mobileAuthLink.onclick = function() { window.location.href = '/login.html'; };
+      }
+    }
+    
+    function handleMobileAuth(e) {
+      const isLoggedIn = localStorage.getItem('auth_token');
+      if (isLoggedIn) {
+        e.preventDefault();
+        logout();
+      }
+    }
+    
+    function logout() {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      window.location.href = '/login.html';
+    }
+    if(localStorage.getItem('auth_token')){
+      document.getElementById('navCta').href = '/dashboard.html';
+      document.getElementById('navCta').textContent = 'Dashboard';
+    }
+  </script>
+</body>
+</html>

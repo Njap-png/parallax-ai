@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact | BRIDGEMIND</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#050508;--card:#12121a;--border:#27272a;--cyan:#00ff88;--text:#e0e0e0;--muted:#9ca3af}
+    body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+    body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(0,0,0,.03) 1px,rgba(0,0,0,.03) 2px);pointer-events:none;z-index:9999}
+    nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(5,5,8,.95);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);padding:.75rem 2rem}
+    nav a{color:var(--muted);text-decoration:none;font-size:.85rem}
+    nav a:hover{color:var(--cyan)}
+    main{padding:80px 2rem 2rem;max-width:600px;margin:0 auto}
+    h1{font-size:1.75rem;margin-bottom:.5rem;background:linear-gradient(90deg,var(--cyan),#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .sub{color:var(--muted);margin-bottom:2rem}
+    .form{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:2rem}
+    .field{margin-bottom:1.5rem}
+    label{display:block;margin-bottom:.5rem;font-size:.9rem}
+    input,textarea{width:100%;padding:.75rem 1rem;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:1rem}
+    input:focus,textarea:focus{outline:none;border-color:var(--cyan)}
+    textarea{min-height:120px;resize:vertical}
+    button{background:var(--cyan);color:var(--bg);border:none;padding:1rem 2rem;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:500;width:100%}
+    button:hover{box-shadow:0 0 20px rgba(0,255,136,.3)}
+    .mobile-menu-btn{display:none;background:none;border:1px solid var(--border);color:var(--muted);padding:.4rem .6rem;border-radius:4px;cursor:pointer;font-size:1.2rem;margin-left:auto}
+    .mobile-menu-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+    .mobile-menu{display:none;position:fixed;top:50px;left:0;right:0;background:var(--card);border-bottom:1px solid var(--border);z-index:999;padding:1rem;flex-direction:column;gap:.5rem;max-height:80vh;overflow-y:auto}
+    .mobile-menu.show{display:flex!important}
+    .mobile-menu a{padding:1rem;color:var(--muted);text-decoration:none;font-size:.9rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+    .mobile-menu a:hover{color:var(--cyan)}
+    @media(max-width:768px){.mobile-menu-btn{display:flex!important;align-items:center;justify-content:center}nav a:not(:last-child):not(.mobile-menu-btn){display:none}nav span:not(:last-child){display:none}}
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/">PARALLAX_DOMINION</a>
+    <a href="/login.html" id="navLogin">Sign In</a>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="/">🏠 Home <span>→</span></a>
+    <a href="/services.html">🚀 Services <span>→</span></a>
+    <a href="/pricing.html">💰 Pricing <span>→</span></a>
+    <a href="/dashboard.html" id="mobileDashboard">📊 Dashboard <span>→</span></a>
+    <a href="/docs.html">📚 Docs <span>→</span></a>
+    <a href="/contact.html" style="color:var(--cyan)">📧 Contact <span>→</span></a>
+    <a href="/login.html" id="mobileAuthLink" onclick="handleMobileAuth(event)" style="color:var(--cyan)">🔑 Sign In <span>→</span></a>
+  </div>
+  <script>
+    function toggleMobileMenu(){
+      document.getElementById('mobileMenu').classList.toggle('show');
+      updateMobileAuth();
+    }
+    
+    function updateMobileAuth() {
+      const isLoggedIn = localStorage.getItem('auth_token');
+      const mobileAuthLink = document.getElementById('mobileAuthLink');
+      
+      if (isLoggedIn) {
+        mobileAuthLink.innerHTML = '🚪 Logout <span>→</span>';
+        mobileAuthLink.onclick = function(e) { e.preventDefault(); logout(); };
+      } else {
+        mobileAuthLink.innerHTML = '🔑 Sign In <span>→</span>';
+        mobileAuthLink.onclick = function() { window.location.href = '/login.html'; };
+      }
+    }
+    
+    function handleMobileAuth(e) {
+      const isLoggedIn = localStorage.getItem('auth_token');
+      if (isLoggedIn) {
+        e.preventDefault();
+        logout();
+      }
+    }
+    
+    function logout() {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      window.location.href = '/login.html';
+    }
+    function logout() { localStorage.removeItem('auth_token'); localStorage.removeItem('user'); window.location.href='/login.html'; }
+    if(localStorage.getItem('auth_token')){ document.getElementById('navDashboard').style.display='inline'; document.getElementById('navLogout').style.display='inline'; document.getElementById('navLogin').style.display='none'; }
+  </script>
+  <main>
+    <h1>CONTACT US</h1>
+    <p class="sub">Get in touch with our team</p>
+    <div class="form">
+      <div class="field">
+        <label>Name</label>
+        <input type="text" id="name" placeholder="Your name">
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="email" placeholder="you@example.com">
+      </div>
+      <div class="field">
+        <label>Message</label>
+        <textarea id="message" placeholder="How can we help?"></textarea>
+      </div>
+      <button onclick="sendMessage()">Send Message</button>
+    </div>
+  </main>
+  <script>
+    async function sendMessage(){
+      const name=document.getElementById('name').value;
+      const email=document.getElementById('email').value;
+      const message=document.getElementById('message').value;
+      if(!name||!email||!message){alert('Please fill all fields');return;}
+      try{
+        await fetch('/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,message})});
+        alert('Message sent! We\'ll respond within 24 hours.');
+        document.getElementById('name').value='';
+        document.getElementById('email').value='';
+        document.getElementById('message').value='';
+      }catch{alert('Error sending message. Please try again.');}
+    }
+  </script>
+</body>
+</html>

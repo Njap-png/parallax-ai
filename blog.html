@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog | BRIDGEMIND</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@animate.css/animate.css">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#030308;--bg2:#0a0a15;--card:#12121a;--border:#1a1a2e;--cyan:#00ff88;--cyan2:#00ffff;--purple:#a855f7;--magenta:#ff00ff;--text:#e0e0e0;--muted:#6b7280;--dim:#374151;--glow:rgba(0,255,136,.3)}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+    nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(3,3,8,.95);border-bottom:1px solid var(--border);backdrop-filter:blur(20px)}
+    nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent)}
+    .nav{max-width:1400px;margin:0 auto;padding:.75rem 2rem;display:flex;justify-content:space-between;align-items:center}
+    .logo{display:flex;align-items:center;gap:.75rem;text-decoration:none;color:var(--text);font-weight:600;letter-spacing:2px;font-family:'Orbitron',sans-serif;font-size:.9rem}
+    .logo-icon{width:28px;height:28px;position:relative}
+    .logo-icon::before{content:'';position:absolute;inset:0;border:2px solid var(--cyan);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);animation:pulse 2s ease-in-out infinite}
+    .logo-icon::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:6px;height:6px;background:var(--cyan);border-radius:50%;box-shadow:0 0 10px var(--cyan)}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+    .links{display:flex;gap:1.5rem}
+    .links a{color:var(--muted);text-decoration:none;font-size:.85rem;transition:all .3s}
+    .links a:hover,.links a.active{color:var(--cyan);text-shadow:0 0 10px var(--cyan)}
+    .cta{padding:.5rem 1.25rem;border:1px solid var(--cyan);color:var(--cyan);text-decoration:none;font-size:.75rem;border-radius:4px;transition:all .3s;font-family:'Orbitron',sans-serif;letter-spacing:1px}
+    .cta:hover{background:var(--cyan);color:var(--bg);box-shadow:0 0 30px var(--glow)}
+    
+    main{padding:120px 2rem 4rem;max-width:1000px;margin:0 auto}
+    .tag{color:var(--cyan);font-size:.8rem;letter-spacing:4px;text-transform:uppercase;font-family:'Orbitron',sans-serif}
+    h1{font-size:3rem;margin:1rem 0 2rem;font-family:'Orbitron',sans-serif;letter-spacing:4px;background:linear-gradient(90deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    
+    .posts{display:flex;flex-direction:column;gap:2rem}
+    .post{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:2rem;transition:all .3s}
+    .post:hover{border-color:var(--cyan);box-shadow:0 0 40px var(--glow)}
+    .post-meta{color:var(--muted);font-size:.8rem;margin-bottom:1rem;display:flex;gap:1rem}
+    .post-meta span{display:flex;align-items:center;gap:.5rem}
+    .post h2{font-family:'Orbitron',sans-serif;margin-bottom:1rem;letter-spacing:2px}
+    .post h2 a{color:var(--text);text-decoration:none;transition:color .3s}
+    .post h2 a:hover{color:var(--cyan)}
+    .post-excerpt{color:var(--muted);margin-bottom:1.5rem;line-height:1.8}
+    .post-link{color:var(--cyan);font-weight:600;font-size:.9rem;text-decoration:none;font-family:'Orbitron',sans-serif;letter-spacing:1px}
+    .post-link:hover{text-shadow:0 0 15px var(--glow)}
+    
+    .featured{background:linear-gradient(135deg,rgba(0,255,136,.1),rgba(168,85,247,.1));border:1px solid var(--cyan);margin-bottom:3rem}
+    .featured-badge{background:var(--cyan);color:var(--bg);padding:.25rem .75rem;border-radius:4px;font-size:.7rem;font-weight:600;font-family:'Orbitron',sans-serif;display:inline-block;margin-bottom:1rem}
+    
+    footer{padding:4rem 2rem;text-align:center;color:var(--muted);font-size:.85rem;border-top:1px solid var(--border)}
+    footer a{color:var(--cyan);text-decoration:none}
+    footer a:hover{text-shadow:0 0 10px var(--glow)}
+    .mobile-menu-btn{display:none;background:none;border:1px solid var(--border);color:var(--muted);padding:.4rem .6rem;border-radius:4px;cursor:pointer;font-size:1.2rem;margin-left:auto}
+    .mobile-menu-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+    .mobile-menu{display:none;position:fixed;top:60px;left:0;right:0;background:var(--card);border-bottom:1px solid var(--border);z-index:999;padding:1rem;flex-direction:column;gap:.5rem;max-height:80vh;overflow-y:auto}
+    .mobile-menu.show{display:flex!important}
+    .mobile-menu a{padding:1rem;color:var(--muted);text-decoration:none;font-size:.9rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+    .mobile-menu a:hover{color:var(--cyan)}
+    .mobile-menu .cta-mobile{background:var(--cyan);color:var(--bg);border:none;text-align:center;justify-content:center;border-radius:6px}
+    @media(max-width:768px){.links{display:none!important}.mobile-menu-btn{display:flex!important;align-items:center;justify-content:center}.cta{display:none!important}.nav{justify-content:space-between}}
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav">
+      <a href="/" class="logo">
+        <div class="logo-icon"></div>
+        PARALLAX_DOMINION
+      </a>
+      <div class="links">
+        <a href="/">Home</a>
+        <a href="/services">Services</a>
+        <a href="/pricing">Pricing</a>
+        <a href="/blog" class="active">Blog</a>
+        <a href="/api-docs">API</a>
+      </div>
+      <a href="/login.html" class="cta" id="navCta">GET STARTED</a>
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
+    </div>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="/">🏠 Home <span>→</span></a>
+    <a href="/services.html">🚀 Services <span>→</span></a>
+    <a href="/agent-swarm.html">🐝 Agent Swarm <span>→</span></a>
+    <a href="/ai-chat.html">💬 AI Chat <span>→</span></a>
+    <a href="/terminal-pro.html">⌨️ Terminal <span>→</span></a>
+    <a href="/sandbox.html">📦 Sandbox <span>→</span></a>
+    <a href="/pricing.html">💰 Pricing <span>→</span></a>
+    <a href="/dashboard.html" id="mobileDashboard">📊 Dashboard <span>→</span></a>
+    <a href="/docs.html">📚 Docs <span>→</span></a>
+    <a href="/blog.html" style="color:var(--cyan)">📝 Blog <span>→</span></a>
+    <a href="/login.html" id="mobileAuthLink" onclick="handleMobileAuth(event)" class="cta-mobile" style="color:var(--bg)">🔑 Get Started <span>→</span></a>
+  </div>
+
+  <main>
+    <span class="tag">// BLOG</span>
+    <h1>Latest Updates</h1>
+    
+    <div class="posts">
+      <article class="post featured">
+        <span class="featured-badge">FEATURED</span>
+        <div class="post-meta">
+          <span>📅 February 15, 2026</span>
+          <span>👤 Teddy Njagi</span>
+          <span>⏱️ 5 min read</span>
+        </div>
+        <h2><a href="#">Introducing Agent Swarm 2.0: Multi-Agent Collaboration</a></h2>
+        <p class="post-excerpt">We're excited to announce Agent Swarm 2.0, featuring 8 specialized AI agents that work together to tackle complex development tasks. From architecture design to security auditing, watch as multiple AI agents collaborate in real-time to build complete solutions.</p>
+        <a href="#" class="post-link">Read More →</a>
+      </article>
+      
+      <article class="post">
+        <div class="post-meta">
+          <span>📅 February 10, 2026</span>
+          <span>👤 Teddy Njagi</span>
+          <span>⏱️ 4 min read</span>
+        </div>
+        <h2><a href="#">New: AI-Powered Security Scanning</a></h2>
+        <p class="post-excerpt">Guardian now uses advanced AI to detect vulnerabilities beyond traditional patterns. From SQL injection to XSS, get detailed remediation steps and secure code examples generated automatically.</p>
+        <a href="#" class="post-link">Read More →</a>
+      </article>
+      
+      <article class="post">
+        <div class="post-meta">
+          <span>📅 February 5, 2026</span>
+          <span>👤 Teddy Njagi</span>
+          <span>⏱️ 6 min read</span>
+        </div>
+        <h2><a href="#">Getting Started with Parallax in 5 Minutes</a></h2>
+        <p class="post-excerpt">Learn how to integrate AI-powered code generation, security scanning, and documentation into your development workflow. Quick start guide with practical examples.</p>
+        <a href="#" class="post-link">Read More →</a>
+      </article>
+      
+      <article class="post">
+        <div class="post-meta">
+          <span>📅 January 28, 2026</span>
+          <span>👤 Teddy Njagi</span>
+          <span>⏱️ 3 min read</span>
+        </div>
+        <h2><a href="#">Announcing Free Tier: 100 API Calls Monthly</a></h2>
+        <p class="post-excerpt">Start building with AI-powered tools at no cost. Our new free tier gives you 100 API calls per month to explore all services including COGI, Guardian, Docufy, and TestPilot.</p>
+        <a href="#" class="post-link">Read More →</a>
+      </article>
+      
+      <article class="post">
+        <div class="post-meta">
+          <span>📅 January 20, 2026</span>
+          <span>👤 Teddy Njagi</span>
+          <span>⏱️ 5 min read</span>
+        </div>
+        <h2><a href="#">How We Built a Sub-200ms AI Response System</a></h2>
+        <p class="post-excerpt">Behind the scenes: How Parallax achieves lightning-fast AI responses using Groq's LPU inference and intelligent caching strategies.</p>
+        <a href="#" class="post-link">Read More →</a>
+      </article>
+    </div>
+  </main>
+  
+  <footer>
+    <p>© 2026 BRIDGEMIND | <a href="/">Home</a> | <a href="/terms">Terms</a> | <a href="/privacy">Privacy</a></p>
+  </footer>
+  <script>
+    function toggleMobileMenu(){
+      document.getElementById('mobileMenu').classList.toggle('show');
+      updateMobileAuth();
+    }
+    
+    function updateMobileAuth() {
+      const isLoggedIn = localStorage.getItem('auth_token');
+      const mobileAuthLink = document.getElementById('mobileAuthLink');
+      
+      if (isLoggedIn) {
+        mobileAuthLink.innerHTML = '🚪 Logout <span>→</span>';
+        mobileAuthLink.onclick = function(e) { e.preventDefault(); logout(); };
+      } else {
+        mobileAuthLink.innerHTML = '🔑 Get Started <span>→</span>';
+        mobileAuthLink.onclick = function() { window.location.href = '/login.html'; };
+      }
+    }
+    
+    function handleMobileAuth(e) {
+      const isLoggedIn = localStorage.getItem('auth_token');
+      if (isLoggedIn) {
+        e.preventDefault();
+        logout();
+      }
+    }
+    
+    function logout() {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      window.location.href = '/login.html';
+    }
+    if(localStorage.getItem('auth_token')){
+      document.getElementById('navCta').href = '/dashboard.html';
+      document.getElementById('navCta').textContent = 'Dashboard';
+    }
+  </script>
+</body>
+</html>

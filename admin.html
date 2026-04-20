@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin | BRIDGEMIND</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#00ff88">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#030308;--bg2:#0a0a15;--card:#12121a;--border:#1a1a2e;--cyan:#00ff88;--cyan2:#00ffff;--purple:#a855f7;--red:#ff6b6b;--text:#e0e0e0;--muted:#6b7280;--dim:#374151}
+    body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);min-height:100vh}
+    body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,136,.015) 2px,rgba(0,255,136,.015) 4px);pointer-events:none;z-index:9998}
+    nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(3,3,8,.95);border-bottom:1px solid rgba(0,255,136,.2);backdrop-filter:blur(20px)}
+    nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent)}
+    .nav{max-width:1400px;margin:0 auto;padding:.75rem 2rem;display:flex;justify-content:space-between;align-items:center}
+    .logo{display:flex;align-items:center;gap:.75rem;text-decoration:none;color:var(--text);font-family:'Orbitron',sans-serif;font-size:.9rem;letter-spacing:2px}
+    .logo-icon{width:28px;height:28px;position:relative}
+    .logo-icon::before{content:'';position:absolute;inset:0;border:2px solid var(--cyan);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);animation:pulse 2s ease-in-out infinite}
+    .logo-icon::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:6px;height:6px;background:var(--cyan);border-radius:50%;box-shadow:0 0 8px var(--cyan)}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+    .links{display:flex;gap:1.5rem}
+    .links a{color:var(--muted);text-decoration:none;font-size:.85rem;transition:all .3s}
+    .links a:hover,.links a.active{color:var(--cyan)}
+    .admin-badge{background:var(--red);color:#fff;padding:.25rem .5rem;border-radius:4px;font-size:.7rem;font-family:'Orbitron',sans-serif}
+
+    main{padding:100px 2rem 3rem;max-width:1400px;margin:0 auto}
+    .header{margin-bottom:3rem}
+    .tag{color:var(--red);font-size:.75rem;letter-spacing:3px;margin-bottom:.5rem;display:block;font-family:'Orbitron',sans-serif}
+    h1{font-size:2rem;font-family:'Orbitron',sans-serif;letter-spacing:3px;margin-bottom:.5rem;background:linear-gradient(90deg,var(--red),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .sub{color:var(--muted);font-size:.95rem}
+
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.5rem;margin-bottom:3rem}
+    .stat{background:linear-gradient(180deg,rgba(18,18,26,.95),rgba(10,10,21,.95));border:1px solid rgba(0,255,136,.15);border-radius:8px;padding:1.75rem;position:relative;overflow:hidden}
+    .stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--purple));opacity:0}
+    .stat:hover::before{opacity:1}
+    .stat-icon{font-size:1.5rem;margin-bottom:1rem}
+    .stat-label{color:var(--dim);font-size:.75rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:.5rem;font-family:'Orbitron',sans-serif}
+    .stat-val{font-size:2.25rem;font-weight:700;color:var(--cyan);font-family:'Orbitron',sans-serif;line-height:1}
+    .stat-sub{font-size:.8rem;color:var(--muted);margin-top:.5rem}
+
+    .card{background:linear-gradient(180deg,rgba(18,18,26,.95),rgba(10,10,21,.95));border:1px solid rgba(0,255,136,.15);border-radius:8px;padding:1.5rem;margin-bottom:2rem}
+    .card-title{font-family:'Orbitron',sans-serif;font-size:1rem;letter-spacing:2px;margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem}
+    .card-title::before{content:'▸';color:var(--cyan)}
+
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:1rem;text-align:left;border-bottom:1px solid rgba(0,255,136,.1);font-size:.85rem}
+    th{color:var(--cyan);font-family:'Orbitron',sans-serif;font-size:.75rem;letter-spacing:1px;text-transform:uppercase;background:rgba(0,0,0,.2)}
+    tr:hover{background:rgba(0,255,136,.05)}
+    .badge{padding:.25rem .75rem;border-radius:100px;font-size:.7rem;font-family:'Orbitron',sans-serif}
+    .badge-active{background:rgba(0,255,136,.2);color:var(--cyan)}
+    .badge-free{background:rgba(168,85,247,.2);color:var(--purple)}
+    .badge-pro{background:rgba(0,200,255,.2);color:var(--cyan2)}
+    .actions{display:flex;gap:.5rem}
+    .btn-sm{padding:.4rem .75rem;background:transparent;border:1px solid rgba(0,255,136,.3);color:var(--cyan);border-radius:4px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:.75rem;transition:all .3s}
+    .btn-sm:hover{background:var(--cyan);color:var(--bg)}
+    .btn-sm.danger{border-color:rgba(255,107,107,.3);color:var(--red)}
+    .btn-sm.danger:hover{background:var(--red);color:#fff}
+
+    .tab-bar{display:flex;gap:.5rem;margin-bottom:1.5rem;border-bottom:1px solid rgba(0,255,136,.1);padding-bottom:.5rem}
+    .tab{padding:.75rem 1.25rem;background:none;border:none;color:var(--muted);cursor:pointer;font-family:'Orbitron',sans-serif;font-size:.75rem;letter-spacing:1px;border-radius:4px 4px 0 0;transition:all .3s}
+    .tab:hover{color:var(--text)}
+    .tab.active{color:var(--cyan);background:rgba(0,255,136,.1)}
+
+    .logs{max-height:400px;overflow-y:auto;background:rgba(0,0,0,.3);border:1px solid rgba(0,255,136,.1);border-radius:4px;padding:1rem;font-size:.8rem}
+    .log-line{display:flex;gap:1rem;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.03)}
+    .log-time{color:var(--dim);flex-shrink:0}
+    .log-type{color:var(--cyan);width:60px;flex-shrink:0}
+    .log-msg{color:var(--muted)}
+    .log-msg.success{color:var(--cyan)}
+    .log-msg.error{color:var(--red)}
+
+    .api-keys-table td:nth-child(2){font-family:monospace;color:var(--dim)}
+    .key-actions{display:flex;gap:.5rem}
+    
+    /* SERVICE CONTROLS */
+    .service-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;margin-bottom:1.5rem}
+    .service-control{background:rgba(0,0,0,.3);border:1px solid rgba(0,255,136,.1);border-radius:8px;padding:1rem;text-align:center;transition:all .3s}
+    .service-control:hover{border-color:var(--cyan)}
+    .service-control.active{border-color:var(--cyan);background:rgba(0,255,136,.05)}
+    .service-name{font-family:'Orbitron',sans-serif;font-size:.85rem;margin-bottom:.5rem}
+    .service-status{width:10px;height:10px;border-radius:50%;margin:0 auto .5rem}
+    .service-status.online{background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+    .service-status.offline{background:var(--red)}
+    .service-status.warning{background:var(--yellow)}
+    .service-toggle{padding:.4rem 1rem;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:4px;cursor:pointer;font-size:.7rem;margin-top:.5rem;transition:all .3s}
+    .service-toggle:hover{border-color:var(--cyan);color:var(--cyan)}
+    .service-toggle.active{background:var(--cyan);color:var(--bg);border-color:var(--cyan)}
+    
+    /* ANALYTICS */
+    .chart-container{height:200px;background:rgba(0,0,0,.3);border:1px solid rgba(0,255,136,.1);border-radius:8px;padding:1rem;margin-bottom:1rem;display:flex;align-items:flex-end;gap:.25rem}
+    .chart-bar{flex:1;background:var(--cyan);border-radius:2px 2px 0 0;opacity:.6;transition:opacity .3s;min-height:4px}
+    .chart-bar:hover{opacity:1}
+    
+    /* QUICK ACTIONS */
+    .quick-actions{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2rem}
+    .quick-action{padding:.75rem 1.5rem;background:rgba(0,0,0,.3);border:1px solid rgba(0,255,136,.2);border-radius:8px;color:var(--cyan);cursor:pointer;font-family:'Orbitron',sans-serif;font-size:.8rem;display:flex;align-items:center;gap:.5rem;transition:all .3s}
+    .quick-action:hover{background:var(--cyan);color:var(--bg);box-shadow:0 0 20px rgba(0,255,136,.3)}
+    
+    /* NOTIFICATIONS */
+    .notification{position:fixed;top:80px;right:1rem;background:var(--card);border:1px solid var(--cyan);border-radius:8px;padding:1rem 1.5rem;display:none;align-items:center;gap:1rem;z-index:1000;box-shadow:0 4px 20px rgba(0,0,0,.3)}
+    .notification.show{display:flex;animation:slideIn .3s ease-out}
+    .notification-icon{font-size:1.25rem}
+    .notification-text{flex:1}
+    .notification-close{background:none;border:none;color:var(--muted);cursor:pointer}
+    @keyframes slideIn{from{opacity:0;transform:translateX(100%)}to{opacity:1;transform:translateX(0)}}
+
+    @media(max-width:768px){.links{display:none}table{font-size:.75rem}th,td{padding:.5rem}}
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav">
+      <a href="/" class="logo">
+        <div class="logo-icon"></div>
+        PARALLAX_DOMINION
+      </a>
+      <div class="links">
+        <a href="/services.html">Services</a>
+        <a href="/pricing.html">Pricing</a>
+        <a href="/dashboard.html">Dashboard</a>
+        <a href="/admin.html" class="active">Admin <span class="admin-badge">BETA</span></a>
+        <a href="#" id="logoutBtn" class="logout" style="color:var(--red)">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="notification" id="notification">
+    <span class="notification-icon">✓</span>
+    <span class="notification-text"></span>
+    <button class="notification-close" onclick="this.parentElement.classList.remove('show')">×</button>
+  </div>
+
+  <main>
+    <div class="header">
+      <span class="tag">// ADMIN_PANEL</span>
+      <h1>CONTROL_CENTER</h1>
+      <p class="sub">Platform administration and monitoring</p>
+    </div>
+
+    <div class="quick-actions">
+      <button class="quick-action" onclick="addLog('INFO', 'Refreshing all services...')">🔄 Refresh Services</button>
+      <button class="quick-action" onclick="addLog('INFO', 'Clearing cache...')">🗑️ Clear Cache</button>
+      <button class="quick-action" onclick="exportData()">📥 Export Data</button>
+      <button class="quick-action" onclick="addLog('INFO', 'Running system diagnostic...')">🔍 System Check</button>
+      <button class="quick-action" onclick="showNotification('Backup started')">💾 Backup Now</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">SERVICE STATUS</div>
+      <div class="service-grid">
+        <div class="service-control active">
+          <div class="service-name">COGI</div>
+          <div class="service-status online"></div>
+          <div style="color:var(--cyan);font-size:.75rem">142ms avg</div>
+          <button class="service-toggle active" onclick="toggleService(this)">RUNNING</button>
+        </div>
+        <div class="service-control active">
+          <div class="service-name">GUARDIAN</div>
+          <div class="service-status online"></div>
+          <div style="color:var(--cyan);font-size:.75rem">1.2s avg</div>
+          <button class="service-toggle active" onclick="toggleService(this)">RUNNING</button>
+        </div>
+        <div class="service-control active">
+          <div class="service-name">DOCUFY</div>
+          <div class="service-status online"></div>
+          <div style="color:var(--cyan);font-size:.75rem">890ms avg</div>
+          <button class="service-toggle active" onclick="toggleService(this)">RUNNING</button>
+        </div>
+        <div class="service-control active">
+          <div class="service-name">TEST PILOT</div>
+          <div class="service-status online"></div>
+          <div style="color:var(--cyan);font-size:.75rem">650ms avg</div>
+          <button class="service-toggle active" onclick="toggleService(this)">RUNNING</button>
+        </div>
+        <div class="service-control">
+          <div class="service-name">CRAWLER</div>
+          <div class="service-status warning"></div>
+          <div style="color:var(--yellow);font-size:.75rem">Rate limited</div>
+          <button class="service-toggle" onclick="toggleService(this)">START</button>
+        </div>
+        <div class="service-control active">
+          <div class="service-name">AGENT SWARM</div>
+          <div class="service-status online"></div>
+          <div style="color:var(--cyan);font-size:.75rem">Beta</div>
+          <button class="service-toggle active" onclick="toggleService(this)">RUNNING</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">API USAGE (LAST 24H)</div>
+      <div class="chart-container" id="usageChart"></div>
+    </div>
+
+    <div class="grid">
+      <div class="stat">
+        <div class="stat-icon">👥</div>
+        <div class="stat-label">Total Users</div>
+        <div class="stat-val" id="totalUsers">1,247</div>
+        <div class="stat-sub">+23 today</div>
+      </div>
+      <div class="stat">
+        <div class="stat-icon">📊</div>
+        <div class="stat-label">API Calls Today</div>
+        <div class="stat-val" id="apiCalls">48,392</div>
+        <div class="stat-sub">↑ 12% from yesterday</div>
+      </div>
+      <div class="stat">
+        <div class="stat-icon">💰</div>
+        <div class="stat-label">Revenue (USD)</div>
+        <div class="stat-val">$2,847</div>
+        <div class="stat-sub">This month</div>
+      </div>
+      <div class="stat">
+        <div class="stat-icon">⚡</div>
+        <div class="stat-label">Uptime</div>
+        <div class="stat-val">99.9%</div>
+        <div class="stat-sub">Last 30 days</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">USERS</div>
+      <table>
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Email</th>
+            <th>Plan</th>
+            <th>API Calls</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="usersTable">
+          <tr>
+            <td><strong>John Doe</strong></td>
+            <td>john@example.com</td>
+            <td><span class="badge badge-pro">PRO</span></td>
+            <td>12,450</td>
+            <td><span class="badge badge-active">Active</span></td>
+            <td class="actions">
+              <button class="btn-sm">Edit</button>
+              <button class="btn-sm danger">Suspend</button>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Jane Smith</strong></td>
+            <td>jane@dev.io</td>
+            <td><span class="badge badge-free">FREE</span></td>
+            <td>89</td>
+            <td><span class="badge badge-active">Active</span></td>
+            <td class="actions">
+              <button class="btn-sm">Edit</button>
+              <button class="btn-sm danger">Suspend</button>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Mike Chen</strong></td>
+            <td>mike@startup.co</td>
+            <td><span class="badge badge-pro">PRO</span></td>
+            <td>45,230</td>
+            <td><span class="badge badge-active">Active</span></td>
+            <td class="actions">
+              <button class="btn-sm">Edit</button>
+              <button class="btn-sm danger">Suspend</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title">API_KEYS</div>
+      <table class="api-keys-table">
+        <thead>
+          <tr>
+            <th>Key ID</th>
+            <th>Key</th>
+            <th>User</th>
+            <th>Service</th>
+            <th>Calls</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="keysTable">
+          <tr>
+            <td>key_001</td>
+            <td>px_live_a1b2c3d4e5f6... </td>
+            <td>john@example.com</td>
+            <td>All</td>
+            <td>8,234</td>
+            <td class="key-actions">
+              <button class="btn-sm">Regenerate</button>
+              <button class="btn-sm danger">Revoke</button>
+            </td>
+          </tr>
+          <tr>
+            <td>key_002</td>
+            <td>px_live_f6e5d4c3b2a1... </td>
+            <td>jane@dev.io</td>
+            <td>COGI, DOCUFY</td>
+            <td>67</td>
+            <td class="key-actions">
+              <button class="btn-sm">Regenerate</button>
+              <button class="btn-sm danger">Revoke</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title">SERVICE_STATUS</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Service</th>
+            <th>Status</th>
+            <th>Latency</th>
+            <th>Requests/min</th>
+            <th>Error Rate</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong style="color:var(--cyan)">COGI</strong></td>
+            <td><span class="badge badge-active">Operational</span></td>
+            <td>142ms</td>
+            <td>1,247</td>
+            <td>0.02%</td>
+            <td><button class="btn-sm">Restart</button></td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--purple)">GUARDIAN</strong></td>
+            <td><span class="badge badge-active">Operational</span></td>
+            <td>89ms</td>
+            <td>456</td>
+            <td>0.01%</td>
+            <td><button class="btn-sm">Restart</button></td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--cyan2)">DOCUFY</strong></td>
+            <td><span class="badge badge-active">Operational</span></td>
+            <td>234ms</td>
+            <td>312</td>
+            <td>0.05%</td>
+            <td><button class="btn-sm">Restart</button></td>
+          </tr>
+          <tr>
+            <td><strong style="color:#ff9f43">TEST_PILOT</strong></td>
+            <td><span class="badge badge-active">Operational</span></td>
+            <td>198ms</td>
+            <td>234</td>
+            <td>0.03%</td>
+            <td><button class="btn-sm">Restart</button></td>
+          </tr>
+          <tr>
+            <td><strong style="color:#a55eea">CRAWLER</strong></td>
+            <td><span class="badge badge-active">Operational</span></td>
+            <td>567ms</td>
+            <td>189</td>
+            <td>0.08%</td>
+            <td><button class="btn-sm">Restart</button></td>
+          </tr>
+          <tr>
+            <td><strong style="color:#ff6b6b">AGENT_SWARM</strong></td>
+            <td><span class="badge badge-active">Operational</span></td>
+            <td>312ms</td>
+            <td>98</td>
+            <td>0.04%</td>
+            <td><button class="btn-sm">Restart</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title">SYSTEM_LOGS</div>
+      <div class="logs" id="logsContainer">
+        <div class="log-line">
+          <span class="log-time">10:42:15</span>
+          <span class="log-type">INFO</span>
+          <span class="log-msg success">User john@example.com upgraded to PRO plan</span>
+        </div>
+        <div class="log-line">
+          <span class="log-time">10:41:58</span>
+          <span class="log-type">INFO</span>
+          <span class="log-msg">API call from mike@startup.co - COGI service</span>
+        </div>
+        <div class="log-line">
+          <span class="log-time">10:41:32</span>
+          <span class="log-type">WARN</span>
+          <span class="log-msg">Rate limit approaching for key_003</span>
+        </div>
+        <div class="log-line">
+          <span class="log-time">10:40:15</span>
+          <span class="log-type">INFO</span>
+          <span class="log-msg">New user registered: sarah@tech.io</span>
+        </div>
+        <div class="log-line">
+          <span class="log-time">10:39:47</span>
+          <span class="log-type">ERROR</span>
+          <span class="log-msg error">GROQ API timeout - CRAWLER service</span>
+        </div>
+        <div class="log-line">
+          <span class="log-time">10:38:22</span>
+          <span class="log-type">INFO</span>
+          <span class="log-msg">Backup completed successfully</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const ADMIN_KEY = 'parallax_admin_secret_2026';
+    const ADMIN_EMAIL = 'parallaxstudio.ai@gmail.com';
+
+    function isAdmin() {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      return localStorage.getItem('admin_token') === ADMIN_KEY || 
+             localStorage.getItem('is_admin') === 'true' ||
+             user.email === ADMIN_EMAIL;
+    }
+
+    function checkAdminAccess() {
+      const isUserLoggedIn = localStorage.getItem('auth_token');
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      
+      if (!isUserLoggedIn) {
+        window.location.href = '/login.html?redirect=/admin.html';
+        return false;
+      }
+      
+      if (!isAdmin()) {
+        document.querySelector('.sub').innerHTML = '⚠️ Admin access required. <a href="/dashboard.html" style="color:var(--cyan)">Return to Dashboard</a>';
+        document.querySelector('.grid').style.display = 'none';
+        document.querySelectorAll('.card').forEach(c => c.style.display = 'none');
+        document.querySelector('h1').textContent = 'ACCESS_DENIED';
+        return false;
+      }
+      
+      return true;
+    }
+
+    function logout() {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('admin_token');
+      localStorage.removeItem('is_admin');
+      window.location.href = '/login.html';
+    }
+    
+    function toggleService(btn) {
+      const isRunning = btn.classList.contains('active');
+      if (isRunning) {
+        btn.textContent = 'STOPPING...';
+        setTimeout(() => {
+          btn.classList.remove('active');
+          btn.textContent = 'START';
+          addLog('WARN', 'Service stopped via admin');
+          showNotification('Service stopped');
+        }, 500);
+      } else {
+        btn.textContent = 'STARTING...';
+        setTimeout(() => {
+          btn.classList.add('active');
+          btn.textContent = 'RUNNING';
+          addLog('INFO', 'Service started via admin');
+          showNotification('Service started');
+        }, 500);
+      }
+    }
+    
+    function showNotification(msg) {
+      const notif = document.getElementById('notification');
+      notif.querySelector('.notification-text').textContent = msg;
+      notif.classList.add('show');
+      setTimeout(() => notif.classList.remove('show'), 3000);
+    }
+    
+    function exportData() {
+      addLog('INFO', 'Exporting data...');
+      const data = {
+        users: document.getElementById('totalUsers').textContent,
+        apiCalls: document.getElementById('apiCalls').textContent,
+        timestamp: new Date().toISOString()
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'parallax-admin-export.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      addLog('INFO', 'Data exported successfully');
+      showNotification('Data exported');
+    }
+    
+    function initChart() {
+      const container = document.getElementById('usageChart');
+      for (let i = 0; i < 24; i++) {
+        const bar = document.createElement('div');
+        bar.className = 'chart-bar';
+        bar.style.height = (Math.random() * 80 + 20) + '%';
+        bar.title = `${i}:00 - ${Math.floor(Math.random() * 5000)} calls`;
+        container.appendChild(bar);
+      }
+    }
+    
+    if (isAdmin() && localStorage.getItem('auth_token')) {
+      localStorage.setItem('is_admin', 'true');
+    }
+
+    function addLog(type, message) {
+      const container = document.getElementById('logsContainer');
+      const now = new Date();
+      const time = now.toTimeString().split(' ')[0];
+      
+      const logLine = document.createElement('div');
+      logLine.className = 'log-line';
+      logLine.innerHTML = `
+        <span class="log-time">${time}</span>
+        <span class="log-type">${type}</span>
+        <span class="log-msg ${type === 'ERROR' ? 'error' : type === 'INFO' ? 'success' : ''}">${message}</span>
+      `;
+      container.insertBefore(logLine, container.firstChild);
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      logout();
+    });
+
+    if (checkAdminAccess()) {
+      addLog('INFO', 'Admin panel loaded successfully');
+      initChart();
+      
+      setInterval(() => {
+        fetch('/api/status')
+          .then(r => r.json())
+          .then(data => {
+            document.getElementById('apiCalls').textContent = (48000 + Math.floor(Math.random() * 1000)).toLocaleString();
+          })
+          .catch(() => {});
+      }, 5000);
+    }
+
+    function exportUsers() {
+      addLog('INFO', 'Exporting user data...');
+      setTimeout(() => addLog('INFO', 'User data exported to CSV'), 1000);
+    }
+  </script>
+</body>
+</html>

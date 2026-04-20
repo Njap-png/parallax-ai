@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parallax Shell | PARALLAX DOMINION</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#00ff88">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&family=Space+Mono:wght@400;700&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --bg:#0a0a0f;--bg2:#0d0d14;--bg3:#141420;--bg4:#1a1a28;--border:#252535;--cyan:#00ff88;--cyan2:#00ffff;--purple:#a855f7;--magenta:#ff00ff;--text:#e0e0e0;--text-dim:#a0a0b0;--muted:#6b7280;--dim:#404050;--red:#ff5f57;--yellow:#febc2e;--green:#28c840;--orange:#ff9500;
+      --font:'JetBrains Mono','Fira Code','Consolas',monospace;
+      --glow:0 0 10px rgba(0,255,136,0.4),0 0 20px rgba(0,255,136,0.2);
+    }
+    html,body{height:100%;overflow:hidden}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex;flex-direction:column;user-select:none}
+    
+    body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,136,.015) 2px,rgba(0,255,136,.015) 4px);pointer-events:none;z-index:9997}
+    body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 20% 20%,rgba(0,255,136,.05) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(168,85,247,.03) 0%,transparent 50%);pointer-events:none;z-index:0}
+    
+    /* HEADER */
+    header{display:flex;align-items:center;justify-content:space-between;padding:.6rem 1rem;background:linear-gradient(180deg,rgba(20,20,32,.98),rgba(13,13,20,.98));border-bottom:1px solid rgba(0,255,136,.15);position:relative;z-index:100}
+    header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),var(--purple),transparent)}
+    
+    .logo{display:flex;align-items:center;gap:.75rem}
+    .logo-icon{width:28px;height:28px;position:relative}
+    .logo-icon::before{content:'';position:absolute;inset:0;border:2px solid var(--cyan);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);animation:logoPulse 3s ease-in-out infinite}
+    .logo-icon::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:8px;height:8px;background:var(--cyan);border-radius:50%;box-shadow:0 0 10px var(--cyan)}
+    @keyframes logoPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(.98)}}
+    .logo-text{font-family:'Orbitron',sans-serif;font-size:.9rem;color:var(--cyan);letter-spacing:3px;text-shadow:var(--glow)}
+    
+    .tabs{display:flex;gap:.5rem;flex:1;justify-content:center}
+    .tab{display:flex;align-items:center;gap:.5rem;padding:.5rem 1rem;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:.8rem;color:var(--text-dim);transition:all .2s}
+    .tab:hover{background:rgba(0,255,136,.05);border-color:rgba(0,255,136,.3)}
+    .tab.active{background:rgba(0,255,136,.1);border-color:var(--cyan);color:var(--cyan)}
+    .tab-icon{font-size:1rem}
+    .tab-title{font-family:'Orbitron',sans-serif;letter-spacing:1px}
+    .tab-close{background:none;border:none;color:var(--dim);cursor:pointer;padding:0;margin-left:.5rem;font-size:1rem;line-height:1;transition:color .2s}
+    .tab-close:hover{color:var(--red)}
+    
+    .header-right{display:flex;gap:.75rem;align-items:center}
+    .btn{background:transparent;border:1px solid var(--border);color:var(--text-dim);padding:.4rem .8rem;border-radius:4px;cursor:pointer;font-family:inherit;font-size:.75rem;transition:all .2s;display:flex;align-items:center;gap:.3rem}
+    .btn:hover{border-color:var(--cyan);color:var(--cyan)}
+    .btn-primary{background:var(--cyan);border-color:var(--cyan);color:var(--bg);font-weight:600}
+    .btn-primary:hover{background:#00cc6a;box-shadow:0 0 20px rgba(0,255,136,.3)}
+    .btn-ai{background:var(--purple);border-color:var(--purple);color:white}
+    .btn-ai:hover{background:#9333ea;box-shadow:0 0 20px rgba(168,85,247,.3)}
+    
+    /* MAIN */
+    main{flex:1;display:flex;flex-direction:column;padding:.75rem;gap:.75rem;position:relative;z-index:1;min-height:0}
+    
+    /* SPLIT LAYOUT */
+    .split{display:flex;gap:.75rem;flex:1;min-height:0}
+    .panel{background:linear-gradient(180deg,rgba(15,15,22,.98),rgba(10,10,15,.98));border:1px solid var(--border);border-radius:8px;display:flex;flex-direction:column;overflow:hidden;position:relative}
+    .panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--cyan),var(--purple));opacity:.3}
+    
+    .panel-header{display:flex;align-items:center;padding:.5rem .75rem;background:rgba(0,0,0,.3);border-bottom:1px solid var(--border);gap:.5rem}
+    .panel-dots{display:flex;gap:.4rem}
+    .panel-dot{width:10px;height:10px;border-radius:50%;cursor:pointer;transition:transform .2s}
+    .panel-dot:nth-child(1){background:var(--red);box-shadow:0 0 6px rgba(255,95,87,.5)}
+    .panel-dot:nth-child(2){background:var(--yellow);box-shadow:0 0 6px rgba(254,188,46,.5)}
+    .panel-dot:nth-child(3){background:var(--green);box-shadow:0 0 6px rgba(40,200,64,.5)}
+    .panel-dot:hover{transform:scale(1.3)}
+    .panel-title{flex:1;text-align:center;font-family:'Orbitron',sans-serif;font-size:.7rem;color:var(--cyan);letter-spacing:2px}
+    .panel-actions{display:flex;gap:.25rem}
+    .panel-btn{background:rgba(0,0,0,.3);border:1px solid var(--border);color:var(--text-dim);padding:.3rem .6rem;border-radius:4px;cursor:pointer;font-size:.7rem;transition:all .2s;font-family:inherit}
+    .panel-btn:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,255,136,.05)}
+    .panel-btn.copied{background:rgba(40,200,64,.2);border-color:var(--green);color:var(--green)}
+    
+    .panel-body{flex:1;padding:.5rem;min-height:0;overflow:auto}
+    
+    /* LEFT PANEL - EDITOR */
+    .left-panel{flex:1.2;min-width:400px}
+    .editor{height:100%;background:rgba(0,0,0,.2);border-radius:4px;padding:.75rem;font-size:.9rem;line-height:1.6;color:var(--text);resize:none;border:none;outline:none;font-family:var(--font)}
+    .editor::placeholder{color:var(--dim)}
+    .editor::selection{background:rgba(0,255,136,.3)}
+    
+    /* RIGHT PANEL - TERMINAL */
+    .right-panel{flex:1;min-width:400px}
+    .terminal-output{flex:1;padding:.75rem;font-size:.85rem;line-height:1.6;overflow-y:auto;white-space:pre-wrap;word-break:break-all;min-height:0}
+    
+    /* OUTPUT STYLES */
+    .output-line{margin-bottom:.3rem;padding:.2rem 0;border-left:2px solid transparent;padding-left:.5rem}
+    .output-line:hover{background:rgba(0,0,0,.2);cursor:pointer}
+    .output-line:hover .copy-single{display:block}
+    .output-line.system{color:var(--text-dim)}
+    .output-line.success{color:var(--green)}
+    .output-line.error{color:var(--red)}
+    .output-line.info{color:var(--cyan)}
+    .output-line.warning{color:var(--yellow)}
+    .output-line.cmd{color:var(--cyan);font-weight:600}
+    .output-line.cmd::before{content:'$ ';opacity:.5}
+    .output-line.ai{color:var(--purple);border-left-color:var(--purple);background:rgba(168,85,247,.05)}
+    .copy-single{float:right;opacity:0;font-size:.6rem;padding:.1rem .3rem;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:3px;color:var(--muted);cursor:pointer;display:none}
+    .copy-single:hover{color:var(--cyan);border-color:var(--cyan)}
+    
+    /* CONSOLE INPUT */
+    .console-input{display:flex;align-items:center;padding:.5rem .75rem;background:rgba(0,0,0,.4);border-top:1px solid var(--border);gap:.5rem}
+    .console-prompt{color:var(--cyan);font-weight:600;white-space:nowrap}
+    .console-input input{flex:1;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:4px;padding:.5rem .75rem;color:var(--text);font-family:var(--font);font-size:.85rem;outline:none}
+    .console-input input:focus{border-color:var(--cyan)}
+    .console-input input::placeholder{color:var(--dim)}
+    
+    /* CODE HIGHLIGHTING */
+    pre code.hljs{background:transparent;padding:0}
+    .hljs{background:transparent!important}
+    
+    /* BOTTOM BAR */
+    .bottom-bar{display:flex;align-items:center;justify-content:space-between;padding:.5rem 1rem;background:rgba(15,15,22,.95);border:1px solid var(--border);border-radius:6px;font-size:.75rem;color:var(--text-dim)}
+    .bottom-left{display:flex;gap:1.5rem}
+    .bottom-item{display:flex;align-items:center;gap:.4rem}
+    .bottom-dot{width:6px;height:6px;border-radius:50%}
+    .bottom-dot.green{background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse 2s infinite}
+    .bottom-dot.yellow{background:var(--yellow)}
+    .bottom-right{display:flex;gap:1.5rem}
+    .bottom-right span{padding:.2rem .5rem;background:rgba(0,255,136,.1);border-radius:3px;color:var(--cyan)}
+    
+    /* SIDEBAR */
+    .sidebar{width:220px;display:flex;flex-direction:column;gap:.75rem}
+    .widget{background:linear-gradient(180deg,rgba(15,15,22,.95),rgba(10,10,15,.95));border:1px solid var(--border);border-radius:8px;padding:.75rem}
+    .widget-title{font-family:'Orbitron',sans-serif;font-size:.65rem;color:var(--cyan);letter-spacing:2px;margin-bottom:.75rem;display:flex;align-items:center;gap:.4rem}
+    .widget-title::before{content:'▸'}
+    
+    .service-list{list-style:none}
+    .service-item{display:flex;align-items:center;gap:.6rem;padding:.5rem;margin-bottom:.4rem;background:rgba(0,0,0,.2);border:1px solid transparent;border-radius:4px;cursor:pointer;transition:all .2s;font-size:.8rem}
+    .service-item:hover{border-color:var(--border);background:rgba(0,255,136,.03)}
+    .service-item.active{border-color:var(--cyan);background:rgba(0,255,136,.08)}
+    .service-icon{width:24px;height:24px;background:linear-gradient(135deg,rgba(0,255,136,.2),rgba(168,85,247,.2));border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:.9rem}
+    .service-name{font-family:'Orbitron',sans-serif;font-size:.7rem;letter-spacing:1px}
+    
+    .quick-actions{display:flex;flex-direction:column;gap:.4rem}
+    .quick-btn{width:100%;padding:.6rem;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:4px;color:var(--text-dim);cursor:pointer;font-family:inherit;font-size:.75rem;text-align:left;transition:all .2s;display:flex;align-items:center;gap:.5rem}
+    .quick-btn:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,255,136,.05)}
+    .quick-btn::before{content:'$';color:var(--cyan);font-weight:600}
+    
+    /* AI PANEL */
+    .ai-panel{display:flex;align-items:center;padding:.5rem .75rem;background:rgba(168,85,247,.1);border-top:1px solid rgba(168,85,247,.3);gap:.5rem}
+    .ai-label{font-size:.65rem;color:var(--purple);display:flex;align-items:center;gap:.3rem;white-space:nowrap}
+    .ai-input{flex:1;background:rgba(0,0,0,.5);border:1px solid rgba(168,85,247,.3);border-radius:4px;padding:.4rem .6rem;color:var(--text);font-family:inherit;font-size:.75rem;outline:none}
+    .ai-input:focus{border-color:var(--purple)}
+    .ai-btn{background:var(--purple);border:none;border-radius:4px;padding:.4rem .8rem;color:white;font-family:inherit;font-size:.7rem;cursor:pointer;transition:all .2s}
+    .ai-btn:hover{background:#9333ea}
+    
+    /* THEMES */
+    body.theme-cyberpunk{--cyan:#00ff88;--bg:#0a0a0f}
+    body.theme-dracula{--cyan:#bd93f9;--bg:#282a36;--text:#f8f8f2}
+    body.theme-monokai{--cyan:#a6e22e;--bg:#272822;--text:#f8f8f2}
+    body.theme-nord{--cyan:#88c0d0;--bg:#2e3440;--text:#eceff4}
+    
+    /* RESPONSIVE */
+    @media(max-width:1400px){.sidebar{display:none}}
+    @media(max-width:900px){
+      .left-panel,.right-panel{min-width:0;flex:1}
+      .split{flex-direction:column}
+      .panel{height:45vh}
+      .panel:first-child{flex:1}
+      .panel:last-child{flex:1}
+    }
+    @media(max-width:768px){
+      *{max-width:100vw;overflow-x:hidden}
+      .mobile-menu-btn{display:block!important}
+      .tabs{overflow-x:auto;max-width:150px;flex-shrink:0}
+      .tab{padding:.3rem .5rem;font-size:.65rem}
+      .tab-title{font-size:.6rem}
+      .logo-text{font-size:.7rem;letter-spacing:2px}
+      .header-right{gap:.25rem}
+      .btn{padding:.25rem .5rem;font-size:.6rem}
+      main{padding:.25rem;gap:.25rem}
+      .panel-header{padding:.25rem .5rem}
+      .panel-body{padding:.25rem}
+      .editor{font-size:.8rem;padding:.5rem}
+      .terminal-output{font-size:.75rem;padding:.5rem}
+      .bottom-bar{flex-wrap:wrap;gap:.25rem;font-size:.6rem;padding:.25rem .5rem}
+      .bottom-left,.bottom-right{gap:.5rem}
+      .bottom-item span{font-size:.6rem}
+      .header-right .btn{font-size:.55rem;padding:.2rem .4rem}
+      .logo-icon{width:20px;height:20px}
+      .panel-title{font-size:.6rem}
+    }
+    @media(max-width:480px){
+      *{overflow-x:hidden}
+      .tabs{max-width:120px}
+      .tab{padding:.2rem .4rem;font-size:.55rem}
+      .tab-icon{font-size:.7rem}
+      .tab-title{display:none}
+      .logo-text{font-size:.6rem;letter-spacing:1px}
+      .header-right .btn{font-size:.5rem;padding:.15rem .3rem}
+      .panel{height:40vh;min-height:200px}
+      .editor{font-size:.75rem}
+      .console-input input{font-size:.75rem}
+      .bottom-bar{font-size:.55rem}
+      body{font-size:.8rem}
+    }
+    
+    /* MOBILE MENU */
+    .mobile-menu-btn{display:none;background:transparent;border:1px solid var(--border);color:var(--text-dim);padding:.4rem .6rem;border-radius:4px;cursor:pointer;font-size:1.2rem}
+    .mobile-menu-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+    .mobile-menu{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,15,22,.98);border:none;z-index:10000;padding:70px 1rem 1rem;overflow-y:auto}
+    .mobile-menu.show{display:block}
+    .mobile-menu select{width:100%;padding:.6rem;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:inherit;margin-bottom:.75rem}
+    .mobile-menu h4{font-family:'Orbitron',sans-serif;font-size:.7rem;color:var(--cyan);margin-bottom:.75rem}
+    .mobile-menu a{padding:1rem;color:var(--muted);text-decoration:none;font-size:1rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+    .mobile-menu a:hover{color:var(--cyan);background:rgba(0,255,136,.05)}
+    .mobile-menu a:last-child{margin-top:auto;border-bottom:none}
+    body.menu-open{overflow:hidden}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <div class="logo-icon"></div>
+      <span class="logo-text">PARALLAX</span>
+    </div>
+    
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('cogi')">
+        <span class="tab-icon">⚡</span>
+        <span class="tab-title">COGI</span>
+      </div>
+      <div class="tab" onclick="switchTab('guardian')">
+        <span class="tab-icon">🛡️</span>
+        <span class="tab-title">GUARDIAN</span>
+      </div>
+      <div class="tab" onclick="switchTab('docufy')">
+        <span class="tab-icon">📝</span>
+        <span class="tab-title">DOCUFY</span>
+      </div>
+      <div class="tab" onclick="switchTab('test')">
+        <span class="tab-icon">🧪</span>
+        <span class="tab-title">TEST</span>
+      </div>
+    </div>
+    
+    <div class="header-right">
+      <button class="btn" onclick="copyCode()">📋 <span id="copyText">Copy</span></button>
+      <button class="btn" onclick="clearConsole()">🗑️ Clear</button>
+      <button class="btn" onclick="runCode()">▶ Run</button>
+      <button class="btn btn-ai" onclick="aiExplain()">🤖 Explain</button>
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
+    </div>
+  </header>
+  
+  <div class="mobile-menu" id="mobileMenu">
+    <h4>// LANGUAGE</h4>
+    <select id="langMobile">
+      <option value="javascript">JavaScript</option>
+      <option value="python">Python</option>
+      <option value="typescript">TypeScript</option>
+      <option value="go">Go</option>
+      <option value="rust">Rust</option>
+    </select>
+    <h4>// THEME</h4>
+    <select id="themeMobile" onchange="changeTheme(this.value)">
+      <option value="cyberpunk">Cyberpunk</option>
+      <option value="dracula">Dracula</option>
+      <option value="monokai">Monokai</option>
+      <option value="nord">Nord</option>
+    </select>
+    <a href="/services.html">Services <span>→</span></a>
+    <a href="/agent-swarm.html">Agent Swarm <span>→</span></a>
+    <a href="/ai-chat.html">AI Chat <span>→</span></a>
+    <a href="/dashboard.html">Dashboard <span>→</span></a>
+    <a href="/login.html" id="mobileAuthLink" onclick="handleMobileAuth(event)">Sign In <span>→</span></a>
+  </div>
+  
+  <main>
+    <div class="split">
+      <div class="sidebar">
+        <div class="widget">
+          <div class="widget-title">// SERVICES</div>
+          <ul class="service-list">
+            <li class="service-item active" onclick="selectService('cogi')">
+              <div class="service-icon">⚡</div>
+              <span class="service-name">COGI</span>
+            </li>
+            <li class="service-item" onclick="selectService('guardian')">
+              <div class="service-icon">🛡️</div>
+              <span class="service-name">GUARDIAN</span>
+            </li>
+            <li class="service-item" onclick="selectService('docufy')">
+              <div class="service-icon">📝</div>
+              <span class="service-name">DOCUFY</span>
+            </li>
+            <li class="service-item" onclick="selectService('testpilot')">
+              <div class="service-icon">🧪</div>
+              <span class="service-name">TEST</span>
+            </li>
+            <li class="service-item" onclick="selectService('crawler')">
+              <div class="service-icon">🕷️</div>
+              <span class="service-name">CRAWLER</span>
+            </li>
+            <li class="service-item" onclick="selectService('agentswarm')">
+              <div class="service-icon">🐝</div>
+              <span class="service-name">SWARM</span>
+            </li>
+          </ul>
+        </div>
+        
+        <div class="widget">
+          <div class="widget-title">// QUICK</div>
+          <div class="quick-actions">
+            <button class="quick-btn" onclick="insertTemplate('hello')">hello world</button>
+            <button class="quick-btn" onclick="insertTemplate('api')">REST API</button>
+            <button class="quick-btn" onclick="insertTemplate('class')">class</button>
+            <button class="quick-btn" onclick="insertTemplate('async')">async/await</button>
+            <button class="quick-btn" onclick="insertTemplate('react')">react component</button>
+          </div>
+        </div>
+        
+        <div class="widget">
+          <div class="widget-title">// AI TOOLS</div>
+          <div style="display:flex;flex-direction:column;gap:.4rem">
+            <button class="quick-btn" onclick="aiExplain()" style="border-color:var(--purple);color:var(--purple)">
+              🧠 Explain Code
+            </button>
+            <button class="quick-btn" onclick="aiDebug()" style="border-color:var(--orange);color:var(--orange)">
+              🔧 Debug Code
+            </button>
+            <button class="quick-btn" onclick="aiOptimize()" style="border-color:var(--green);color:var(--green)">
+              ⚡ Optimize Code
+            </button>
+            <button class="quick-btn" onclick="aiConvert()" style="border-color:var(--cyan);color:var(--cyan)">
+              🔄 Convert Language
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="panel left-panel">
+        <div class="panel-header">
+          <div class="panel-dots">
+            <div class="panel-dot"></div>
+            <div class="panel-dot"></div>
+            <div class="panel-dot"></div>
+          </div>
+          <div class="panel-title" id="editorTitle">main.js</div>
+          <div class="panel-actions">
+            <button class="panel-btn" onclick="formatCode()">FMT</button>
+            <button class="panel-btn" onclick="copyCode()" id="copyBtnEditor">📋</button>
+            <button class="panel-btn" onclick="selectAll()">⊞</button>
+          </div>
+        </div>
+        <div class="panel-body" style="padding:0;display:flex;flex-direction:column">
+          <textarea class="editor" id="editor" placeholder="// Enter your code here or describe what you want...
+// Example: Create a React login form with validation
+
+// Or use AI commands:
+// - Type 'explain: this code'
+// - Type 'debug: find errors'
+// - Type 'optimize: make faster'" oninput="updateLineNumbers()"></textarea>
+        </div>
+      </div>
+      
+      <div class="panel right-panel">
+        <div class="panel-header">
+          <div class="panel-dots">
+            <div class="panel-dot"></div>
+            <div class="panel-dot"></div>
+            <div class="panel-dot"></div>
+          </div>
+          <div class="panel-title">TERMINAL</div>
+          <div class="panel-actions">
+            <button class="panel-btn" onclick="clearConsole()">CLR</button>
+            <button class="panel-btn" onclick="downloadOutput()">↓</button>
+            <button class="panel-btn" onclick="copyTerminal()">📋</button>
+          </div>
+        </div>
+        <div class="panel-body" style="display:flex;flex-direction:column;padding:0">
+          <div class="terminal-output" id="terminal">
+            <div class="output-line system">╔══════════════════════════════════════════════════════════╗</div>
+            <div class="output-line system">║  ⚡ PARALLAX TERMINAL v3.0 - AI POWERED                ║</div>
+            <div class="output-line system">╚══════════════════════════════════════════════════════════╝</div>
+            <div class="output-line info">🤖 AI Ready. Type code or describe what you want.</div>
+            <div class="output-line system">──────────────────────────────────────────────────────────</div>
+          </div>
+          <div class="console-input">
+            <span class="console-prompt">$</span>
+            <input type="text" id="consoleInput" placeholder="Type a command or describe..." onkeydown="handleConsoleInput(event)">
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="ai-panel">
+      <span class="ai-label">🤖 AI</span>
+      <input type="text" class="ai-input" id="aiInput" placeholder="Ask AI to explain, debug, optimize, or generate code..." onkeydown="if(event.key==='Enter')runAICommand()">
+      <button class="ai-btn" onclick="runAICommand()">SEND</button>
+    </div>
+    
+    <div class="bottom-bar">
+      <div class="bottom-left">
+        <div class="bottom-item">
+          <div class="bottom-dot green"></div>
+          <span>AI Connected</span>
+        </div>
+        <div class="bottom-item">
+          <span id="currentService">COGI</span>
+        </div>
+        <div class="bottom-item">
+          <span id="lineCol">Ln 1, Col 1</span>
+        </div>
+      </div>
+      <div class="bottom-right">
+        <span id="latency">~0ms</span>
+        <span>UTF-8</span>
+        <span id="langDisplay">JavaScript</span>
+      </div>
+    </div>
+  </main>
+  
+  <script>
+    let currentService = 'cogi';
+    let isRunning = false;
+    
+    const BASE_URL = 'https://parallaxdominion.vercel.app';
+    
+    const templates = {
+      hello: `console.log("Hello, World!");
+console.log("Welcome to Parallax Terminal!");`,
+
+  const user = new User("Alice", "alice@parallaxdominion.vercel.app");
+console.log(user.getInfo());`,
+      async: `async function fetchData(url) {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('HTTP error!');
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error:', error.message);
+  }
+}
+
+fetchData('https://api.example.com/data')
+  .then(data => console.log(data));`,
+      react: `import React, { useState, useEffect } from 'react';
+
+function App() {
+  const [count, setCount] = useState(0);
+  
+  useEffect(() => {
+    document.title = \`Count: \${count}\`;
+  }, [count]);
+  
+  return (
+    <div>
+      <h1>Counter: {count}</h1>
+      <button onClick={() => setCount(c => c + 1)}>Increment</button>
+    </div>
+  );
+}
+
+export default App;`
+    };
+    
+    function detectLanguage(code) {
+      const patterns = {
+        'JavaScript': ['const ', 'let ', 'var ', 'function ', '=>', 'require(', 'module.exports', 'console.', 'import ', 'export ', 'async ', 'await '],
+        'Python': ['import ', 'def ', 'from ', 'print(', '__init__', 'self.', 'class ', 'if __name__', 'async def', 'print '],
+        'TypeScript': [': string', ': number', 'interface ', 'type ', '<T>', ': boolean', 'as ', 'import type', ': void'],
+        'Rust': ['fn ', 'let mut', 'impl ', 'pub fn', 'use ', '::', '-> ', 'match ', 'struct ', 'enum '],
+        'Go': ['func ', 'package ', 'import (', 'fmt.', 'go ', ':=', 'chan ', 'defer ', 'goroutine'],
+        'Java': ['public class', 'private ', 'public static void', 'System.out.', '@Override', 'public static void main'],
+        'C++': ['#include', 'std::', 'int main()', 'cout <<', 'cin >>', 'namespace ', '#define ', 'template<'],
+        'PHP': ['<?php', '$', 'echo ', 'function ', '->', 'namespace ', 'use ', 'class ', 'public function'],
+        'React': ['import React', 'from \'react\'', 'useState', 'useEffect', 'component', 'jsx']
+      };
+      
+      for (const [lang, keywords] of Object.entries(patterns)) {
+        if (keywords.some(k => code.includes(k))) return lang;
+      }
+      return 'JavaScript';
+    }
+    
+    function log(message, type = 'system') {
+      const terminal = document.getElementById('terminal');
+      const line = document.createElement('div');
+      line.className = 'output-line ' + type;
+      line.innerHTML = escapeHtml(message) + '<button class="copy-single" onclick="copyLine(this)">📋</button>';
+      terminal.appendChild(line);
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+    
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    function clearConsole() {
+      const terminal = document.getElementById('terminal');
+      terminal.innerHTML = `
+        <div class="output-line system">╔══════════════════════════════════════════════════════════╗</div>
+        <div class="output-line system">║  ⚡ PARALLAX TERMINAL v3.0 - AI POWERED                ║</div>
+        <div class="output-line system">╚══════════════════════════════════════════════════════════╝</div>
+        <div class="output-line info">🤖 AI Ready. Type code or describe what you want.</div>
+        <div class="output-line system">──────────────────────────────────────────────────────────</div>
+      `;
+    }
+    
+    function copyLine(btn) {
+      const text = btn.parentElement.textContent.replace('📋', '').trim();
+      navigator.clipboard.writeText(text);
+      btn.textContent = '✓';
+      setTimeout(() => btn.textContent = '📋', 1000);
+    }
+    
+    function selectService(service) {
+      currentService = service;
+      document.querySelectorAll('.service-item').forEach(el => el.classList.remove('active'));
+      event.target.closest('.service-item').classList.add('active');
+      document.getElementById('currentService').textContent = service.toUpperCase();
+      log(`Service switched to ${service.toUpperCase()}`, 'info');
+    }
+    
+    function switchTab(service) {
+      document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+      event.target.closest('.tab').classList.add('active');
+      selectService(service);
+    }
+    
+    function insertTemplate(type) {
+      const editor = document.getElementById('editor');
+      if (templates[type]) {
+        editor.value = templates[type];
+        updateLineNumbers();
+        log(`Loaded template: ${type}`, 'success');
+      }
+    }
+    
+    function updateLineNumbers() {
+      const editor = document.getElementById('editor');
+      const lines = editor.value.split('\n').length;
+      const cursorPos = editor.selectionStart;
+      const textBeforeCursor = editor.value.substring(0, cursorPos);
+      const currentLine = textBeforeCursor.split('\n').length;
+      document.getElementById('lineCol').textContent = `Ln ${currentLine}, Col ${cursorPos - textBeforeCursor.lastIndexOf('\n')}`;
+      
+      const lang = detectLanguage(editor.value);
+      const ext = {JavaScript:'js',Python:'py',TypeScript:'ts',Go:'go',Rust:'rs',Java:'java','C++':'cpp',PHP:'php',React:'jsx'};
+      document.getElementById('editorTitle').textContent = `main.${ext[lang] || 'txt'}`;
+      document.getElementById('langDisplay').textContent = lang;
+    }
+    
+    function selectAll() {
+      document.getElementById('editor').select();
+    }
+    
+    async function runCode() {
+      if (isRunning) return;
+      isRunning = true;
+      
+      const editor = document.getElementById('editor');
+      const code = editor.value.trim();
+      const detectedLang = detectLanguage(code);
+      
+      if (!code) {
+        log('Please enter code.', 'warning');
+        isRunning = false;
+        return;
+      }
+      
+      log('', 'system');
+      log(`⚡ Running ${detectedLang}...`, 'info');
+      
+      const startTime = Date.now();
+      
+      if (detectedLang === 'JavaScript' || detectedLang === 'React') {
+        try {
+          const logs = [];
+          const customConsole = {
+            log: (...args) => logs.push(args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' ')),
+            error: (...args) => logs.push('[ERROR] ' + args.join(' ')),
+            warn: (...args) => logs.push('[WARN] ' + args.join(' ')),
+            info: (...args) => logs.push('[INFO] ' + args.join(' '))
+          };
+          
+          const fn = new Function('console', code);
+          await fn(customConsole);
+          
+          if (logs.length > 0) {
+            log('═══ OUTPUT ═══', 'system');
+            logs.forEach(l => log(l, 'success'));
+          } else {
+            log('Code executed (no output)', 'info');
+          }
+        } catch (err) {
+          log('✗ Error: ' + err.message, 'error');
+        }
+      } else {
+        log('🤖 AI execution for ' + detectedLang, 'ai');
+        log('Use the AI button to generate/convert code!', 'info');
+      }
+      
+      const latency = Date.now() - startTime;
+      document.getElementById('latency').textContent = `~${latency}ms`;
+      log(`Completed in ${latency}ms`, 'system');
+      isRunning = false;
+    }
+    
+    function handleConsoleInput(event) {
+      if (event.key === 'Enter') {
+        const input = document.getElementById('consoleInput');
+        const cmd = input.value.trim();
+        if (cmd) {
+          log(cmd, 'cmd');
+          input.value = '';
+          
+          if (cmd === 'clear' || cmd === 'cls') {
+            clearConsole();
+          } else if (cmd === 'run') {
+            runCode();
+          } else if (cmd.startsWith('use ')) {
+            const svc = cmd.slice(4).trim();
+            selectService(svc);
+          } else if (cmd === 'help') {
+            log('═══ HELP ═══', 'system');
+            log('clear/cls - Clear console', 'system');
+            log('run - Execute code', 'system');
+            log('use <service> - Switch service', 'system');
+            log('<any text> - Generate/run code', 'system');
+          } else {
+            document.getElementById('editor').value = cmd;
+            updateLineNumbers();
+            runCode();
+          }
+        }
+      }
+    }
+    
+    function formatCode() {
+      const editor = document.getElementById('editor');
+      log('Formatting...', 'info');
+      let code = editor.value;
+      code = code.replace(/\s+/g, ' ');
+      code = code.replace(/{\s+/g, ' { ');
+      code = code.replace(/}\s+/g, ' } ');
+      code = code.replace(/;\s+/g, ';\n');
+      editor.value = code;
+      log('Formatted!', 'success');
+    }
+    
+    function copyCode() {
+      const editor = document.getElementById('editor');
+      navigator.clipboard.writeText(editor.value);
+      document.getElementById('copyText').textContent = 'Copied!';
+      document.getElementById('copyBtnEditor').classList.add('copied');
+      setTimeout(() => {
+        document.getElementById('copyText').textContent = 'Copy';
+        document.getElementById('copyBtnEditor').classList.remove('copied');
+      }, 2000);
+      log('Code copied to clipboard!', 'success');
+    }
+    
+    function copyTerminal() {
+      const terminal = document.getElementById('terminal');
+      const text = terminal.innerText;
+      navigator.clipboard.writeText(text);
+      log('Terminal output copied!', 'success');
+    }
+    
+    function downloadOutput() {
+      const terminal = document.getElementById('terminal');
+      const text = terminal.innerText;
+      const blob = new Blob([text], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'terminal-output.txt';
+      a.click();
+      URL.revokeObjectURL(url);
+      log('Output downloaded!', 'success');
+    }
+    
+    async function runAICommand() {
+      const input = document.getElementById('aiInput');
+      const cmd = input.value.trim();
+      if (!cmd) return;
+      
+      log(`🤖 AI: ${cmd}`, 'ai');
+      input.value = '';
+      
+      log('Processing with AI...', 'system');
+      
+      try {
+        const response = await fetch(BASE_URL + '/api/ai/groq', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: cmd
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.response) {
+          let code = data.response;
+          const codeBlock = code.match(/```(?:\w+)?\n?([\s\S]*?)```/);
+          if (codeBlock) {
+            code = codeBlock[1];
+            document.getElementById('editor').value = code;
+            updateLineNumbers();
+          }
+          log('═══ AI RESPONSE ═══', 'system');
+          code.split('\n').slice(0, 20).forEach(line => log(line, 'ai'));
+          if (code.split('\n').length > 20) {
+            log('... (truncated)', 'system');
+          }
+        } else {
+          log('AI response unavailable', 'error');
+        }
+      } catch (err) {
+        log('AI Error: ' + err.message, 'error');
+      }
+    }
+    
+    async function aiExplain() {
+      const code = document.getElementById('editor').value.trim();
+      if (!code) {
+        log('Please enter code to explain', 'warning');
+        return;
+      }
+      
+      log('🤖 Asking AI to explain...', 'ai');
+      
+      try {
+        const response = await fetch(BASE_URL + '/api/ai/groq', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: `Explain this code in simple terms:\n\n${code}`
+          })
+        });
+        
+        const data = await response.json();
+        if (data.response) {
+          log('═══ EXPLANATION ═══', 'system');
+          data.response.split('\n').slice(0, 15).forEach(line => log(line, 'ai'));
+        }
+      } catch (err) {
+        log('AI Error: ' + err.message, 'error');
+      }
+    }
+    
+    async function aiDebug() {
+      const code = document.getElementById('editor').value.trim();
+      if (!code) {
+        log('Please enter code to debug', 'warning');
+        return;
+      }
+      
+      log('🔧 AI is debugging...', 'ai');
+      
+      try {
+        const response = await fetch(BASE_URL + '/api/ai/groq', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: `Find and fix bugs in this code. Return the corrected code:\n\n${code}`
+          })
+        });
+        
+        const data = await response.json();
+        if (data.response) {
+          let fixedCode = data.response;
+          const codeBlock = fixedCode.match(/```(?:\w+)?\n?([\s\S]*?)```/);
+          if (codeBlock) fixedCode = codeBlock[1];
+          
+          document.getElementById('editor').value = fixedCode;
+          updateLineNumbers();
+          log('═══ FIXED CODE ═══', 'system');
+          log('Code has been updated!', 'success');
+        }
+      } catch (err) {
+        log('AI Error: ' + err.message, 'error');
+      }
+    }
+    
+    async function aiOptimize() {
+      const code = document.getElementById('editor').value.trim();
+      if (!code) {
+        log('Please enter code to optimize', 'warning');
+        return;
+      }
+      
+      log('⚡ AI is optimizing...', 'ai');
+      
+      try {
+        const response = await fetch(BASE_URL + '/api/ai/groq', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: `Optimize this code for better performance. Return the optimized code:\n\n${code}`
+          })
+        });
+        
+        const data = await response.json();
+        if (data.response) {
+          let optCode = data.response;
+          const codeBlock = optCode.match(/```(?:\w+)?\n?([\s\S]*?)```/);
+          if (codeBlock) optCode = codeBlock[1];
+          
+          document.getElementById('editor').value = optCode;
+          updateLineNumbers();
+          log('═══ OPTIMIZED ═══', 'system');
+          log('Performance optimized!', 'success');
+        }
+      } catch (err) {
+        log('AI Error: ' + err.message, 'error');
+      }
+    }
+    
+    async function aiConvert() {
+      const code = document.getElementById('editor').value.trim();
+      if (!code) {
+        log('Please enter code to convert', 'warning');
+        return;
+      }
+      
+      log('🔄 Select target language from sidebar', 'info');
+    }
+    
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.key === 'Enter') {
+        e.preventDefault();
+        runCode();
+      }
+      if (e.ctrlKey && e.key === 'l') {
+        e.preventDefault();
+        clearConsole();
+      }
+      if (e.ctrlKey && e.key === 'k') {
+        e.preventDefault();
+        document.getElementById('aiInput').focus();
+      }
+    });
+    
+    document.getElementById('editor').addEventListener('click', updateLineNumbers);
+    document.getElementById('editor').addEventListener('keyup', updateLineNumbers);
+    
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobileMenu');
+      menu.classList.toggle('show');
+      document.body.classList.toggle('menu-open');
+    }
+    
+    function changeTheme(theme) {
+      document.body.className = 'theme-' + theme;
+      log(`Theme changed to ${theme}`, 'info');
+    }
+    
+    updateLineNumbers();
+  </script>
+</body>
+</html>

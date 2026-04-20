@@ -1,0 +1,56 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+media/
+staticfiles/
+
+# Virtual environments
+venv/
+env/
+.env
+.venv/
+
+# Node
+node_modules/
+.npm
+.next/
+out/
+dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# Misc
+.DS_Store
+Thumbs.db
+.ruff_cache/
+.vercel
+
+# Environment variables (keep secrets safe)
+.env
+.env.local
+.env.production
+.env.*.local

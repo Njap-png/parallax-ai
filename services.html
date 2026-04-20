@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Services | BRIDGEMIND</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#00ff88">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=Michroma&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --bg:#0a0a0f;--bg2:#0f0f18;--card:#12121f;--card2:#1a1a2e;
+      --border:#1e1e3a;--cyan:#00ff88;--cyan2:#00ffff;--cyan3:#00cc6a;
+      --purple:#a855f7;--purple2:#7c3aed;--magenta:#ff00ff;--magenta2:#e040fb;
+      --text:#e0e0e0;--muted:#6b7280;--dim:#374151;--glow:rgba(0,255,136,0.4);
+      --red:#ff3366;--orange:#ff9500;--yellow:#ffcc00;--green:#00ff88
+    }
+    body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;overflow-x:hidden}
+    body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,136,.015) 2px,rgba(0,255,136,.015) 4px);pointer-events:none;z-index:9998}
+    
+    /* SCANLINE EFFECT */
+    body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(transparent 50%,rgba(0,0,0,0.02) 50%);background-size:100% 4px;pointer-events:none;z-index:9997;opacity:0.3}
+    
+    nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(10,10,15,.95);border-bottom:1px solid rgba(0,255,136,.15);backdrop-filter:blur(20px)}
+    nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);box-shadow:0 0 20px var(--cyan)}
+    .nav{max-width:1600px;margin:0 auto;padding:.75rem 2rem;display:flex;justify-content:space-between;align-items:center}
+    .logo{color:var(--text);text-decoration:none;font-weight:600;letter-spacing:3px;font-family:'Orbitron',sans-serif;font-size:.9rem;display:flex;align-items:center;gap:.75rem}
+    .logo-icon{width:28px;height:28px;position:relative;transform-style:preserve-3d}
+    .logo-icon::before{content:'';position:absolute;inset:0;border:2px solid var(--cyan);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);animation:hexRotate 8s linear infinite;box-shadow:0 0 15px var(--cyan),inset 0 0 15px rgba(0,255,136,0.3)}
+    .logo-icon::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:6px;height:6px;background:var(--cyan);border-radius:50%;box-shadow:0 0 10px var(--cyan),0 0 20px var(--cyan);animation:corePulse 1.5s ease-in-out infinite}
+    @keyframes hexRotate{0%{transform:rotateY(0deg)}100%{transform:rotateY(360deg)}}
+    @keyframes corePulse{0%,100%{opacity:1;transform:translate(-50%,-50%) scale(1)}50%{opacity:0.5;transform:translate(-50%,-50%) scale(1.5)}}
+    .links{display:flex;gap:1.5rem}
+    .links a{color:var(--muted);text-decoration:none;font-size:.85rem;transition:all .3s;position:relative}
+    .links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--cyan);transition:width .3s;box-shadow:0 0 8px var(--cyan)}
+    .links a:hover,.links a.active{color:var(--cyan);text-shadow:0 0 10px var(--cyan)}
+    .links a:hover::after{width:100%}
+    .cta{padding:.5rem 1.5rem;border:1px solid var(--cyan);color:var(--cyan);text-decoration:none;font-size:.8rem;border-radius:4px;font-family:'Orbitron',sans-serif;letter-spacing:2px;transition:all .3s;text-transform:uppercase;position:relative;overflow:hidden}
+    .cta::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(0,255,136,.2),transparent);transform:translateX(-100%);transition:transform .5s}
+    .cta:hover{background:var(--cyan);color:var(--bg);box-shadow:0 0 30px rgba(0,255,136,.5);text-shadow:none}
+    .cta:hover::before{transform:translateX(100%)}
+    
+    main{padding-top:80px;position:relative;z-index:1}
+    
+    /* HERO SECTION */
+    .hero{padding:6rem 2rem;text-align:center;background:radial-gradient(ellipse at 50% 0%,rgba(0,255,136,.12) 0%,rgba(168,85,247,.05) 40%,transparent 70%);position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:conic-gradient(from 0deg at 50% 50%,transparent 0deg,rgba(0,255,136,.03) 60deg,transparent 120deg,rgba(168,85,247,.03) 180deg,transparent 240deg,rgba(0,255,136,.03) 300deg,transparent 360deg);animation:rotateBg 30s linear infinite;pointer-events:none}
+    @keyframes rotateBg{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+    .tag{color:var(--cyan);font-size:.75rem;letter-spacing:6px;display:block;margin-bottom:1rem;text-transform:uppercase;font-family:'Michroma',sans-serif;text-shadow:0 0 20px var(--cyan);position:relative}
+    .tag::before{content:'[ ';opacity:.5}
+    .tag::after{content:' ]';opacity:.5}
+    h1{font-size:clamp(2rem,5vw,4rem);font-weight:800;background:linear-gradient(90deg,var(--cyan),var(--cyan2),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-family:'Orbitron',sans-serif;letter-spacing:6px;margin-bottom:1.5rem;position:relative;filter:drop-shadow(0 0 30px rgba(0,255,136,0.5))}
+    .sub{color:var(--muted);margin-bottom:0;font-size:1.15rem;max-width:700px;margin-left:auto;margin-right:auto;line-height:1.8}
+    
+    /* HOLOGRAPHIC LINE */
+    .holo-line{height:1px;background:linear-gradient(90deg,transparent,var(--cyan),var(--purple),var(--magenta),var(--cyan),transparent);margin:0 auto;max-width:600px;position:relative}
+    .holo-line::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:20px;height:20px;background:var(--cyan);border-radius:50%;box-shadow:0 0 30px var(--cyan),0 0 60px var(--cyan);animation:lineOrb 3s ease-in-out infinite}
+    @keyframes lineOrb{0%,100%{left:10%;opacity:1}50%{left:90%;opacity:0.5}}
+    
+    .section{padding:5rem 2rem;max-width:1600px;margin:0 auto}
+    
+    /* FUTURISTIC GRID */
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(500px,1fr));gap:3rem;margin-top:3rem}
+    
+    /* 3D HOLOGRAPHIC CARD */
+    .card{background:linear-gradient(145deg,rgba(18,18,31,.95),rgba(10,10,20,.98));border:1px solid rgba(0,255,136,.15);border-radius:16px;padding:2.5rem;position:relative;overflow:hidden;transform-style:preserve-3d;perspective:1000px;transition:all .5s cubic-bezier(.23,1,.32,1)}
+    .card::before{content:'';position:absolute;inset:-2px;border-radius:18px;background:linear-gradient(45deg,var(--cyan),var(--purple),var(--magenta),var(--cyan));z-index:-1;opacity:0;transition:opacity .5s;animation:borderRotate 4s linear infinite;background-size:400% 400%}
+    @keyframes borderRotate{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+    .card::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(0,255,136,.1),transparent 60%);opacity:0;transition:opacity .5s}
+    .card:hover{border-color:transparent;transform:translateY(-10px) rotateX(2deg);box-shadow:0 30px 60px rgba(0,0,0,.5),0 0 60px rgba(0,255,136,.15)}
+    .card:hover::before{opacity:1}
+    .card:hover::after{opacity:1}
+    
+    /* CARD INTERIOR LINES */
+    .card-lines{position:absolute;top:0;left:0;right:0;height:100%;pointer-events:none;overflow:hidden}
+    .card-line{position:absolute;background:linear-gradient(90deg,transparent,rgba(0,255,136,.1),transparent);height:1px;width:200%;animation:lineScan 8s linear infinite}
+    .card-line:nth-child(1){top:20%;animation-delay:0s}
+    .card-line:nth-child(2){top:40%;animation-delay:-2s}
+    .card-line:nth-child(3){top:60%;animation-delay:-4s}
+    .card-line:nth-child(4){top:80%;animation-delay:-6s}
+    @keyframes lineScan{0%{transform:translateX(-50%)}100%{transform:translateX(0%)}}
+    
+    /* CARD HEADER */
+    .card-head{display:flex;align-items:flex-start;gap:1.5rem;margin-bottom:1.5rem;position:relative;z-index:2}
+    .icon{width:80px;height:80px;background:linear-gradient(135deg,rgba(0,255,136,.15),rgba(168,85,247,.15));border:1px solid rgba(0,255,136,.3);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;box-shadow:0 0 30px rgba(0,255,136,.2),inset 0 0 20px rgba(0,255,136,.1);transition:all .4s;position:relative;overflow:hidden}
+    .icon::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,.1) 50%,transparent 60%);transform:translateX(-100%);transition:transform .6s}
+    .card:hover .icon{transform:scale(1.1) rotateY(15deg);box-shadow:0 0 50px rgba(0,255,136,.3),inset 0 0 30px rgba(0,255,136,.2)}
+    .card:hover .icon::before{transform:translateX(100%)}
+    .title-wrap{flex:1}
+    .title{font-size:1.75rem;font-weight:700;margin-bottom:.25rem;font-family:'Orbitron',sans-serif;letter-spacing:3px;background:linear-gradient(90deg,var(--text),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .cat{font-size:.65rem;color:var(--purple);letter-spacing:4px;text-transform:uppercase;font-weight:600;font-family:'Michroma',sans-serif}
+    .status{margin-left:auto;padding:.5rem 1.25rem;background:linear-gradient(135deg,rgba(0,255,136,.15),rgba(0,255,136,.05));border:1px solid rgba(0,255,136,.4);border-radius:100px;font-size:.7rem;color:var(--cyan);font-weight:600;font-family:'Orbitron',sans-serif;letter-spacing:2px;box-shadow:0 0 20px rgba(0,255,136,.2);position:relative;overflow:hidden}
+    .status::before{content:'';position:absolute;top:50%;left:-100%;width:20px;height:20px;background:linear-gradient(90deg,transparent,rgba(0,255,136,.5),transparent);transform:translateY(-50%);animation:statusPulse 2s ease-in-out infinite}
+    @keyframes statusPulse{0%{left:-100%}100%{left:200%}}
+    .status.offline{background:linear-gradient(135deg,rgba(255,51,102,.15),rgba(255,51,102,.05));border-color:rgba(255,51,102,.4);color:var(--red)}
+    .status.beta{background:linear-gradient(135deg,rgba(255,204,0,.15),rgba(255,204,0,.05));border-color:rgba(255,204,0,.4);color:var(--yellow);box-shadow:0 0 20px rgba(255,204,0,.2)}
+    .desc{color:var(--muted);margin-bottom:1.5rem;font-size:1rem;line-height:1.8;position:relative;z-index:2}
+    .tags{display:flex;flex-wrap:wrap;gap:.75rem;margin-bottom:1.5rem;position:relative;z-index:2}
+    .tag2{padding:.5rem 1.25rem;background:rgba(0,0,0,.4);border:1px solid rgba(0,255,136,.15);border-radius:100px;font-size:.8rem;color:var(--muted);transition:all .3s;cursor:pointer;position:relative;overflow:hidden;font-family:'JetBrains Mono',monospace}
+    .tag2::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(0,255,136,.2),transparent);transform:translateX(-100%);transition:transform .4s}
+    .tag2:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 20px rgba(0,255,136,.3);text-shadow:0 0 10px var(--cyan)}
+    .tag2:hover::before{transform:translateX(100%)}
+    
+    /* CODE OUTPUT SECTION */
+    .code-section{position:relative;z-index:2}
+    .code-tabs{display:flex;gap:.5rem;margin-bottom:1rem}
+    .code-tab{padding:.6rem 1.5rem;background:rgba(0,0,0,.4);border:1px solid rgba(0,255,136,.1);border-radius:8px;color:var(--muted);font-family:'Orbitron',sans-serif;font-size:.75rem;cursor:pointer;transition:all .3s;letter-spacing:2px;text-transform:uppercase;position:relative;overflow:hidden}
+    .code-tab::before{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--cyan);transform:scaleX(0);transition:transform .3s}
+    .code-tab.active{background:linear-gradient(135deg,var(--cyan),var(--cyan2));color:var(--bg);border-color:var(--cyan);box-shadow:0 0 25px rgba(0,255,136,.4)}
+    .code-tab.active::before{transform:scaleX(1);background:var(--bg)}
+    .code-tab:hover:not(.active){border-color:var(--cyan);color:var(--cyan)}
+    
+    .code-preview{background:linear-gradient(180deg,rgba(0,0,0,.6),rgba(0,0,10,.8));border:1px solid rgba(0,255,136,.2);border-radius:12px;padding:1.5rem;font-size:.85rem;max-height:220px;overflow:auto;display:none;position:relative}
+    .code-preview.active{display:block}
+    .code-preview::before{content:'';position:absolute;top:0;left:0;right:0;height:30px;background:linear-gradient(180deg,rgba(0,0,0,.5),transparent);pointer-events:none;z-index:1;border-radius:12px 12px 0 0}
+    .code-preview code{color:var(--cyan);white-space:pre-wrap;line-height:1.8;display:block}
+    .code-preview .comment{color:var(--dim);font-style:italic}
+    .code-preview .keyword{color:var(--purple)}
+    .code-preview .string{color:var(--green)}
+    .code-preview .number{color:var(--orange)}
+    
+    /* ACTION BUTTONS */
+    .code-actions{display:flex;gap:.75rem;margin-top:.75rem;position:relative;z-index:2}
+    .action-btn{display:flex;align-items:center;gap:.5rem;padding:.6rem 1.25rem;background:rgba(0,0,0,.4);border:1px solid rgba(0,255,136,.2);border-radius:8px;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:.8rem;cursor:pointer;transition:all .3s}
+    .action-btn:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 15px rgba(0,255,136,.2);transform:translateY(-2px)}
+    .action-btn svg{width:16px;height:16px;fill:currentColor}
+    .action-btn.copied{background:rgba(0,255,136,.2);border-color:var(--cyan);color:var(--cyan)}
+    .action-btn.downloaded{background:rgba(168,85,247,.2);border-color:var(--purple);color:var(--purple)}
+    
+    /* SERVICE METRICS */
+    .service-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.5rem;padding:1.25rem;background:rgba(0,0,0,.3);border-radius:12px;border:1px solid rgba(0,255,136,.1);position:relative;z-index:2}
+    .service-metrics::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent)}
+    .metric-item{display:flex;flex-direction:column;gap:.25rem;text-align:center}
+    .metric-label{font-size:.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:2px;font-family:'Michroma',sans-serif}
+    .metric-value{font-size:1.1rem;color:var(--cyan);font-family:'Orbitron',sans-serif;font-weight:600;text-shadow:0 0 15px rgba(0,255,136,.5)}
+    
+    /* BUTTONS */
+    .btns{display:flex;gap:1rem;margin-top:1.5rem;position:relative;z-index:2}
+    .btn{padding:1rem 1.5rem;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;text-decoration:none;transition:all .4s cubic-bezier(.23,1,.32,1);font-family:'Orbitron',sans-serif;letter-spacing:2px;flex:1;text-align:center;text-transform:uppercase;position:relative;overflow:hidden}
+    .btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.1),transparent);transform:translateX(-100%) rotate(45deg);transition:transform .5s}
+    .btn:hover::before{transform:translateX(100%) rotate(45deg)}
+    .btn1{background:linear-gradient(135deg,var(--cyan),var(--cyan3));color:var(--bg);border:none;box-shadow:0 0 30px rgba(0,255,136,.4),inset 0 1px 0 rgba(255,255,255,.2)}
+    .btn1:hover{box-shadow:0 0 50px rgba(0,255,136,.6),0 10px 40px rgba(0,255,136,.3);transform:translateY(-3px)}
+    .btn2{background:transparent;color:var(--text);border:1px solid rgba(255,255,255,.1)}
+    .btn2:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 25px rgba(0,255,136,.2)}
+    
+    /* USAGE BANNER */
+    .usage-banner{background:linear-gradient(135deg,rgba(0,255,136,.1),rgba(168,85,247,.1));border:1px solid rgba(0,255,136,.3);border-radius:16px;padding:2rem;text-align:center;margin-bottom:3rem;position:relative;overflow:hidden}
+    .usage-banner::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(0,255,136,.05),transparent);animation:shimmer 3s ease-in-out infinite}
+    @keyframes shimmer{0%,100%{transform:translateX(-100%)}50%{transform:translateX(100%)}}
+    .usage-banner p{color:var(--muted);margin-bottom:.5rem;position:relative}
+    .usage-banner strong{color:var(--cyan);font-family:'Orbitron',sans-serif}
+    .usage-banner a{color:var(--cyan);text-decoration:none;font-family:'Orbitron',sans-serif}
+    
+    /* MODAL */
+    .modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.95);display:none;align-items:center;justify-content:center;z-index:2000;padding:2rem;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+    .modal.active{display:flex}
+    .modal-content{background:linear-gradient(180deg,rgba(18,18,31,.98),rgba(10,10,20,.98));border:1px solid rgba(0,255,136,.3);border-radius:20px;padding:2.5rem;max-width:900px;width:100%;max-height:90vh;overflow-y:auto;position:relative;box-shadow:0 0 80px rgba(0,255,136,.2)}
+    .modal-content::before{content:'';position:absolute;top:-2px;left:-2px;right:-2px;bottom:-2px;border-radius:22px;background:linear-gradient(45deg,var(--cyan),var(--purple),var(--magenta),var(--cyan));z-index:-1;opacity:.5;filter:blur(15px);animation:borderPulse 4s ease-in-out infinite}
+    @keyframes borderPulse{0%,100%{opacity:.3}50%{opacity:.6}}
+    .modal-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem}
+    .modal-hdr h3{font-size:1.5rem;font-family:'Orbitron',sans-serif;letter-spacing:3px;color:var(--cyan);text-shadow:0 0 20px var(--cyan)}
+    .modal-close{background:none;border:none;color:var(--muted);font-size:2.5rem;cursor:pointer;padding:.5rem;transition:all .3s;line-height:1}
+    .modal-close:hover{color:var(--cyan);transform:rotate(90deg)}
+    .modal-body textarea{width:100%;background:rgba(0,0,0,.6);border:1px solid rgba(0,255,136,.2);border-radius:12px;padding:1.25rem;color:var(--text);font-family:inherit;font-size:.95rem;min-height:150px;resize:vertical;transition:all .3s}
+    .modal-body textarea:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 30px rgba(0,255,136,.2)}
+    .modal-file-upload{display:flex;align-items:center;gap:1rem;margin:1rem 0;padding:1.5rem;background:rgba(0,0,0,.3);border:2px dashed rgba(0,255,136,.2);border-radius:12px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+    .modal-file-upload:hover{border-color:var(--cyan);background:rgba(0,255,136,.05)}
+    .modal-file-upload.dragover{border-color:var(--cyan);background:rgba(0,255,136,.1)}
+    .modal-file-upload input{display:none}
+    .modal-file-icon{font-size:2rem;color:var(--cyan)}
+    .modal-file-text{flex:1;color:var(--muted);font-size:.95rem}
+    .modal-file-name{color:var(--cyan);font-size:.85rem;margin-top:.25rem;font-family:'JetBrains Mono',monospace}
+    .modal-controls{display:flex;gap:1rem;margin:1.5rem 0;flex-wrap:wrap}
+    .modal-controls select{background:rgba(0,0,0,.5);border:1px solid rgba(0,255,136,.2);border-radius:8px;padding:.75rem 1.25rem;color:var(--text);font-family:inherit;cursor:pointer;transition:all .3s}
+    .modal-controls select:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 15px rgba(0,255,136,.2)}
+    .modal-output{background:rgba(0,0,10,.9);border:1px solid rgba(0,255,136,.2);border-radius:12px;padding:1.5rem;min-height:150px;max-height:350px;overflow-y:auto;margin-top:1.5rem;white-space:pre-wrap;font-size:.9rem;line-height:1.8;color:var(--muted);position:relative}
+    .modal-output.loading{color:var(--dim)}
+    .modal-output-actions{display:flex;gap:.75rem;margin-top:.75rem}
+    .modal-footer{display:flex;gap:1rem;margin-top:2rem}
+    
+    /* MOBILE MENU */
+    .mobile-menu-btn{display:none;background:rgba(0,0,0,.5);border:1px solid var(--border);color:var(--text);padding:.4rem .6rem;border-radius:8px;cursor:pointer;font-size:1.2rem;margin-left:auto;z-index:2147483647}
+    .mobile-menu-btn:hover{border-color:var(--cyan);color:var(--cyan);background:var(--cyan);color:var(--bg)}
+    .mobile-menu{position:fixed;top:0;right:0;width:300px;max-width:85vw;height:100vh;background:var(--card);border-left:1px solid var(--border);padding:80px 0 1rem;z-index:2147483647!important;transform:translateX(100%);transition:transform .3s ease-in-out;overflow-y:auto;box-shadow:-10px 0 40px rgba(0,0,0,.5)}
+    .mobile-menu.show{transform:translateX(0)}
+    .mobile-menu a{padding:1rem 1.5rem;color:var(--muted);text-decoration:none;font-size:1rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;transition:all .3s}
+    .mobile-menu a:hover{color:var(--cyan);background:rgba(0,255,136,.05)}
+    .mobile-menu .cta-mobile{background:var(--cyan);color:var(--bg);border:none;text-align:center;justify-content:center;border-radius:8px}
+    .mobile-menu-close{position:absolute;top:1rem;right:1rem;background:none;border:1px solid var(--border);color:var(--muted);padding:.5rem .75rem;border-radius:8px;cursor:pointer;font-size:1.2rem}
+    .mobile-menu-close:hover{border-color:var(--cyan);color:var(--cyan)}
+    .menu-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8);z-index:2147483646!important;opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s;backdrop-filter:blur(5px)}
+    .menu-overlay.show{opacity:1;visibility:visible}
+    
+    /* SCROLLBAR */
+    ::-webkit-scrollbar{width:8px;height:8px}
+    ::-webkit-scrollbar-track{background:var(--bg2)}
+    ::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:4px}
+    ::-webkit-scrollbar-thumb:hover{background:var(--cyan2);box-shadow:0 0 10px var(--cyan)}
+    
+    @media(max-width:1024px){
+      .grid{grid-template-columns:1fr;gap:2rem}
+    }
+    @media(max-width:768px){
+      *{max-width:100vw;overflow-x:hidden}
+      .mobile-menu-btn{display:flex!important;align-items:center;justify-content:center}
+      .links{display:none!important}
+      .cta{display:none!important}
+      .nav{justify-content:space-between}
+      .hero{padding:4rem 0.75rem 2rem}
+      .hero h1{font-size:1.5rem;letter-spacing:2px}
+      .section{padding:2rem 0.75rem}
+      .grid{grid-template-columns:1fr;gap:1.5rem}
+      .card{padding:1.5rem;border-radius:12px}
+      .card-head{flex-direction:column;gap:1rem}
+      .icon{width:60px;height:60px;font-size:1.75rem}
+      .title{font-size:1.25rem}
+      .desc{font-size:.9rem}
+      .modal-content{padding:1.5rem;margin:.5rem;max-height:85vh;border-radius:12px}
+      .modal-output{max-height:250px;font-size:.85rem}
+      .usage-banner{padding:1.5rem;margin:0 0 2rem 0;border-radius:12px}
+      .btns{flex-direction:column}
+      .btns .btn{width:100%;padding:.85rem}
+      .code-tabs{overflow-x:auto;padding-bottom:.5rem}
+      .code-tab{padding:.5rem 1rem;font-size:.7rem;white-space:nowrap}
+      .service-metrics{grid-template-columns:1fr;gap:.75rem}
+      body{font-size:.85rem}
+    }
+    @media(max-width:480px){
+      *{overflow-x:hidden}
+      .hero h1{font-size:1.25rem}
+      .card{padding:1.25rem}
+      .title{font-size:1rem;letter-spacing:1px}
+      .desc{font-size:.85rem}
+      .tags{flex-wrap:wrap}
+      .tag2{font-size:.75rem;padding:.4rem 1rem}
+      body{font-size:.8rem}
+      .code-actions{flex-wrap:wrap}
+      .action-btn{padding:.5rem 1rem;font-size:.75rem}
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav">
+      <a href="/" class="logo">
+        <div class="logo-icon"></div>
+        PARALLAX_DOMINION
+      </a>
+      <div class="links">
+        <a href="/">Home</a>
+        <a href="/services.html" class="active">Services</a>
+        <a href="/agent-swarm.html">Agent Swarm</a>
+        <a href="/ai-chat.html">AI Chat</a>
+        <a href="/terminal-pro.html">Terminal</a>
+        <a href="/sandbox.html">Sandbox</a>
+        <a href="/pricing.html">Pricing</a>
+        <a href="/docs.html">Docs</a>
+        <a href="/dashboard.html" id="navDashboard" style="display:none">Dashboard</a>
+        <a href="#" id="navLogout" style="display:none" onclick="logout()">Logout</a>
+        <a href="/login.html" id="navLogin">Sign In</a>
+      </div>
+      <a href="/login.html" class="cta" id="navCta">SIGN IN</a>
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
+    </div>
+  </nav>
+  <div class="menu-overlay" id="menuOverlay" onclick="toggleMobileMenu()"></div>
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="mobile-menu-close" onclick="toggleMobileMenu()">✕</button>
+    <a href="/">🏠 Home</a>
+    <a href="/services.html" style="color:var(--cyan)">🚀 Services</a>
+    <a href="/agent-swarm.html">🐝 Agent Swarm</a>
+    <a href="/ai-chat.html">💬 AI Chat</a>
+    <a href="/terminal-pro.html">⌨️ Terminal</a>
+    <a href="/sandbox.html">📦 Sandbox</a>
+    <a href="/media-gen.html">🎨 Media Gen</a>
+    <a href="/pricing.html">💰 Pricing</a>
+    <a href="/dashboard.html" id="mobileDashboard">📊 Dashboard</a>
+    <a href="/docs.html">📚 Docs</a>
+    <a href="/login.html" id="mobileAuthLink" onclick="handleMobileAuth(event)">🔑 Sign In</a>
+  </div>
+  
+  <script>
+    function toggleMobileMenu(){
+      const menu = document.getElementById('mobileMenu');
+      const overlay = document.getElementById('menuOverlay');
+      menu.classList.toggle('show');
+      overlay.classList.toggle('show');
+      document.body.style.overflow = menu.classList.contains('show') ? 'hidden' : '';
+      updateMobileAuth();
+    }
+    
+    function updateMobileAuth() {
+      const isLoggedIn = localStorage.getItem('auth_token');
+      const mobileAuthLink = document.getElementById('mobileAuthLink');
+      const mobileDashboard = document.getElementById('mobileDashboard');
+      
+      if (isLoggedIn) {
+        mobileAuthLink.innerHTML = '🚪 Logout <span>→</span>';
+        mobileAuthLink.onclick = function(e) { e.preventDefault(); logout(); };
+        mobileDashboard.style.display = 'block';
+      } else {
+        mobileAuthLink.innerHTML = '🔑 Sign In <span>→</span>';
+        mobileAuthLink.onclick = function() { window.location.href = '/login.html'; };
+        mobileDashboard.style.display = 'block';
+      }
+    }
+    
+    function handleMobileAuth(e) {
+      const isLoggedIn = localStorage.getItem('auth_token');
+      if (isLoggedIn) {
+        e.preventDefault();
+        logout();
+      }
+    }
+    
+    function logout() {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      window.location.href = '/login.html';
+    }
+    
+    function copyToClipboard(text, btn) {
+      navigator.clipboard.writeText(text).then(() => {
+        btn.classList.add('copied');
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg> COPIED';
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.innerHTML = originalHTML;
+        }, 2000);
+      });
+    }
+    
+    function downloadCode(text, filename, btn) {
+      const blob = new Blob([text], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      btn.classList.add('downloaded');
+      const originalHTML = btn.innerHTML;
+      btn.innerHTML = '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg> SAVED';
+      setTimeout(() => {
+        btn.classList.remove('downloaded');
+        btn.innerHTML = originalHTML;
+      }, 2000);
+    }
+    
+    function getServiceCode(serviceId) {
+      const codes = {
+        'cogi-output': `const helloWorld = () => {
+  return "Hello, World!";
+};
+
+console.log(helloWorld());`,
+        'cogi-code': `from fastapi import FastAPI
+from pydantic import BaseModel
+
+app = FastAPI()
+
+class User(BaseModel):
+    id: int
+    name: str
+    email: str
+
+@app.get("/users/{user_id}")
+async def get_user(user_id: int):
+    return {"id": user_id, "name": "User", "email": "user@example.com"}`,
+        'guardian-output': `Security Scan Results
+═══════════════════════════════
+
+Security Score: 94/100 (Grade A)
+Files Scanned: 24
+Lines of Code: 1,847
+Scan Duration: 1.2s
+
+Issues Found: 3 total
+  • Critical: 1
+  • Medium: 2
+
+Scan Status: COMPLETE ✓`,
+        'guardian-code': `CRITICAL - SQL Injection (auth.js:42)
+query = "SELECT * FROM users WHERE id=" + userId
+
+MEDIUM - XSS Vulnerability (display.js:18)
+element.innerHTML = userInput;
+
+MEDIUM - Hardcoded Secret (.env:5)
+API_KEY="sk-xxxxx-secret-key"`,
+        'docufy-output': `Documentation Generated
+═══════════════════════════════
+
+✓ Found 24 functions
+✓ Found 8 classes
+✓ Found 12 API endpoints
+
+Generated Files:
+  • README.md
+  • API.md
+  • CONTRIBUTING.md
+
+Status: COMPLETE ✓`,
+        'docufy-code': `# API Documentation
+
+## UserController
+
+### createUser(name, email)
+Creates a new user in the system.
+
+### getUser(id)
+Retrieves user by their unique ID.
+
+### deleteUser(id)
+Permanently removes user from system.
+
+### updateUser(id, data)
+Updates existing user information.`,
+        'testpilot-output': `Test Generation Complete
+═══════════════════════════════
+
+✓ Found 8 testable functions
+✓ Generated 24 test cases
+✓ Coverage Target: 85%
+✓ Actual Coverage: 87%
+
+Framework: Jest
+Status: COMPLETE ✓`,
+        'testpilot-code': `describe('helloWorld', () => {
+  test('returns correct string', () => {
+    expect(helloWorld()).toBe("Hello, World!");
+  });
+  
+  test('returns a string type', () => {
+    expect(typeof helloWorld()).toBe('string');
+  });
+});`,
+        'crawler-output': `Crawler Results
+═══════════════════════════════
+
+✓ Connected to target
+✓ Title: Example Domain
+✓ Links found: 127
+✓ Images found: 24
+✓ Data extracted: 2.4MB
+
+Status: COMPLETE ✓`,
+        'crawler-code': `{
+  "url": "https://example.com",
+  "title": "Example Domain",
+  "links": [
+    {"href": "/about", "text": "About"},
+    {"href": "/contact", "text": "Contact"}
+  ],
+  "images": [
+    {"src": "/logo.png", "alt": "Logo"}
+  ],
+  "metadata": {
+    "description": "Example domain",
+    "keywords": "example, domain"
+  }
+}`,
+        'agentswarm-output': `Agent Swarm Deployment
+═══════════════════════════════
+
+✓ Initializing 4 AI agents...
+✓ Researcher: Ready (analyzing)
+✓ Coder: Ready (coding)
+✓ Reviewer: Ready (reviewing)
+✓ Tester: Ready (testing)
+
+Est. completion: 8 minutes`,
+        'agentswarm-code': `Active Agents (4/4)
+═══════════════════════════════
+
+[1] RESEARCHER - Analyzing requirements
+    Status: WORKING
+    Progress: 34%
+
+[2] CODER - Writing code
+    Status: STANDBY
+    Progress: 0%
+
+[3] REVIEWER - Code review
+    Status: STANDBY
+    Progress: 0%
+
+[4] TESTER - Running tests
+    Status: STANDBY
+    Progress: 0%`
+      };
+      return codes[serviceId] || '';
+    }
+    
+    function getServiceFilename(serviceId) {
+      const filenames = {
+        'cogi-output': 'helloworld.js',
+        'cogi-code': 'api.py',
+        'guardian-output': 'scan-results.txt',
+        'guardian-code': 'vulnerabilities.txt',
+        'docufy-output': 'documentation.txt',
+        'docufy-code': 'README.md',
+        'testpilot-output': 'test-results.txt',
+        'testpilot-code': 'test.spec.js',
+        'crawler-output': 'crawl-results.txt',
+        'crawler-code': 'data.json',
+        'agentswarm-output': 'swarm-status.txt',
+        'agentswarm-code': 'agents-status.txt'
+      };
+      return filenames[serviceId] || 'output.txt';
+    }
+  </script>
+
+  <main>
+    <section class="hero">
+      <span class="tag">AI SERVICES</span>
+      <h1>PLATFORM SERVICES</h1>
+      <p class="sub">Next-generation AI-powered tools. Copy or download any output instantly.</p>
+      <div class="holo-line" style="margin-top:3rem"></div>
+    </section>
+
+    <section class="section">
+      <div id="usage-banner" class="usage-banner" style="display:none">
+        <p>You're using the <strong>Free tier</strong> - <span id="usage-count">0</span> / 100 API calls this month</p>
+        <p><a href="/pricing.html">Upgrade for unlimited access →</a></p>
+      </div>
+
+      <div class="grid">
+        <!-- COGI CARD -->
+        <div class="card" id="cogi">
+          <div class="card-lines">
+            <div class="card-line"></div>
+            <div class="card-line"></div>
+            <div class="card-line"></div>
+            <div class="card-line"></div>
+          </div>
+          <div class="card-head">
+            <div class="icon">⚡</div>
+            <div class="title-wrap">
+              <div class="title">COGI</div>
+              <div class="cat">CODE GENERATION</div>
+            </div>
+            <span class="status">LIVE</span>
+          </div>
+          <p class="desc">AI-powered code generation, debugging, explanation, and optimization. Supports 50+ programming languages with real-time syntax highlighting.</p>
+          <div class="tags">
+            <span class="tag2">Code Gen</span>
+            <span class="tag2">Debug</span>
+            <span class="tag2">Explain</span>
+            <span class="tag2">50+ Languages</span>
+          </div>
+          <div class="code-section">
+            <div class="code-tabs">
+              <button class="code-tab active" onclick="switchCodeTab(this, 'cogi-output')">OUTPUT</button>
+              <button class="code-tab" onclick="switchCodeTab(this, 'cogi-code')">CODE</button>
+            </div>
+            <div id="cogi-output" class="code-preview active">
+              <code><span class="comment">// Generated JavaScript</span>
+<span class="keyword">const</span> helloWorld = <span class="keyword">()</span> => {
+  <span class="keyword">return</span> <span class="string">"Hello, World!"</span>;
+};
+
+console.<span class="keyword">log</span>(helloWorld());</code>
+            </div>
+            <div id="cogi-code" class="code-preview">
+              <code><span class="comment"># FastAPI Python</span>
+<span class="keyword">from</span> fastapi <span class="keyword">import</span> FastAPI
+<span class="keyword">from</span> pydantic <span class="keyword">import</span> BaseModel
+
+app = FastAPI()
+
+<span class="keyword">class</span> <span class="keyword">User</span>(BaseModel):
+    id: <span class="keyword">int</span>
+    name: <span class="keyword">str</span>
+    email: <span class="keyword">str</span></code>
+            </div>
+            <div class="code-actions">
+              <button class="action-btn" onclick="copyToClipboard(getServiceCode('cogi-output'), this)">
+                <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                COPY
+              </button>
+              <button class="action-btn" onclick="downloadCode(getServiceCode('cogi-output'), 'helloworld.js', this)">
+                <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                DOWNLOAD
+              </button>
+            </div>
+          </div>
+          <div class="service-metrics">
+            <div class="metric-item">
+              <span class="metric-label">Avg Latency</span>
+              <span class="metric-value">~142ms</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Success Rate</span>
+              <span class="metric-value">99.9%</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Languages</span>
+              <span class="metric-value">50+</span>
+            </div>
+          </div>
+          <div class="btns">
+            <button class="btn btn1" onclick="openModal('cogi')">TRY DEMO</button>
+            <button class="btn btn2" onclick="window.location.href='/docs.html#cogi'">VIEW DOCS</button>
+          </div>
+        </div>
+
+        <!-- GUARDIAN CARD -->
+        <div class="card" id="guardian">
+          <div class="card-lines">
+            <div class="card-line"></div>
+            <div class="card-line"></div>
+            <div class="card-line"></div>
+            <div class="card-line"></div>
+          </div>
+          <div class="card-head">
+            <div class="icon">🛡️</div>
+            <div class="title-wrap">
+              <div class="title">GUARDIAN</div>
+              <div class="cat">SECURITY SCANNER</div>
+            </div>
+            <span class="status">LIVE</span>
+          </div>
+          <p class="desc">Automated security vulnerability scanning with OWASP Top 10 compliance. Get detailed fix recommendations for every issue.</p>
+          <div class="tags">
+            <span class="tag2">XSS Detection</span>
+            <span class="tag2">SQL Injection</span>
+            <span class="tag2">Secrets Scan</span>
+          </div>
+          <div class="code-section">
+            <div class="code-tabs">
+              <button class="code-tab active" onclick="switchCodeTab(this, 'guardian-output')">OUTPUT</button>
+              <button class="code-tab" onclick="switchCodeTab(this, 'guardian-code')">VULNS</button>
+            </div>
+            <div id="guardian-output" class="code-preview active">
+              <code><span class="comment">// Security Scan Results</span>
+<span class="keyword">Security Score:</span> 94/100 (A)
+<span class="keyword">Files Scanned:</span> 24
+<span class="keyword">Issues Found:</span> 1 critical, 2 medium
+<span class="string">✓ Scan completed in 1.2s</span></code>
+            </div>
+            <div id="guardian-code" class="code-preview">
+              <code><span class="comment">// Critical Issues</span>
+<span class="keyword">1.</span> SQL Injection (High)
+   File: auth.js:42
+   Line: <span class="string">query = "SELECT * FROM users WHERE..."</span>
+    
+<span class="keyword">2.</span> XSS (Medium)
+   File: display.js:18
+   Line: innerHTML = userInput</code>
+            </div>
+            <div class="code-actions">
+              <button class="action-btn" onclick="copyToClipboard(getServiceCode('guardian-output'), this)">
+                <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                COPY
+              </button>
+              <button class="action-btn" onclick="downloadCode(getServiceCode('guardian-output'), 'scan-results.txt', this)">
+                <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                DOWNLOAD
+              </button>
+            </div>
+          </div>
+          <div class="service-metrics">
+            <div class="metric-item">
+              <span class="metric-label">Avg Latency</span>
+              <span class="metric-value">~1.2s</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">OWASP Top 10</span>
+              <span class="metric-value">✓</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Coverage</span>
+              <span class="metric-value">100%</span>
+            </div>
+          </div>
+          <div class="btns">
+            <button class="btn btn1" onclick="openModal('guardian')">TRY DEMO</button>
+            <button class="btn btn2" onclick="window.location.href='/docs.html#guardian'">VIEW DOCS</button>
+          </div>
+        </div>
+
+        <!-- DOCUFY CARD -->
+        <div class="card" id="docufy">
+          <div class="card-lines">
+            <div class="card-line"></div>
+            <div class="card-line"></div>
+            <div class="card-line"></div>
+            <div class="card-line"></div>
+          </div>
+          <div class="card-head">
+            <div class="icon">📝</div>
+            <div class="title-wrap">
+              <div class="title">DOCUFY</div>
+              <div class="cat">AUTO DOCUMENTATION</div>
+            </div>
+            <span class="status">LIVE</span>
+          </div>
+          <p class="desc">Generate comprehensive documentation from your codebase automatically. Supports README, API docs, and JSDoc formats.</p>
+          <div class="tags">
+            <span class="tag2">API Docs</span>
+            <span class="tag2">README</span>
+            <span class="tag2">JSDoc</span>
+          </div>
+          <div class="code-section">
+            <div class="code-tabs">
+              <button class="code-tab active" onclick="switchCodeTab(this, 'docufy-output')">OUTPUT</button>
+              <button class="code-tab" onclick="switchCodeTab(this, 'docufy-code')">DOCS</button>
+            </div>
+            <div id="docufy-output" class="code-preview active">
+              <code><span class="comment">// Documentation Generated</span>
+<span class="keyword">✓</span> Found 24 functions
+<span class="keyword">✓</span> Found 8 classes
+<span class="keyword">✓</span> Generated: README.md, API.md
+<span class="string">✓ Documentation complete</span></code>
+            </div>
+            <div id="docufy-code" class="code-preview">
+              <code><span class="comment"># API Documentation</span>
+<span class="keyword">## UserController</span>
+<span class="string">createUser(name, email)</span> - Create new user
+<span class="string">getUser(id)</span> - Get user by ID
+<span class="string">deleteUser(id)</span> - Delete user</code>
+            </div>
+            <div class="code-actions">
+              <button class="action-btn" onclick="copyToClipboard(getServiceCode('docufy-code'), this)">
+                <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                COPY
+              </button>
+              <button class="action-btn" onclick="downloadCode(getServiceCode('docufy-code'), 'README.md', this)">
+                <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                DOWNLOAD
+              </button>
+            </div>
+          </div>
+          <div class="service-metrics">
+            <div class="metric-item">
+              <span class="metric-label">Avg Latency</span>
+              <span class="metric-value">~890ms</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Formats</span>
+              <span class="metric-value">4</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Success</span>
+              <span class="metric-value">99.8%</span>
+            </div>
+          </div>
+          <div class="btns">
+            <button class="btn btn1" onclick="openModal('docufy')">TRY DEMO</button>
+            <button class="btn btn2" onclick="window.location.href='/docs.html#docufy'">VIEW DOCS</button>
+          </div>
+        </div>
+
+        <!-- TEST PILOT CARD -->
+        <div class="card" id="testpilot">
+          <div class="card-lines">
+            <div class="card-line"></div>
+            <div class="card-line"></div>
+            <div class="card-line"></div>
+            <div class="card-line"></div>
+          </div>
+          <div class="card-head">
+            <div class="icon">🧪</div>
+            <div class="title-wrap">
+              <div class="title">TEST PILOT</div>
+              <div class="cat">AUTOMATED TESTING</div>
+            </div>
+            <span class="status">LIVE</span>
+          </div>
+          <p class="desc">Automated test generation for Jest, Mocha, pytest and more frameworks. Achieve 85%+ code coverage instantly.</p>
+          <div class="tags">
+            <span class="tag2">Jest</span>
+            <span class="tag2">Mocha</span>
+            <span class="tag2">pytest</span>
+          </div>
+          <div class="code-section">
+            <div class="code-tabs">
+              <button class="code-tab active" onclick="switchCodeTab(this, 'testpilot-output')">OUTPUT</button>
+              <button class="code-tab" onclick="switchCodeTab(this, 'testpilot-code')">TESTS</button>
+            </div>
+            <div id="testpilot-output" class="code-preview active">
+              <code><span class="comment">// Test Generation Results</span>
+<span class="keyword">✓</span> Found 8 testable functions
+<span class="keyword">✓</span> Generated 24 test cases
+<span class="keyword">✓</span> Coverage: <span class="string">85%</span>
+<span class="string">✓ Tests generated successfully</span></code>
+            </div>
+            <div id="testpilot-code" class="code-preview">
+              <code><span class="comment">// Generated Jest Tests</span>
+<span class="keyword">describe</span>(<span class="string">'helloWorld'</span>, () => {
+  <span class="keyword">test</span>(<span class="string">'returns string'</span>, () => {
+    expect(helloWorld()).<span class="keyword">toBe</span>(<span class="string">"Hello!"</span>);
+  });
+});</code>
+            </div>
+            <div class="code-actions">
+              <button class="action-btn" onclick="copyToClipboard(getServiceCode('testpilot-code'), this)">
+                <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                COPY
+              </button>
+              <button class="action-btn" onclick="downloadCode(getServiceCode('testpilot-code'), 'test.spec.js', this)">
+                <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                DOWNLOAD
+              </button>
+            </div>
+          </div>
+          <div class="service-metrics">
+            <div class="metric-item">
+              <span class="metric-label">Avg Latency</span>
+              <span class="metric-value">~650ms</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Frameworks</span>
+              <span class="metric-value">5</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Coverage</span>
+              <span class="metric-value">85%+</span>
+            </div>
+          </div>
+          <div class="btns">
+            <button class="btn btn1" onclick="openModal('testpilot')">TRY DEMO</button>
+            <button class="btn btn2" onclick="window.location.href='/docs.html#testpilot'">VIEW DOCS</button>
+          </div>
+        </div>
+
+        <!-- CRAWLER CARD -->
+        <div class="card" id="crawler">
+          <div class="card-lines">
+            <div class="card-line"></div>
+            <div class="card-line"></div>
+            <div class="card-line"></div>
+            <div class="card-line"></div>
+          </div>
+          <div class="card-head">
+            <div class="icon">🕷️</div>
+            <div class="title-wrap">
+              <div class="title">CRAWLER</div>
+              <div class="cat">WEB SCRAPING</div>
+            </div>
+            <span class="status">LIVE</span>
+          </div>
+          <p class="desc">Intelligent web scraping and data extraction with anti-blocking technology. Export data in 5 different formats.</p>
+          <div class="tags">
+            <span class="tag2">Anti-Bot</span>
+            <span class="tag2">Data Mining</span>
+            <span class="tag2">Export</span>
+          </div>
+          <div class="code-section">
+            <div class="code-tabs">
+              <button class="code-tab active" onclick="switchCodeTab(this, 'crawler-output')">OUTPUT</button>
+              <button class="code-tab" onclick="switchCodeTab(this, 'crawler-code')">DATA</button>
+            </div>
+            <div id="crawler-output" class="code-preview active">
+              <code><span class="comment">// Crawler Results</span>
+<span class="keyword">✓</span> Connected to target
+<span class="keyword">✓</span> Title: Example Domain
+<span class="keyword">✓</span> Links found: <span class="number">127</span>
+<span class="keyword">✓</span> Images found: <span class="number">24</span>
+<span class="string">✓ Extracted 2.4MB of data</span></code>
+            </div>
+            <div id="crawler-code" class="code-preview">
+              <code><span class="comment">// JSON Export</span>
+{
+  <span class="string">"url"</span>: <span class="string">"https://example.com"</span>,
+  <span class="string">"title"</span>: <span class="string">"Example Domain"</span>,
+  <span class="string">"links"</span>: [...],
+  <span class="string">"images"</span>: [...]
+}</code>
+            </div>
+            <div class="code-actions">
+              <button class="action-btn" onclick="copyToClipboard(getServiceCode('crawler-code'), this)">
+                <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                COPY
+              </button>
+              <button class="action-btn" onclick="downloadCode(getServiceCode('crawler-code'), 'data.json', this)">
+                <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                DOWNLOAD
+              </button>
+            </div>
+          </div>
+          <div class="service-metrics">
+            <div class="metric-item">
+              <span class="metric-label">Avg Latency</span>
+              <span class="metric-value">~2.5s</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Anti-Bot</span>
+              <span class="metric-value">✓</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Export</span>
+              <span class="metric-value">5 formats</span>
+            </div>
+          </div>
+          <div class="btns">
+            <button class="btn btn1" onclick="openModal('crawler')">TRY DEMO</button>
+            <button class="btn btn2" onclick="window.location.href='/docs.html#crawler'">VIEW DOCS</button>
+          </div>
+        </div>
+
+        <!-- AGENT SWARM CARD -->
+        <div class="card" id="agentswarm">
+          <div class="card-lines">
+            <div class="card-line"></div>
+            <div class="card-line"></div>
+            <div class="card-line"></div>
+            <div class="card-line"></div>
+          </div>
+          <div class="card-head">
+            <div class="icon">🐝</div>
+            <div class="title-wrap">
+              <div class="title">AGENT SWARM</div>
+              <div class="cat">MULTI-AGENT AI</div>
+            </div>
+            <span class="status beta">BETA</span>
+          </div>
+          <p class="desc">Deploy multiple AI agents to tackle complex multi-step tasks autonomously. Scale from 4 to 16 agents.</p>
+          <div class="tags">
+            <span class="tag2">Multi-agent</span>
+            <span class="tag2">Workflows</span>
+            <span class="tag2">Research</span>
+          </div>
+          <div class="code-section">
+            <div class="code-tabs">
+              <button class="code-tab active" onclick="switchCodeTab(this, 'agentswarm-output')">OUTPUT</button>
+              <button class="code-tab" onclick="switchCodeTab(this, 'agentswarm-code')">AGENTS</button>
+            </div>
+            <div id="agentswarm-output" class="code-preview active">
+              <code><span class="comment">// Swarm Deployment</span>
+<span class="keyword">✓</span> Initializing 4 agents
+<span class="keyword">✓</span> Researcher: Ready
+<span class="keyword">✓</span> Coder: Ready
+<span class="keyword">✓</span> Tester: Ready
+<span class="string">✓ Est. completion: 8 min</span></code>
+            </div>
+            <div id="agentswarm-code" class="code-preview">
+              <code><span class="comment">// Active Agents</span>
+<span class="keyword">1.</span> Researcher - Analyzing requirements
+<span class="keyword">2.</span> Coder - Writing code
+<span class="keyword">3.</span> Reviewer - Code review
+<span class="keyword">4.</span> Tester - Running tests</code>
+            </div>
+            <div class="code-actions">
+              <button class="action-btn" onclick="copyToClipboard(getServiceCode('agentswarm-output'), this)">
+                <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                COPY
+              </button>
+              <button class="action-btn" onclick="downloadCode(getServiceCode('agentswarm-output'), 'swarm-status.txt', this)">
+                <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                DOWNLOAD
+              </button>
+            </div>
+          </div>
+          <div class="service-metrics">
+            <div class="metric-item">
+              <span class="metric-label">Agents</span>
+              <span class="metric-value">4-16</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Status</span>
+              <span class="metric-value">Beta</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Est. Speed</span>
+              <span class="metric-value">8-15min</span>
+            </div>
+          </div>
+          <div class="btns">
+            <button class="btn btn1" onclick="openModal('agentswarm')">TRY DEMO</button>
+            <button class="btn btn2" onclick="window.location.href='/docs.html#agentswarm'">VIEW DOCS</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <div class="modal-hdr">
+        <h3 id="modal-title">Service Demo</h3>
+        <button class="modal-close" onclick="closeModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-file-upload" id="fileUpload" onclick="document.getElementById('fileInput').click()">
+          <input type="file" id="fileInput" onchange="handleFileSelect(event)" accept=".js,.ts,.py,.java,.c,.cpp,.go,.rb,.php,.html,.css,.json,.txt,.zip">
+          <span class="modal-file-icon">📁</span>
+          <div class="modal-file-text">
+            <span id="fileUploadText">Click to upload file or drag & drop</span>
+            <div class="modal-file-name" id="fileName"></div>
+          </div>
+        </div>
+        <textarea id="modal-input" placeholder="Or paste code here..."></textarea>
+        <div class="modal-controls">
+          <select id="modal-mode">
+            <option value="code">Code Generation</option>
+            <option value="explain">Explain Code</option>
+            <option value="debug">Debug Code</option>
+            <option value="optimize">Optimize Code</option>
+          </select>
+          <select id="modal-lang">
+            <option value="javascript">JavaScript</option>
+            <option value="python">Python</option>
+            <option value="typescript">TypeScript</option>
+            <option value="go">Go</option>
+          </select>
+          <select id="modal-framework" style="display:none">
+            <option value="jest">Jest</option>
+            <option value="mocha">Mocha</option>
+            <option value="pytest">pytest</option>
+          </select>
+        </div>
+        <div class="modal-output" id="modal-output">Output will appear here...</div>
+        <div class="modal-output-actions">
+          <button class="action-btn" onclick="copyToClipboard(document.getElementById('modal-output').textContent, this)" style="display:none" id="modal-copy-btn">
+            <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+            COPY OUTPUT
+          </button>
+          <button class="action-btn" onclick="downloadCode(document.getElementById('modal-output').textContent, 'output.txt', this)" style="display:none" id="modal-download-btn">
+            <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            DOWNLOAD
+          </button>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn1" onclick="runService()" style="flex:1">RUN</button>
+          <button class="btn btn2" onclick="closeModal()" style="flex:1">CLOSE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentService = '';
+    let usageCount = parseInt(localStorage.getItem('api_usage') || '0');
+    let selectedFile = null;
+    
+    function handleFileSelect(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      selectedFile = file;
+      document.getElementById('fileName').textContent = file.name + ' (' + formatFileSize(file.size) + ')';
+      document.getElementById('fileUploadText').textContent = 'File selected - ' + file.name;
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('modal-input').value = e.target.result;
+      };
+      reader.readAsText(file);
+    }
+    
+    function formatFileSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+    
+    function initFileUpload() {
+      const dropzone = document.getElementById('fileUpload');
+      
+      dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.classList.add('dragover');
+      });
+      
+      dropzone.addEventListener('dragleave', () => {
+        dropzone.classList.remove('dragover');
+      });
+      
+      dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        if (file) {
+          const input = document.getElementById('fileInput');
+          const dt = new DataTransfer();
+          dt.items.add(file);
+          input.files = dt.files;
+          handleFileSelect({ target: input });
+        }
+      });
+    }
+    
+    function switchCodeTab(btn, tabId) {
+      const card = btn.closest('.card');
+      card.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+      card.querySelectorAll('.code-preview').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+    }
+    
+    function updateUsageDisplay() {
+      const banner = document.getElementById('usage-banner');
+      if (localStorage.getItem('auth_token')) {
+        banner.style.display = 'none';
+      } else {
+        banner.style.display = 'block';
+        document.getElementById('usage-count').textContent = usageCount;
+      }
+    }
+    
+    function requireAuth() {
+      if (!localStorage.getItem('auth_token')) {
+        if (usageCount >= 10) {
+          alert('Free demo limit reached. Sign up for free to continue!');
+          window.location.href = '/login.html';
+          return false;
+        }
+      }
+      return true;
+    }
+    
+    function openModal(service) {
+      if (!requireAuth()) return;
+      currentService = service;
+      const modal = document.getElementById('modal');
+      const title = document.getElementById('modal-title');
+      const input = document.getElementById('modal-input');
+      const mode = document.getElementById('modal-mode');
+      const lang = document.getElementById('modal-lang');
+      const framework = document.getElementById('modal-framework');
+      const copyBtn = document.getElementById('modal-copy-btn');
+      const downloadBtn = document.getElementById('modal-download-btn');
+      
+      const titles = {cogi:'COGI // CODE GENERATION',guardian:'GUARDIAN // SECURITY',docufy:'DOCUFY // DOCUMENTATION',testpilot:'TEST PILOT // TESTING',crawler:'CRAWLER // SCRAPING',agentswarm:'AGENT SWARM // MULTI-AGENT'};
+      const placeholders = {cogi:'Enter code or describe what you want to generate...',guardian:'Paste code to scan for vulnerabilities...',docufy:'Paste code to generate documentation...',testpilot:'Paste code to generate tests...',crawler:'Enter URL to scrape...',agentswarm:'Describe the task for the agent swarm...'};
+      
+      title.textContent = titles[service];
+      input.placeholder = placeholders[service];
+      copyBtn.style.display = 'none';
+      downloadBtn.style.display = 'none';
+      
+      if (service === 'cogi') {
+        mode.style.display = 'block';
+        lang.style.display = 'block';
+        framework.style.display = 'none';
+      } else if (service === 'testpilot') {
+        mode.style.display = 'none';
+        lang.style.display = 'none';
+        framework.style.display = 'block';
+      } else {
+        mode.style.display = 'none';
+        lang.style.display = 'none';
+        framework.style.display = 'none';
+      }
+      
+      document.getElementById('modal-output').textContent = 'Output will appear here...';
+      document.getElementById('fileName').textContent = '';
+      document.getElementById('fileUploadText').textContent = 'Click to upload file or drag & drop';
+      selectedFile = null;
+      modal.classList.add('active');
+    }
+    
+    function closeModal() {
+      document.getElementById('modal').classList.remove('active');
+    }
+    
+    async function runService() {
+      const input = document.getElementById('modal-input').value;
+      const output = document.getElementById('modal-output');
+      const mode = document.getElementById('modal-mode').value;
+      const lang = document.getElementById('modal-lang').value;
+      const framework = document.getElementById('modal-framework').value;
+      const copyBtn = document.getElementById('modal-copy-btn');
+      const downloadBtn = document.getElementById('modal-download-btn');
+      
+      if (!input.trim()) {
+        output.textContent = 'Please enter a request...';
+        return;
+      }
+      
+      usageCount++;
+      localStorage.setItem('api_usage', usageCount);
+      updateUsageDisplay();
+      
+      output.textContent = 'Processing...';
+      output.classList.add('loading');
+      copyBtn.style.display = 'none';
+      downloadBtn.style.display = 'none';
+      
+      let body = { service: currentService };
+      if (currentService === 'cogi') body = { service: 'cogi', message: input, mode: mode, language: lang };
+      else if (currentService === 'testpilot') body = { service: 'testpilot', code: input, framework: framework };
+      else if (currentService === 'guardian') body = { service: 'guardian', code: input };
+      else if (currentService === 'docufy') body = { service: 'docufy', code: input };
+      else if (currentService === 'crawler') body = { service: 'crawler', url: input };
+      else if (currentService === 'agentswarm') body = { service: 'agentswarm', task: input };
+      
+      try {
+        const response = await fetch('/api/services', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        
+        const data = await response.json();
+        output.classList.remove('loading');
+        
+        let resultText = '';
+        if (data.response) resultText = data.response;
+        else if (data.documentation) resultText = data.documentation;
+        else if (data.tests) resultText = data.tests;
+        else if (data.score !== undefined) resultText = `Security Score: ${data.score}/100 (${data.grade})\n\nVulnerabilities Found: ${data.vulnerabilities.length}\n\n${data.vulnerabilities.map(v => `• ${v.severity.toUpperCase()}: ${v.type}`).join('\n')}`;
+        else if (data.swarm) resultText = `Agents Deployed: ${data.stats.agentsDeployed}\n\n${data.swarm.map(a => `• ${a.name}: ${a.status}`).join('\n')}`;
+        else if (data.data) resultText = `URL: ${data.data.url}\nTitle: ${data.data.title}\nLinks: ${data.data.linksFound}\nImages: ${data.data.imagesFound}`;
+        else resultText = JSON.stringify(data, null, 2);
+        
+        output.textContent = resultText;
+        copyBtn.style.display = 'flex';
+        downloadBtn.style.display = 'flex';
+      } catch (err) {
+        output.classList.remove('loading');
+        output.textContent = 'Error: ' + err.message;
+      }
+    }
+    
+    if (localStorage.getItem('auth_token')) {
+      document.getElementById('navDashboard').style.display = 'block';
+      document.getElementById('navLogout').style.display = 'block';
+      document.getElementById('navLogin').style.display = 'none';
+      document.getElementById('navCta').href = '/dashboard.html';
+      document.getElementById('navCta').textContent = 'DASHBOARD';
+    }
+    
+    updateUsageDisplay();
+    
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+    
+    window.addEventListener('load', () => {
+      const hash = window.location.hash;
+      if (hash) {
+        setTimeout(() => {
+          const target = document.querySelector(hash);
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            target.style.outline = '2px solid var(--cyan)';
+            setTimeout(() => target.style.outline = '', 2000);
+          }
+        }, 300);
+      }
+    });
+    
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+    
+    initFileUpload();
+  </script>
+</body>
+</html>

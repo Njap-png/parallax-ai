@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terms of Service | BRIDGEMIND</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#050508;--card:#12121a;--border:#27272a;--muted:#9ca3af;--text:#e0e0e0;--cyan:#00ff88}
+    body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.8;padding:80px 2rem}
+    nav{position:fixed;top:0;left:0;right:0;background:rgba(5,5,8,.95);border-bottom:1px solid #27272a;padding:.75rem 2rem;display:flex;justify-content:space-between;align-items:center;z-index:1000}
+    nav a{color:var(--muted);text-decoration:none;font-size:.85rem}
+    nav a:hover{color:var(--cyan)}
+    main{max-width:800px;margin:0 auto}
+    h1{font-size:1.5rem;margin-bottom:2rem;background:linear-gradient(90deg,var(--cyan),#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    h2{font-size:1.1rem;margin:2rem 0 1rem;color:var(--cyan)}
+    p{color:var(--muted);margin-bottom:1rem}
+    ul{color:var(--muted);margin-left:1.5rem;margin-bottom:1rem}
+    .mobile-menu-btn{display:none;background:none;border:1px solid var(--border);color:var(--muted);padding:.4rem .6rem;border-radius:4px;cursor:pointer;font-size:1.2rem;margin-left:auto}
+    .mobile-menu-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+    .mobile-menu{display:none;position:fixed;top:50px;left:0;right:0;background:var(--card);border-bottom:1px solid var(--border);z-index:999;padding:1rem;flex-direction:column;gap:.5rem;max-height:80vh;overflow-y:auto}
+    .mobile-menu.show{display:flex!important}
+    .mobile-menu a{padding:1rem;color:var(--muted);text-decoration:none;font-size:.9rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+    .mobile-menu a:hover{color:var(--cyan)}
+    @media(max-width:768px){.mobile-menu-btn{display:flex!important;align-items:center;justify-content:center}nav a:not(:last-child):not(.mobile-menu-btn){display:none}nav span:not(:last-child){display:none}}
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/">PARALLAX_DOMINION</a>
+    <a href="/login.html" id="navLogin">Sign In</a>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="/">🏠 Home <span>→</span></a>
+    <a href="/services.html">🚀 Services <span>→</span></a>
+    <a href="/pricing.html">💰 Pricing <span>→</span></a>
+    <a href="/dashboard.html" id="mobileDashboard">📊 Dashboard <span>→</span></a>
+    <a href="/docs.html">📚 Docs <span>→</span></a>
+    <a href="/contact.html">📧 Contact <span>→</span></a>
+    <a href="/login.html" id="mobileAuthLink" onclick="handleMobileAuth(event)" style="color:var(--cyan)">🔑 Sign In <span>→</span></a>
+  </div>
+  <script>
+    function toggleMobileMenu(){
+      document.getElementById('mobileMenu').classList.toggle('show');
+      updateMobileAuth();
+    }
+    
+    function updateMobileAuth() {
+      const isLoggedIn = localStorage.getItem('auth_token');
+      const mobileAuthLink = document.getElementById('mobileAuthLink');
+      
+      if (isLoggedIn) {
+        mobileAuthLink.innerHTML = '🚪 Logout <span>→</span>';
+        mobileAuthLink.onclick = function(e) { e.preventDefault(); logout(); };
+      } else {
+        mobileAuthLink.innerHTML = '🔑 Sign In <span>→</span>';
+        mobileAuthLink.onclick = function() { window.location.href = '/login.html'; };
+      }
+    }
+    
+    function handleMobileAuth(e) {
+      const isLoggedIn = localStorage.getItem('auth_token');
+      if (isLoggedIn) {
+        e.preventDefault();
+        logout();
+      }
+    }
+    
+    function logout() {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      window.location.href = '/login.html';
+    }
+    function logout() { localStorage.removeItem('auth_token'); localStorage.removeItem('user'); window.location.href='/login.html'; }
+    if(localStorage.getItem('auth_token')){ document.getElementById('navDashboard').style.display='inline'; document.getElementById('navLogout').style.display='inline'; document.getElementById('navLogin').style.display='none'; }
+  </script>
+  <main>
+    <h1>TERMS OF SERVICE</h1>
+    <p>Last updated: January 2026</p>
+    <h2>1. Acceptance of Terms</h2>
+    <p>By accessing and using Parallax, you agree to be bound by these Terms of Service.</p>
+    <h2>2. Services</h2>
+    <p>Parallax provides AI-powered developer tools including code generation, security scanning, documentation, testing, web scraping, and agent automation services.</p>
+    <h2>3. Account</h2>
+    <p>You must provide accurate information when creating an account. You are responsible for maintaining the security of your API keys.</p>
+    <h2>4. Acceptable Use</h2>
+    <ul>
+      <li>Use services for lawful purposes only</li>
+      <li>Do not attempt to circumvent rate limits</li>
+      <li>Do not resell or redistribute our services</li>
+      <li>Do not use for malicious activities</li>
+    </ul>
+    <h2>5. Payment</h2>
+    <p>All fees are charged in advance. You may cancel your subscription at any time.</p>
+    <h2>6. Disclaimer</h2>
+    <p>Services are provided "as is" without warranties. We do not guarantee uninterrupted or error-free operation.</p>
+    <h2>7. Contact</h2>
+    <p>Questions? Contact us at <a href="/contact.html" style="color:var(--cyan)">contact page</a>.</p>
+  </main>
+</body>
+</html>

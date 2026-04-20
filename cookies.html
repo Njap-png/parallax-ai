@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cookie Policy | BRIDGEMIND</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#030308;--bg2:#0a0a15;--card:#12121a;--border:#1a1a2e;--cyan:#00ff88;--purple:#a855f7;--text:#e0e0e0;--muted:#6b7280;--glow:rgba(0,255,136,.3)}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.8}
+    nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(3,3,8,.95);border-bottom:1px solid var(--border);backdrop-filter:blur(20px)}
+    nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent)}
+    .nav{max-width:1400px;margin:0 auto;padding:.75rem 2rem;display:flex;justify-content:space-between;align-items:center}
+    .logo{display:flex;align-items:center;gap:.75rem;text-decoration:none;color:var(--text);font-weight:600;letter-spacing:2px;font-family:'Orbitron',sans-serif;font-size:.9rem}
+    .logo-icon{width:28px;height:28px;position:relative}
+    .logo-icon::before{content:'';position:absolute;inset:0;border:2px solid var(--cyan);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)}
+    .logo-icon::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:6px;height:6px;background:var(--cyan);border-radius:50%}
+    .links{display:flex;gap:1.5rem}
+    .links a{color:var(--muted);text-decoration:none;font-size:.85rem;transition:all .3s}
+    .links a:hover,.links a.active{color:var(--cyan)}
+    
+    main{padding:120px 2rem 4rem;max-width:800px;margin:0 auto}
+    .tag{color:var(--cyan);font-size:.8rem;letter-spacing:4px;text-transform:uppercase;font-family:'Orbitron',sans-serif}
+    h1{font-size:2.5rem;margin:1rem 0 2rem;font-family:'Orbitron',sans-serif;letter-spacing:3px;background:linear-gradient(90deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    h2{font-family:'Orbitron',sans-serif;margin:2rem 0 1rem;color:var(--cyan);letter-spacing:2px}
+    p{color:var(--muted);margin-bottom:1.5rem}
+    ul{color:var(--muted);margin:1rem 0 1.5rem 1.5rem}
+    li{margin-bottom:.75rem}
+    
+    .update{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:1.5rem;margin-bottom:2rem}
+    .update strong{color:var(--cyan)}
+    
+    footer{padding:4rem 2rem;text-align:center;color:var(--muted);font-size:.85rem;border-top:1px solid var(--border)}
+    footer a{color:var(--cyan);text-decoration:none}
+    .mobile-menu-btn{display:none;background:none;border:1px solid var(--border);color:var(--muted);padding:.4rem .6rem;border-radius:4px;cursor:pointer;font-size:1.2rem;margin-left:auto}
+    .mobile-menu-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+    .mobile-menu{display:none;position:fixed;top:60px;left:0;right:0;background:var(--card);border-bottom:1px solid var(--border);z-index:999;padding:1rem;flex-direction:column;gap:.5rem;max-height:80vh;overflow-y:auto}
+    .mobile-menu.show{display:flex!important}
+    .mobile-menu a{padding:1rem;color:var(--muted);text-decoration:none;font-size:.9rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+    .mobile-menu a:hover{color:var(--cyan)}
+    .mobile-menu .cta-mobile{background:var(--cyan);color:var(--bg);border:none;text-align:center;justify-content:center;border-radius:6px}
+    @media(max-width:768px){.links{display:none!important}.mobile-menu-btn{display:flex!important;align-items:center;justify-content:center}.cta{display:none!important}.nav{justify-content:space-between}}
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav">
+      <a href="/" class="logo">
+        <div class="logo-icon"></div>
+        PARALLAX_DOMINION
+      </a>
+      <div class="links">
+        <a href="/">Home</a>
+        <a href="/services">Services</a>
+        <a href="/pricing">Pricing</a>
+        <a href="/terms">Terms</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/cookies" class="active">Cookies</a>
+      </div>
+      <a href="/login.html" class="cta" id="navCta">Sign In</a>
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
+    </div>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="/">🏠 Home <span>→</span></a>
+    <a href="/services.html">🚀 Services <span>→</span></a>
+    <a href="/pricing.html">💰 Pricing <span>→</span></a>
+    <a href="/dashboard.html" id="mobileDashboard">📊 Dashboard <span>→</span></a>
+    <a href="/docs.html">📚 Docs <span>→</span></a>
+    <a href="/terms.html">📜 Terms <span>→</span></a>
+    <a href="/privacy.html">🔒 Privacy <span>→</span></a>
+    <a href="/cookies.html" style="color:var(--cyan)">🍪 Cookies <span>→</span></a>
+    <a href="/login.html" id="mobileAuthLink" onclick="handleMobileAuth(event)" class="cta-mobile" style="color:var(--bg)">🔑 Sign In <span>→</span></a>
+  </div>
+
+  <main>
+    <span class="tag">// LEGAL</span>
+    <h1>Cookie Policy</h1>
+    
+    <div class="update">
+      <strong>Last Updated:</strong> February 5, 2026
+    </div>
+    
+    <h2>What Are Cookies?</h2>
+    <p>Cookies are small text files stored on your device when you visit our website. They help us provide you with a better experience and allow certain features to function properly.</p>
+    
+    <h2>How We Use Cookies</h2>
+    <p>Parallax uses cookies for the following purposes:</p>
+    <ul>
+      <li><strong>Essential Cookies:</strong> Required for the platform to function properly, including authentication and security features.</li>
+      <li><strong>Preference Cookies:</strong> Remember your settings like theme preference (dark/light mode).</li>
+      <li><strong>Analytics Cookies:</strong> Help us understand how visitors interact with our platform to improve it.</li>
+    </ul>
+    
+    <h2>Cookie Types We Use</h2>
+    <ul>
+      <li><strong>auth_token:</strong> Keeps you logged in (30 days)</li>
+      <li><strong>theme:</strong> Remembers your theme preference (1 year)</li>
+      <li><strong>cookies:</strong> Tracks your cookie consent (1 year)</li>
+    </ul>
+    
+    <h2>Managing Cookies</h2>
+    <p>You can control cookies through your browser settings. Disabling essential cookies may affect platform functionality.</p>
+    
+    <h2>Third-Party Cookies</h2>
+    <p>We use third-party services that may set cookies:</p>
+    <ul>
+      <li><strong>Google Fonts:</strong> For font delivery</li>
+      <li><strong>Groq API:</strong> For AI services</li>
+      <li><strong>Paystack:</strong> For payment processing</li>
+    </ul>
+    
+    <h2>Updates to This Policy</h2>
+    <p>We may update this policy periodically. Changes will be posted on this page with an updated revision date.</p>
+    
+    <h2>Contact Us</h2>
+    <p>For questions about our use of cookies, contact us at privacy@parallaxdominion.vercel.app</p>
+  </main>
+  
+  <footer>
+    <p>© 2026 BRIDGEMIND | <a href="/">Home</a> | <a href="/terms">Terms</a> | <a href="/privacy">Privacy</a></p>
+  </footer>
+  <script>
+    function toggleMobileMenu(){
+      document.getElementById('mobileMenu').classList.toggle('show');
+      updateMobileAuth();
+    }
+    
+    function updateMobileAuth() {
+      const isLoggedIn = localStorage.getItem('auth_token');
+      const mobileAuthLink = document.getElementById('mobileAuthLink');
+      
+      if (isLoggedIn) {
+        mobileAuthLink.innerHTML = '🚪 Logout <span>→</span>';
+        mobileAuthLink.onclick = function(e) { e.preventDefault(); logout(); };
+      } else {
+        mobileAuthLink.innerHTML = '🔑 Sign In <span>→</span>';
+        mobileAuthLink.onclick = function() { window.location.href = '/login.html'; };
+      }
+    }
+    
+    function handleMobileAuth(e) {
+      const isLoggedIn = localStorage.getItem('auth_token');
+      if (isLoggedIn) {
+        e.preventDefault();
+        logout();
+      }
+    }
+    
+    function logout() {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      window.location.href = '/login.html';
+    }
+    if(localStorage.getItem('auth_token')){
+      document.getElementById('navCta').href = '/dashboard.html';
+      document.getElementById('navCta').textContent = 'Dashboard';
+    }
+  </script>
+</body>
+</html>
