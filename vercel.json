@@ -1,17 +1,5 @@
 {
   "cleanUrls": true,
-  "framework": null,
-  "functions": {
-    "api/services/**/*.js": {
-      "runtime": "nodejs18.x"
-    },
-    "api/chat.js": {
-      "runtime": "nodejs18.x"
-    },
-    "api/**/*.js": {
-      "runtime": "nodejs18.x"
-    }
-  },
   "rewrites": [
     { "source": "/ai-chat", "destination": "/ai-chat.html" },
     { "source": "/agent-swarm", "destination": "/agent-swarm.html" },
